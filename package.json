@@ -1,6 +1,6 @@
 {
   "name": "x-mini",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "封装小程序",
   "main": "lib/index.js",
   "options": {
