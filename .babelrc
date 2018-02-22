@@ -1,0 +1,12 @@
+{
+  "comments": false,
+  "presets": [
+    "es2015",
+    "stage-2"
+  ],
+  "plugins": [
+    "syntax-dynamic-import",
+    "transform-object-rest-spread",
+    "transform-runtime"
+  ]
+}
