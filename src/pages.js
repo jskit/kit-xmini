@@ -6,23 +6,35 @@ let miniConfig = {};
 let pages;
 let tabBar;
 let tabBarList;
+let tabPages;
 
 // 此文件路径在 ./node_modules/x-mini/lib/pages.js
-// 所以引入文件需要 跳出四层
+// 所以引入文件需要 跳出四层，而且引入文件的配置文件app.json 的位置并不固定，
+// 就需要使用时，传入配置路径
+// 所以推荐使用全局变量来处理
 switch (me.miniType) {
-  case 'aliapp':
-    miniConfig = require('../../../../app.json');
-    pages = miniConfig.pages;
-    tabBar = miniConfig.tabBar;
+  case 'aliapp': {
+    // 使用一个全局变量来替代 $global
+    // miniConfig = require('../../../../app.json');
+    const { pagesConfig = {}, tabsConfig = {} } = $global;
+    pages = Object.keys(pagesConfig);
+    tabPages = Object.keys(tabsConfig);
+    // tabBarList = miniConfig.tabBar;
     // { pages = [], tabBar = {} } = miniConfig;
-    tabBarList = tabBar.list || [];
+    // tabBarList = tabBar.list || [];
     break;
+  }
   case 'wxapp':
+    // __wxConfig 微信小程序内的一个全局变量
     miniConfig = __wxConfig;
+    /* eslint prefer-destructuring: 0 */
     pages = miniConfig.pages;
     tabBar = miniConfig.tabBar;
     // { pages = [], tabBar = {} } = miniConfig;
     tabBarList = tabBar.list;
+    tabPages = mapTo(tabBarList, (item) => {
+      return item.pagePath.replace('.html', '')
+    });
     break;
   default:
     // do nothing
@@ -42,12 +54,14 @@ function pagesMap(pageArr) {
 
 const regPages = pagesMap(pages);
 
-/* eslint prefer-destructuring: 0 */
-regPages.defaultPage = pages[0].split('/').reverse()[0];
+[regPages.defaultPage] = pages[0].split('/').reverse();
 
-const tabPages = mapTo(tabBarList, (item) => {
-  return item.pagePath.replace('.html', '')
-});
+// 支付宝变量取配置时，没拿到数组排序
+// 所以如果 index 存在，则设置index为默认首页
+if (me.miniType === 'aliapp') {
+  regPages.defaultPage = 'index';
+}
+
 regPages.tabPages = pagesMap(tabPages);
 
 console.log('所有注册页面：');

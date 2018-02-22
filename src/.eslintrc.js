@@ -7,6 +7,7 @@ module.exports = {
     "App": false,
     "Page": false,
     "getCurrentPages": false,
+    "$global": false,
     "__wxConfig": false,
   },
 }
