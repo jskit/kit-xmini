@@ -38,7 +38,10 @@ this.setData({
 
 ## 使用
 
-请把代码下载到项目根目录 `./mini` 中，统一通过 `./utils/mini.js` 暴露接口来引用
+请把代码下载到项目根目录 `./mini` 中使用（更多使用参看 [kit-xapp](https://github.com/jskit/kit-xapp)）
+
+- 统一通过 `./utils/mini.js` 暴露接口来引用 `mini`
+- 统一通过 `./config/api` 暴露 api 接口
 
 ```js
 // ./utils/mini.js
@@ -52,14 +55,37 @@ export default mini;
 import {
   me,
   xPage,
-} from '../../utils/mini'
+} from '/utils/mini';
+import api from '/config/api';
 
 xPage({
   onLoad(query) {
-
+    me.showLoading();
+    api.getDemo({}, (res) => {
+      // success
+    }, (err) => {
+      // fail
+    });
   },
   onShow() {
-
+    me.showToast('提示信息');
+  },
+  onClick(e) {
+    const {
+      type,
+      pid,
+    } = e.currentTarget.dataset;
+    switch (type) {
+      case 'detail':
+        this.forward('detail', { id: pid });
+        break;
+      case 'service':
+        this.forward('service');
+        break;
+      default:
+        // do nothing...
+        break;
+    }
   },
   ...
 })
