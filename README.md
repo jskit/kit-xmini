@@ -19,6 +19,24 @@ import mini from '../mini'
 export default mini;
 ```
 
+```page.js
+// 页面js
+import {
+  me,
+  xPage,
+} from '../../utils/mini'
+
+xPage({
+  onLoad(query) {
+
+  },
+  onShow() {
+
+  },
+  ...
+})
+```
+
 ## Testing
 
 可以以支付宝小程序为例测试
