@@ -1,3 +1,3 @@
-import mini from './utils/mini';
+import mini from './mini';
 
 export default mini;
