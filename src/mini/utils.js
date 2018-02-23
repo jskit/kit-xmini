@@ -1,6 +1,23 @@
 
 export function noop() {}
 
+export function pagesMap(pageArr) {
+  return pageArr.reduce((obj, item) => {
+    const page = item.split('/').reverse()[0] || '';
+    /* eslint no-param-reassign: 0 */
+    obj[page] = `${item}`;
+    return obj;
+  }, {});
+}
+
+export function pagesObj(allPages, tabPages) {
+  return {
+    all: pagesMap(allPages),
+    tabs: pagesMap(tabPages),
+    defaultPage: allPages[0].split('/').reverse(),
+  }
+}
+
 export function stringify(params = {}) {
   const temp = params;
   const arr = [];
@@ -12,6 +29,23 @@ export function stringify(params = {}) {
     }
   }
   return arr.join('&');
+}
+
+export function methodRewrite(func, opts, funcName) {
+  const funcTemp = func;
+  return (options) => {
+    let op = options;
+    if (funcName === 'showToast' && !op) {
+      // showToast content 必须要有值
+      op = '数据出错';
+    }
+    if (typeof op === 'string') {
+      op = Object.assign({
+        title: op,
+      }, opts);
+    }
+    funcTemp(op);
+  };
 }
 
 // const map = Array.prototype.map

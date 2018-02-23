@@ -1,7 +1,6 @@
 
-// 扩展
 import origin from './origin';
-import mixins from './mixins/index';
+import mixins from './mixins';
 
 export default {
   ...origin,

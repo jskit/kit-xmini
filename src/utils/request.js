@@ -72,12 +72,12 @@ export default function request(url, options = {}, success = noop, fail = noop) 
   const method = (newOptions.method || 'GET').toUpperCase();
   newOptions.method = method;
   if (method === 'GET') {
-    newOptions.headers = {
+    newOptions.header = {
       'Content-Type': 'application/json; charset=utf-8',
     };
     newOptions.data = JSON.stringify(newOptions.data);
   } else if (method === 'POST') {
-    newOptions.headers = {
+    newOptions.header = {
       // 我们的 post 请求，使用的这个，不是 application/json
       'Content-Type': 'application/x-www-form-urlencoded',
     };

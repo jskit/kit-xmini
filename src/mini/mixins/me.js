@@ -1,16 +1,16 @@
 // 扩展 me
-import regPages, { tabPages } from '../pages';
 import { stringify } from '../utils';
 
 // rewrite.me();
 
 export default {
   getCurPageUrl(url, params = {}) {
+    const { all } = this.pages;
     let query = { ...params };
     const urlArr = url.split('?');
     const pageName = urlArr[0];
     if (!pageName) return;
-    const pagePath = regPages[pageName];
+    const pagePath = all[pageName];
     query = !urlArr[1] ? stringify(query) : [stringify(query), urlArr[1]].join('&');
     if (!pagePath) {
       this.showToast('此链接不支持跳转');
@@ -23,7 +23,7 @@ export default {
       //   [h5PageName] = hash.split('?');
       // }
       // pageName = h5Map[h5PageName.replace(/#/g, '')];
-      // pagePath = regPages[pageName];
+      // pagePath = all[pageName];
     }
     query = query ? `?${query}` : '';
     return {
@@ -49,8 +49,9 @@ export default {
     delete query.back;
     const { pageName, pagePath } = this.getCurPageUrl(url, query);
     if (!pagePath) return;
+    const { tabs } = this.pages;
     const page = { url: `../../${pagePath}` };
-    if (tabPages[pageName]) {
+    if (tabs[pageName]) {
       type = 'switch';
     }
     switch (type) {
