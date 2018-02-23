@@ -111,12 +111,12 @@ export default {
   },
 
   getPageName() {
-    const { all } = me.pages;
+    const { defaultPage } = me.pages;
     const {
       pageName,
       route = '',
     } = this;
-    return pageName || route.split('/').reverse()[0] || all.defaultPage;
+    return pageName || route.split('/').reverse()[0] || defaultPage;
   },
 
   getShareInfo() {
