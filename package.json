@@ -21,6 +21,8 @@
     "url": "git+https://github.com/jskit/kit-xmini.git"
   },
   "keywords": [
+    "mini",
+    "xmini",
     "mini-app",
     "aliapp",
     "wxapp",
