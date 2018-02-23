@@ -65,6 +65,10 @@ xPage({
 })
 ```
 
+### 其他工具
+
+- 微信小程序引用图片远程化工具 [kit-wxapp-remote](https://github.com/jskit/kit-wxapp-remote)
+
 ## Testing
 
 可以以支付宝小程序为例测试
