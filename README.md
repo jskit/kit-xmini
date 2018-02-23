@@ -4,8 +4,11 @@
 
 ```js
 // 需要注意的文件
-./mini/rewrite/index.js
-./mini/pages.js
+./origin.js
+./aliapp/me.js
+./aliapp/pages.js
+./wxapp/me.js
+./wxapp/pages.js
 ```
 
 ## 常见问题
@@ -45,9 +48,9 @@ this.setData({
 
 ```js
 // ./utils/mini.js
-import mini from '../mini'
+import { aliapp } from '../mini'
 
-export default mini;
+export default aliapp;
 ```
 
 ```page.js

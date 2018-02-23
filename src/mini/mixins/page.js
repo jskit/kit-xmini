@@ -186,6 +186,7 @@ export default {
   },
 
   postMessage(page, opts = {}) {
+    const { all } = me.pages;
     if (!all[page] && !msgPages[page]) {
       console.error(`无法给 ${page} 页面发消息`);
       return;
@@ -198,6 +199,7 @@ export default {
   },
 
   onMessage() {
+    const { all } = me.pages;
     const page = this.getPageName();
     const msgKey = msgPages[page];
     let message;
