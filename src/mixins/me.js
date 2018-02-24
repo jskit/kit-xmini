@@ -1,5 +1,5 @@
 // 扩展 me
-import { deepLength, pages } from '../mini';
+import { deepLength, pages } from '../origin';
 import { stringify } from '../utils';
 
 // rewrite.me();

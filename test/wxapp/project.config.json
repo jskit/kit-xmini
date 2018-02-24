@@ -1,7 +1,7 @@
 {
-	"client": "./test/wxapp",
+	"client": "./",
 	"svr": "./server",
-	"miniprogramRoot": "./test/wxapp",
+	"miniprogramRoot": "./",
 	"qcloudRoot": "./server",
 	"description": "项目配置文件。",
 	"setting": {

@@ -1,5 +1,5 @@
 
-import XMini, { utils } from '../../../lib/wxapp/index';
+import XMini, { utils } from '../../../src/wxapp/index';
 // 微信小程序没法加载 json 文件
 // import { pages, tabBar } from '../app.json';
 

@@ -1,7 +1,8 @@
 // 针对小程序挂载的方法进行覆写或扩展，优化增强调用方法
 
-import mini from './mini';
-import * as utils from './utils';
+import origin from './origin';
+// import mini from './mini';
+import utils from './utils';
 
 let newed;
 
@@ -15,13 +16,13 @@ class XMini {
     switch (opts.miniType) {
       case 'aliapp':
         if (!opts.deepLength) opts.deepLength = 5;
-        mini.init(opts);
+        origin.init(opts);
         require('./aliapp/me')();
         require('./aliapp/page')();
         break;
       case 'wxapp':
         if (!opts.deepLength) opts.deepLength = 10;
-        mini.init(opts);
+        origin.init(opts);
         require('./wxapp/me')();
         require('./wxapp/page')();
         break;
@@ -31,6 +32,7 @@ class XMini {
         break;
     }
     // Object.assign(mini.me, { pages });
+    const mini = require('../mini');
 
     Object.assign(this, {
       ...mini,

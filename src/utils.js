@@ -1,7 +1,7 @@
 
-export function noop() {}
+function noop() {}
 
-export function pagesMap(pageArr) {
+function pagesMap(pageArr) {
   return pageArr.reduce((obj, item) => {
     const page = item.split('/').reverse()[0] || '';
     /* eslint no-param-reassign: 0 */
@@ -10,7 +10,7 @@ export function pagesMap(pageArr) {
   }, {});
 }
 
-export function pagesObj(allPages, tabPages) {
+function pagesObj(allPages, tabPages) {
   return {
     all: pagesMap(allPages),
     tabs: pagesMap(tabPages),
@@ -18,7 +18,7 @@ export function pagesObj(allPages, tabPages) {
   }
 }
 
-export function stringify(params = {}) {
+function stringify(params = {}) {
   const temp = params;
   const arr = [];
   for (const key in params) {
@@ -31,30 +31,13 @@ export function stringify(params = {}) {
   return arr.join('&');
 }
 
-export function methodRewrite(func, opts, funcName) {
-  const funcTemp = func;
-  return (options) => {
-    let op = options;
-    if (funcName === 'showToast' && !op) {
-      // showToast content 必须要有值
-      op = '数据出错';
-    }
-    if (typeof op === 'string') {
-      op = Object.assign({
-        title: op,
-      }, opts);
-    }
-    funcTemp(op);
-  };
-}
-
 // const map = Array.prototype.map
 // 提取参数
 // test:
 // var aa = [{a: 1,b:2},{a:3, b:4}]
 // map(aa, 'a')
 // [2, 3]
-export function map(arr, key) {
+function map(arr, key) {
   return arr.map(item => item[key]);
 }
 
@@ -63,7 +46,7 @@ export function map(arr, key) {
 // 暂时只是浅处理
 // var aa = [{a: 1,b:2},{a:3, b:4}]
 // mapTo(aa, {a: 'c'})
-export function mapTo(arr, options = {}) {
+function mapTo(arr, options = {}) {
   return arr.map((item) => {
     // 如果是函数，处理数据
     if (typeof options === 'function') {
@@ -90,7 +73,7 @@ export function mapTo(arr, options = {}) {
  * @param {any} destination
  * @param {any} source
  */
-export function extend() {
+function extend() {
   const isObjFunc = (name) => {
     const { toString } = Object.prototype;
     return (...args) => {
@@ -148,3 +131,13 @@ export function extend() {
     return destination;
   }
 }
+
+
+export default {
+  noop,
+  pagesObj,
+  stringify,
+  map,
+  mapTo,
+  extend,
+};

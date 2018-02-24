@@ -5,7 +5,7 @@ import {
 
 xPage({
   data: {},
-  onLoad() {
+  onLoad(query) {
     me.showLoading();
   },
 

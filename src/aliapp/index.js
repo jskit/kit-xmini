@@ -1,7 +1,8 @@
 // 针对小程序挂载的方法进行覆写或扩展，优化增强调用方法
 
-import mini from '../mini';
-import * as utils from '../utils';
+import origin from '../origin';
+// import mini from '../mini';
+import utils from '../utils';
 
 let newed;
 
@@ -16,11 +17,13 @@ class XMini {
       opts.deepLength = 5;
     }
 
-    mini.init(opts);
+    origin.init(opts);
 
     require('./me')();
     require('./page')();
     // Object.assign(mini.me, { pages });
+
+    const mini = require('../mini');
 
     Object.assign(this, {
       ...mini,

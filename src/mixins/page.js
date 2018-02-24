@@ -1,6 +1,6 @@
 // 扩展 Page
 
-import { me, pages } from '../mini';
+import { me, pages } from '../origin';
 import { stringify } from '../utils';
 
 const messages = {};
