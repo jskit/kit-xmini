@@ -12,6 +12,10 @@ class XMini {
       return this;
     }
 
+    if (!opts.deepLength) {
+      opts.deepLength = 5;
+    }
+
     mini.init(opts);
 
     require('./me')();

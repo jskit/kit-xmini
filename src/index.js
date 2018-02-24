@@ -12,14 +12,16 @@ class XMini {
       return this;
     }
 
-    mini.init(opts);
-
     switch (opts.miniType) {
       case 'aliapp':
+        if (!opts.deepLength) opts.deepLength = 5;
+        mini.init(opts);
         require('./aliapp/me')();
         require('./aliapp/page')();
         break;
       case 'wxapp':
+        if (!opts.deepLength) opts.deepLength = 10;
+        mini.init(opts);
         require('./wxapp/me')();
         require('./wxapp/page')();
         break;
