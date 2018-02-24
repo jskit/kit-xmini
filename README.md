@@ -41,12 +41,10 @@ this.setData({
 
 ## 使用
 
-请把代码下载到项目根目录 `./mini` 中使用（更多使用参看 [kit-xapp](https://github.com/jskit/kit-xapp)）
+支付宝小程序可以直接引用 `import XMini, { utils } from 'x-mini/lib/aliapp';`，微信小程序还有问题 （更多使用参看 [kit-xapp](https://github.com/jskit/kit-xapp)）
 
 - 统一通过 `./utils/mini.js` 暴露接口来引用 `mini`
 - 统一通过 `./config/api` 暴露 api 接口
-
-**Aliapp**
 
 ```js
 // ./utils/mini.js
@@ -54,6 +52,14 @@ import XMini, { utils } from 'x-mini/lib/aliapp';
 import { pages, tabBar } from '../app.json';
 
 const { noop, mapTo, pagesObj } = utils;
+
+// wxapp
+// __wxConfig 是微信小程序内的一个全局变量
+// const { pages = [], tabBar = {} } = __wxConfig;
+// const tabBarList = tabBar.list;
+// const tabPages = mapTo(tabBarList, (item) => {
+//   return item.pagePath.replace('.html', '')
+// });
 
 // alipay
 const tabBarList = (tabBar || {}).list || [];
@@ -68,84 +74,10 @@ const mini = new XMini({
   xApp: noop,
   xPage: Page,
   getCurrentPages,
-  miniType: 'aliapp',
-  deepLength: 5,
+  miniType: 'aliapp', // wxapp
 });
 
 export default mini;
-```
-
-**Wxapp**
-
-```js
-// ./utils/mini.js
-import XMini, { utils } from 'x-mini/lib/aliapp';
-// 微信小程序没法加载 json 文件
-// import { pages, tabBar } from '../app.json';
-
-const { noop, mapTo, pagesObj } = utils;
-
-// wxapp
-// __wxConfig 微信小程序内的一个全局变量
-const miniConfig = __wxConfig;
-const { pages = [], tabBar = {} } = miniConfig;
-const tabBarList = tabBar.list;
-const tabPages = mapTo(tabBarList, (item) => {
-  return item.pagePath.replace('.html', '')
-});
-
-const mini = new XMini({
-  pages: allPages,
-  me: my,
-  xApp: noop,
-  xPage: Page,
-  getCurrentPages,
-  miniType: 'aliapp',
-  deepLength: 10,
-});
-
-export default mini;
-```
-
-```page.js
-// 页面js
-import {
-  me,
-  xPage,
-} from '../../utils/mini';
-import api from '../../config/api';
-
-xPage({
-  onLoad(query) {
-    me.showLoading();
-    api.getDemo({}, (res) => {
-      // success
-    }, (err) => {
-      // fail
-    });
-  },
-  onShow() {
-    me.showToast('提示信息');
-  },
-  onClick(e) {
-    const {
-      type,
-      pid,
-    } = e.currentTarget.dataset;
-    switch (type) {
-      case 'detail':
-        this.forward('detail', { id: pid });
-        break;
-      case 'service':
-        this.forward('service');
-        break;
-      default:
-        // do nothing...
-        break;
-    }
-  },
-  ...
-})
 ```
 
 ### 其他工具
