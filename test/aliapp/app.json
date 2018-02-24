@@ -1,0 +1,36 @@
+{
+  "debug": true,
+  "version": "0.0.1",
+  "pages": [
+    "pages/index/index",
+    "pages/profile/profile"
+  ],
+  "window": {
+    "enableWK": "YES",
+    "enableDSL": true,
+    "pullRefresh": false,
+    "defaultTitle": "支付宝小程序",
+    "backgroundColor": "#F5F5F9",
+    "allowsBounceVertical": true
+  },
+  "tabBar": {
+    "textColor": "#212121",
+    "selectedColor": "#108ee9",
+    "backgroundColor": "#ffffff",
+    "items": [
+      {
+        "pagePath": "pages/index/index",
+        "name": "首页",
+        "icon": "img/profile/ic_aliportal.png",
+        "activeIcon": "img/profile/ic_aliportal_s.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "name": "个人中心",
+        "icon": "img/profile/ic_aliprofile.png",
+        "activeIcon": "img/profile/ic_aliprofile_s.png"
+      }
+    ]
+  }
+}
+

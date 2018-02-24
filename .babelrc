@@ -2,9 +2,19 @@
   "comments": false,
   "presets": [
     "es2015",
-    "stage-2"
+    "stage-2",
+    ["env", {
+      "modules": false,
+      "targets": {
+        "safari": 9,
+        "chrome": "56",
+        "browsers": ["> 1%", "last 2 versions", "not ie <= 8"],
+        "node": "current"
+      }
+    }]
   ],
   "plugins": [
+    "add-module-exports",
     "syntax-dynamic-import",
     "transform-object-rest-spread",
     "transform-runtime"
