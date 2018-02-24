@@ -32,6 +32,7 @@ const mini = new XMini({
   xPage: Page,
   getCurrentPages,
   miniType: 'aliapp',
+  deepLength: 5,
 });
 
 console.log(mini);

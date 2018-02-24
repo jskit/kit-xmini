@@ -21,14 +21,14 @@
       {
         "pagePath": "pages/index/index",
         "name": "首页",
-        "icon": "img/profile/ic_aliportal.png",
-        "activeIcon": "img/profile/ic_aliportal_s.png"
+        "icon": "img/tab/ic_portal.png",
+        "activeIcon": "img/tab/ic_portal_s.png"
       },
       {
         "pagePath": "pages/profile/profile",
         "name": "个人中心",
-        "icon": "img/profile/ic_aliprofile.png",
-        "activeIcon": "img/profile/ic_aliprofile_s.png"
+        "icon": "img/tab/ic_profile.png",
+        "activeIcon": "img/tab/ic_profile_s.png"
       }
     ]
   }

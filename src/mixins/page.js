@@ -1,6 +1,6 @@
 // 扩展 Page
 
-import { me } from '../mini';
+import { me, pages } from '../mini';
 import { stringify } from '../utils';
 
 const messages = {};
@@ -111,12 +111,11 @@ export default {
   },
 
   getPageName() {
-    const { defaultPage } = me.pages;
     const {
       pageName,
       route = '',
     } = this;
-    return pageName || route.split('/').reverse()[0] || defaultPage;
+    return pageName || route.split('/').reverse()[0] || pages.defaultPage;
   },
 
   getShareInfo() {
@@ -186,8 +185,7 @@ export default {
   },
 
   postMessage(page, opts = {}) {
-    const { all } = me.pages;
-    if (!all[page] && !msgPages[page]) {
+    if (!pages.all[page] && !msgPages[page]) {
       console.error(`无法给 ${page} 页面发消息`);
       return;
     }
@@ -199,11 +197,10 @@ export default {
   },
 
   onMessage() {
-    const { all } = me.pages;
     const page = this.getPageName();
     const msgKey = msgPages[page];
     let message;
-    if (all[page] || messages[msgKey]) {
+    if (pages.all[page] || messages[msgKey]) {
       message = messages[msgKey] || {};
       delete messages[msgKey];
       if (message.needRefresh) {

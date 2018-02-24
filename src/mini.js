@@ -10,6 +10,7 @@ const defaultOpts = {
   xPage: noop,
   getCurrentPages: noop,
   miniType: '',
+  deepLength: 5,
 };
 
 function init(origin) {

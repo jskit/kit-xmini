@@ -1,16 +1,16 @@
 // 扩展 me
+import { deepLength, pages } from '../mini';
 import { stringify } from '../utils';
 
 // rewrite.me();
 
 export default {
   getCurPageUrl(url, params = {}) {
-    const { all } = this.pages;
     let query = { ...params };
     const urlArr = url.split('?');
     const pageName = urlArr[0];
     if (!pageName) return;
-    const pagePath = all[pageName];
+    const pagePath = pages.all[pageName];
     query = !urlArr[1] ? stringify(query) : [stringify(query), urlArr[1]].join('&');
     if (!pagePath) {
       this.showToast('此链接不支持跳转');
@@ -23,7 +23,7 @@ export default {
       //   [h5PageName] = hash.split('?');
       // }
       // pageName = h5Map[h5PageName.replace(/#/g, '')];
-      // pagePath = all[pageName];
+      // pagePath = pages.all[pageName];
     }
     query = query ? `?${query}` : '';
     return {
@@ -49,9 +49,8 @@ export default {
     delete query.back;
     const { pageName, pagePath } = this.getCurPageUrl(url, query);
     if (!pagePath) return;
-    const { tabs } = this.pages;
     const page = { url: `../../${pagePath}` };
-    if (tabs[pageName]) {
+    if (pages.tabs[pageName]) {
       type = 'switch';
     }
     switch (type) {
@@ -66,7 +65,7 @@ export default {
         break;
       default:
         /* eslint no-undef: 0 */
-        if (getCurrentPages().length >= 10) {
+        if (getCurrentPages().length >= deepLength) {
           this.redirectTo(page);
         } else {
           // navigateTo, redirectTo 只能打开非 tabBar 页面。

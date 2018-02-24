@@ -1,5 +1,6 @@
 
 import XMini, { utils } from '../../../lib/wxapp';
+// 微信小程序没法加载 json 文件
 // import { pages, tabBar } from '../app.json';
 
 const { noop, mapTo, pagesObj } = utils;
@@ -22,6 +23,7 @@ const mini = new XMini({
   xPage: Page,
   getCurrentPages,
   miniType: 'wxapp',
+  deepLength: 10,
 });
 
 console.log(mini);
