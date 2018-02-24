@@ -1,7 +1,7 @@
 
 import {
   me,
-  xApp,
+  // xApp,
 } from './utils/mini';
 import api from './config/api';
 

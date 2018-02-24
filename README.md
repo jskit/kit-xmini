@@ -69,6 +69,7 @@ const mini = new XMini({
   xPage: Page,
   getCurrentPages,
   miniType: 'aliapp',
+  deepLength: 5,
 });
 
 export default mini;
@@ -100,6 +101,7 @@ const mini = new XMini({
   xPage: Page,
   getCurrentPages,
   miniType: 'aliapp',
+  deepLength: 10,
 });
 
 export default mini;

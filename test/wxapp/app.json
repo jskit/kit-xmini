@@ -29,7 +29,7 @@
         "pagePath": "pages/profile/profile",
         "text": "个人中心",
         "iconPath": "img/tab/ic_profile.png",
-        "selectedIconPath": "img/tab/tab_profile_s.png"
+        "selectedIconPath": "img/tab/ic_profile_s.png"
       }
     ]
   }
