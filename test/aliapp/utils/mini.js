@@ -1,13 +1,9 @@
-// import {
-//   prepend,
-//   append,
-// } from '../mini/utils';
 
 import {
   init,
   xApp,
   xPage,
-} from '../mini/index';
+} from '../src/index';
 
 const mini = init({
   stat: true,
