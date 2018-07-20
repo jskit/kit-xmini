@@ -12,6 +12,15 @@ const xPage = new XMini({ type: 'page' });
 const mini = {};
 
 function init(opts = {}) {
+  if (opts.report) {
+    report.init({
+      me: opts.me,
+      xApp,
+      xPage,
+    });
+    Object.assign(mini, report);
+  }
+
   if (opts.stat) {
     stat.init({
       me: opts.me,
@@ -21,14 +30,7 @@ function init(opts = {}) {
     });
     Object.assign(mini, stat);
   }
-  if (opts.report) {
-    report.init({
-      me: opts.me,
-      xApp,
-      xPage,
-    });
-    Object.assign(mini, report);
-  }
+
   if (opts.debug) {
     debug.init({
       me: opts.me,
