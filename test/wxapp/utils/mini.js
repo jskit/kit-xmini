@@ -10,7 +10,7 @@ import {
   xPage,
 } from '../src/index';
 
-init({
+const mini = init({
   stat: true,
   report: true,
 });

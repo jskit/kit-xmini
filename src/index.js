@@ -8,13 +8,18 @@ import report from './report/index';
 const xApp = new XMini({ type: 'app' });
 const xPage = new XMini({ type: 'page' });
 
+const mini = {};
+
 function init(opts = {}) {
   if (opts.stat) {
     stat.init(xApp, xPage);
+    Object.assign(mini, stat);
   }
   if (opts.report) {
     report.init(xApp, xPage);
+    Object.assign(mini, report);
   }
+  return mini;
 }
 
 module.exports = {
