@@ -10,11 +10,16 @@ function postAppOnLaunch() {
   console.log('report post app.js onLaunch:', this);
 }
 
-export.report = function() {
+exports.report = function() {
   // 自定义上报问题
 }
 
-exports.init = function(app, page) {
+exports.init = function(opts = {}) {
+  const {
+    app,
+    page,
+  } = opts;
+
   app.use("onError", preAppOnError);
   app.use("onLaunch", preAppOnLaunch);
   app.use("onLaunch", postAppOnLaunch, 'post');

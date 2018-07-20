@@ -1,15 +1,9 @@
 
-// import {
-//   // getUUIDKey,
-//   // getSRCKey,
-//   // init,
-//   // getCookie,
-// } from './fn';
 import {
   isDef,
   isUnDef,
   isEmptyObject,
-} from '../mini/utils';
+} from '../utils';
 
 // page 相关统计
 exports.prePageOnLoad = function prePageOnLoad(opts, fnName) {

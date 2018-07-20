@@ -1,14 +1,14 @@
 
-import {
-  prepend,
-  append,
-} from '../src/mini/utils';
+// import {
+//   prepend,
+//   append,
+// } from '../mini/utils';
 
 import {
   init,
   xApp,
   xPage,
-} from '../src/index';
+} from '../mini/index';
 
 const mini = init({
   stat: true,

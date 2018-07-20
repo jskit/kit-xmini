@@ -25,7 +25,12 @@ exports.event = function() {
   // 自定义事件
 }
 
-exports.init = function(app, page) {
+exports.init = function(opts = {}) {
+  const {
+    app,
+    page,
+    // getLocation,
+  } = opts;
   app.use("onLaunch", preAppOnLaunch);
   app.use("onLaunch", postAppOnLaunch, 'post');
   app.use("onUnlaunch", preAppOnUnlaunch);

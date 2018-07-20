@@ -2,7 +2,7 @@
 import {
   prepend,
   append,
-} from './utils';
+} from '../utils';
 
 class XMini {
   constructor(opts = {}) {

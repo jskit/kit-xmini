@@ -8,7 +8,7 @@ import {
 import {
   isDef,
   isUnDef,
-} from '../mini/utils';
+} from '../utils';
 // import Log from './Log';
 
 // app 相关统计

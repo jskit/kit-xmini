@@ -3,6 +3,7 @@
 
 import XMini from './mini/index';
 import stat from './stat/index';
+import debug from './debug/index';
 import report from './report/index';
 
 const xApp = new XMini({ type: 'app' });
@@ -12,12 +13,26 @@ const mini = {};
 
 function init(opts = {}) {
   if (opts.stat) {
-    stat.init(xApp, xPage);
+    stat.init({
+      app: xApp,
+      page: xPage,
+      getLocation: true,
+    });
     Object.assign(mini, stat);
   }
   if (opts.report) {
-    report.init(xApp, xPage);
+    report.init({
+      app: xApp,
+      page: xPage,
+    });
     Object.assign(mini, report);
+  }
+  if (opts.debug) {
+    debug.init({
+      app: xApp,
+      page: xPage,
+    });
+    Object.assign(mini, debug);
   }
   return mini;
 }

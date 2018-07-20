@@ -1,7 +1,3 @@
-import {
-  idUnDef,
-} from './utils';
-
 const config = {
   getLocation: false,
 };

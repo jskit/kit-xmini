@@ -9,10 +9,12 @@ ln -sd ./src ./test/aliapp
 ln -sd ./src ./test/wxapp
 ```
 
+借助 `x-mini` 集成以下功能
+
 ## 统计方案
 
-stat 借助 x-mini 的混入支持，支持最简单的实现统计方案接入
+stat 支持最简单的实现统计方案接入
 
-## 错误报告
+## 错误上报
 
-report 借助 x-mini 混入报告收集错误
+report 实现错误上报机制
