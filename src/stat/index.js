@@ -21,6 +21,10 @@ function postAppOnLaunch() {
   console.log('stat post app.js onLaunch:', this);
 }
 
+exports.event = function() {
+  // 自定义事件
+}
+
 exports.init = function(app, page) {
   app.use("onLaunch", preAppOnLaunch);
   app.use("onLaunch", postAppOnLaunch, 'post');
