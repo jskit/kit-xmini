@@ -14,23 +14,26 @@ const mini = {};
 function init(opts = {}) {
   if (opts.stat) {
     stat.init({
-      app: xApp,
-      page: xPage,
-      getLocation: true,
+      me: opts.me,
+      xApp,
+      xPage,
+      getLocation: opts.getLocation || true,
     });
     Object.assign(mini, stat);
   }
   if (opts.report) {
     report.init({
-      app: xApp,
-      page: xPage,
+      me: opts.me,
+      xApp,
+      xPage,
     });
     Object.assign(mini, report);
   }
   if (opts.debug) {
     debug.init({
-      app: xApp,
-      page: xPage,
+      me: opts.me,
+      xApp,
+      xPage,
     });
     Object.assign(mini, debug);
   }

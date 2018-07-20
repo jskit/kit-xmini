@@ -4,7 +4,7 @@ exports.debug = function() {
 
 exports.init = function(opts = {}) {
   const {
-    app,
-    page,
+    xApp,
+    xPage,
   } = opts;
 }

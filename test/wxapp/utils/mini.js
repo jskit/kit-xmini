@@ -5,7 +5,12 @@ import {
   xPage,
 } from '../src/index';
 
+// 对wx变量进行处理
+const me = Object.assign({}, wx);
+wx = me;
+
 const mini = init({
+  me,
   stat: true,
   report: true,
 });

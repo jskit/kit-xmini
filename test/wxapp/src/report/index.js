@@ -16,11 +16,11 @@ exports.report = function() {
 
 exports.init = function(opts = {}) {
   const {
-    app,
-    page,
+    xApp,
+    xPage,
   } = opts;
 
-  app.use("onError", preAppOnError);
-  app.use("onLaunch", preAppOnLaunch);
-  app.use("onLaunch", postAppOnLaunch, 'post');
+  xApp.use("onError", preAppOnError);
+  xApp.use("onLaunch", preAppOnLaunch);
+  xApp.use("onLaunch", postAppOnLaunch, 'post');
 }
