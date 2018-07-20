@@ -117,8 +117,8 @@ module.exports = {
       "avoidEscape": true,
       "allowTemplateLiterals": true,
     }],
-    "semi": [0, "never"],
     "require-yield": 1,
+    "semi": [0, "never"],
     "space-before-function-paren": ["error", {
       "anonymous": "always",
       "named": "ignore",
