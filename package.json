@@ -2,7 +2,7 @@
   "name": "x-mini",
   "version": "0.0.5",
   "description": "封装小程序",
-  "main": "mini/index.js",
+  "main": "src/index.js",
   "options": {
     "mini": "--harmony --require babel-core/register test/*.spec.js",
     "mocha": "--harmony --require babel-core/register test/**/*.spec.js"
@@ -11,7 +11,7 @@
     "clean": "rm -rf lib",
     "benchmark": "npm test && node benchmark",
     "build": "rimraf lib && ./node_modules/.bin/babel src -d lib --ignore test",
-    "prepublish": "npm run build",
+    "prepublish": "npm run clean",
     "test": "./node_modules/.bin/_mocha $npm_package_options_mocha",
     "mini": "./node_modules/.bin/_mocha $npm_package_options_mini",
     "lint": "./node_modules/.bin/eslint --ext .js src test"
