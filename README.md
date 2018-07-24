@@ -7,6 +7,55 @@
 - 模块间逻辑相互独立，按需引用
 - 支持配置以及扩展功能
 
+## 使用
+
+新建 `/utils/mini.js` 文件
+
+```js
+import {
+  init,
+  xApp,
+  xPage,
+} from 'x-mini';
+
+const mini = init({
+  me,
+  stat: true,
+  report: true,
+});
+
+module.exports = {
+  xApp,
+  xPage,
+}
+```
+
+页面引用如下
+
+```js
+// app.js
+import {
+  xApp,
+} from './utils/mini';
+
+App(xApp.entry({
+  onLaunch() {},
+  onShow() {},
+}));
+```
+
+```js
+// page.js
+import {
+  xPage,
+} from './utils/mini';
+
+Page(xPage.entry({
+  onLoad() {},
+  onShow() {},
+}));
+```
+
 ### x-mini
 
 支持对生命周期方法进行前置、后置的方法混入
