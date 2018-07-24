@@ -1,6 +1,6 @@
 {
   "name": "x-mini",
-  "version": "0.0.5",
+  "version": "1.0.0",
   "description": "封装小程序",
   "main": "src/index.js",
   "options": {
@@ -33,10 +33,6 @@
     "url": "https://github.com/jskit/kit-xmini/issues"
   },
   "homepage": "https://github.com/jskit/kit-xmini#readme",
-  "dependencies": {
-
-  },
-  "devDependencies": {
-
-  }
+  "dependencies": {},
+  "devDependencies": {}
 }
