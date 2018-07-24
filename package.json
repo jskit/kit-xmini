@@ -2,7 +2,7 @@
   "name": "x-mini",
   "version": "0.0.5",
   "description": "封装小程序",
-  "main": "lib/index.js",
+  "main": "mini/index.js",
   "options": {
     "mini": "--harmony --require babel-core/register test/*.spec.js",
     "mocha": "--harmony --require babel-core/register test/**/*.spec.js"
