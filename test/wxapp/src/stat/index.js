@@ -24,6 +24,7 @@ function postAppOnLaunch() {
 }
 
 exports.init = function(opts = {}) {
+  console.log('tip: x-mini add stat');
   const {
     me,
     xApp,
