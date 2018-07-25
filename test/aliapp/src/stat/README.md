@@ -6,7 +6,7 @@
 
 以小程序生命周期为切入点，可以统计到用户的常规操作，并且还支持自定义事件统计。
 
-App 相关统计
+### App 相关统计
 
 - 生命周期
   - onLaunch
@@ -20,7 +20,7 @@ App 相关统计
 - 地理位置 经纬度 速度
 - UV
 
-Page 相关统计
+### Page 相关统计
 
 - PV
 - 生命周期
@@ -32,11 +32,14 @@ Page 相关统计
   - onPullDownRefresh
   - onShareAppMessage
 
-其他统计数据
+### 其他数据统计
 
-- 小程序标识 appId
-- 用户唯一标识 userId || UUID
-- 渠道相关信息 channel spm
-- 页面上下文
-- App、Page 停留时间
-- 错误计数
+- 必要数据
+  - 小程序标识 appId
+  - 用户唯一标识 userId || UUID
+  - 渠道相关信息 channel spm
+  - 页面上下文
+- 扩展数据
+  - App、Page 停留时间
+  - 错误计数
+  - 启动时长

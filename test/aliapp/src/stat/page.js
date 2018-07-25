@@ -3,7 +3,7 @@ import {
   isDef,
   isUnDef,
   isEmptyObject,
-} from '../utils';
+} from '../mini/utils';
 
 // page 相关统计
 exports.prePageOnLoad = function prePageOnLoad(opts, fnName) {

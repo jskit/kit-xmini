@@ -1,4 +1,6 @@
 
+import native form '../mini/native';
+import log from './log';
 import {
   preAppOnLaunch,
   preAppOnUnlaunch,
@@ -18,34 +20,36 @@ import {
 } from './page';
 
 function postAppOnLaunch() {
-  console.log('stat post app.js onLaunch:', this);
-}
-
-exports.event = function() {
-  // 自定义事件
+  console.log('stat post xApp.js onLaunch:', this);
 }
 
 exports.init = function(opts = {}) {
   const {
-    app,
-    page,
+    me,
+    xApp,
+    xPage,
     // getLocation,
   } = opts;
-  app.use("onLaunch", preAppOnLaunch);
-  app.use("onLaunch", postAppOnLaunch, 'post');
-  app.use("onUnlaunch", preAppOnUnlaunch);
-  app.use("onShow", preAppOnShow);
-  app.use("onShow", postAppOnShow, 'post');
-  app.use("onHide", preAppOnHide);
-  app.use("onError", preAppOnError);
 
-  page.use("onLoad", prePageOnLoad);
-  page.use("onUnload", prePageOnUnload);
-  page.use("onShow", prePageOnShow);
-  page.use("onHide", prePageOnHide);
-  page.use("onReachBottom", prePageOnReachBottom);
-  page.use("onPullDownRefresh", prePageOnPullDownRefresh);
-  page.use("onShareAppMessage", postPageOnShareAppMessage, 'post');
+  Object.assign(me, {
+    $log: log,
+  });
+
+  xApp.use("onLaunch", preAppOnLaunch);
+  xApp.use("onLaunch", postAppOnLaunch, 'post');
+  xApp.use("onUnlaunch", preAppOnUnlaunch);
+  xApp.use("onShow", preAppOnShow);
+  xApp.use("onShow", postAppOnShow, 'post');
+  xApp.use("onHide", preAppOnHide);
+  xApp.use("onError", preAppOnError);
+
+  xPage.use("onLoad", prePageOnLoad);
+  xPage.use("onUnload", prePageOnUnload);
+  xPage.use("onShow", prePageOnShow);
+  xPage.use("onHide", prePageOnHide);
+  xPage.use("onReachBottom", prePageOnReachBottom);
+  xPage.use("onPullDownRefresh", prePageOnPullDownRefresh);
+  xPage.use("onShareAppMessage", postPageOnShareAppMessage, 'post');
 }
 
 

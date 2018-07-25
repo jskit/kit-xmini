@@ -3,6 +3,7 @@ import {
   prepend,
   append,
 } from './utils';
+// import native from './native';
 
 class XMini {
   constructor(opts = {}) {

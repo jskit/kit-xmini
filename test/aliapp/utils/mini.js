@@ -6,6 +6,7 @@ import {
 } from '../src/index';
 
 const mini = init({
+  me: my,
   stat: true,
   report: true,
 });

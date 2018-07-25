@@ -1,3 +1,6 @@
+exports.copy = function(data) {
+  return JSON.parse(JSON.stringify(data));
+}
 
 exports.isUnDef = function isUnDef(v) {
   return v === 'undefined' || v === null;

@@ -16,6 +16,7 @@ const mini = init({
 });
 
 module.exports = {
+  me,
   xApp,
   xPage,
 }

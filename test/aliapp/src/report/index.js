@@ -1,6 +1,7 @@
-
+import report from './report';
 function preAppOnError(err) {
-  console.log(err);
+  console.log('report error:')
+  console.error(JSON.stringify(err));
 }
 
 function preAppOnLaunch() {
@@ -10,17 +11,19 @@ function postAppOnLaunch() {
   console.log('report post app.js onLaunch:', this);
 }
 
-exports.report = function() {
-  // 自定义上报问题
-}
-
 exports.init = function(opts = {}) {
   const {
-    app,
-    page,
+    me,
+    xApp,
+    xPage,
+    // getLocation,
   } = opts;
 
-  app.use("onError", preAppOnError);
-  app.use("onLaunch", preAppOnLaunch);
-  app.use("onLaunch", postAppOnLaunch, 'post');
+  Object.assign(me, {
+    $report: report,
+  });
+
+  xApp.use("onError", preAppOnError);
+  xApp.use("onLaunch", preAppOnLaunch);
+  xApp.use("onLaunch", postAppOnLaunch, 'post');
 }

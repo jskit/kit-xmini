@@ -1,5 +1,6 @@
 
-import event from './event';
+import native from '../mini/native';
+import log from './log';
 import {
   preAppOnLaunch,
   preAppOnUnlaunch,
@@ -31,7 +32,7 @@ exports.init = function(opts = {}) {
   } = opts;
 
   Object.assign(me, {
-    $event: event,
+    $log: log,
   });
 
   xApp.use("onLaunch", preAppOnLaunch);

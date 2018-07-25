@@ -1,6 +1,7 @@
 
 // 暂定封装小程序的方法
 
+import native form './native';
 import XMini from './mini/index';
 import stat from './stat/index';
 import debug from './debug/index';
@@ -12,25 +13,34 @@ const xPage = new XMini({ type: 'page' });
 const mini = {};
 
 function init(opts = {}) {
-  if (opts.stat) {
-    stat.init({
-      app: xApp,
-      page: xPage,
-      getLocation: true,
-    });
-    Object.assign(mini, stat);
-  }
+  native.init({
+    opts,
+  });
+  // 缓存下全局变量，供内部使用
   if (opts.report) {
     report.init({
-      app: xApp,
-      page: xPage,
+      me: opts.me,
+      xApp,
+      xPage,
     });
     Object.assign(mini, report);
   }
+
+  if (opts.stat) {
+    stat.init({
+      me: opts.me,
+      xApp,
+      xPage,
+      getLocation: opts.getLocation || true,
+    });
+    Object.assign(mini, stat);
+  }
+
   if (opts.debug) {
     debug.init({
-      app: xApp,
-      page: xPage,
+      me: opts.me,
+      xApp,
+      xPage,
     });
     Object.assign(mini, debug);
   }

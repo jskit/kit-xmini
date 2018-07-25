@@ -4,11 +4,11 @@ import {
   getSystemInfo,
   getLocation,
   getUserInfo,
-} from '../mini/native';
+} from '../mini/fn';
 import {
   isDef,
   isUnDef,
-} from '../utils';
+} from '../mini/utils';
 // import Log from './Log';
 
 // app 相关统计

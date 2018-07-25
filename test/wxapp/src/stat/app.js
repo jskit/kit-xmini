@@ -4,7 +4,7 @@ import {
   getSystemInfo,
   getLocation,
   getUserInfo,
-} from '../mini/native';
+} from '../mini/fn';
 import {
   isDef,
   isUnDef,

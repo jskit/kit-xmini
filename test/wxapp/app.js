@@ -1,5 +1,6 @@
 
 import {
+  me,
   xApp,
 } from './utils/mini';
 
@@ -10,7 +11,9 @@ App(xApp.entry({
     console.error(err);
   },
   onLaunch() {
-    console.log('on launch')
+    console.log('app.js on launch')
+    me.$log(111111)
+
     // wx.getSystemInfo({
     //   success: (res) => {
     //     console.log(res);
@@ -23,7 +26,7 @@ App(xApp.entry({
     // });
   },
   onShow(query) {
-    wx.$event('小程序启动花费时间', {
+    wx.$log('小程序启动花费时间', {
       "花费时长" : Date.now() - time,
     });
     console.log('app.js onShow')
