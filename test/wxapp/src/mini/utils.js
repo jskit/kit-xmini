@@ -13,13 +13,13 @@ exports.isDef = function isDef(v) {
 exports.prepend = function prepend(opts, fnName, fn) {
   if (opts[fnName]) {
     const oldFn = opts[fnName];
-    opts[fnName] = function (opts) {
-      fn.call(this, opts, fnName);
-      oldFn.call(this, opts);
+    opts[fnName] = function (options) {
+      fn.call(this, options, fnName);
+      oldFn.call(this, options);
     };
   } else {
-    opts[fnName] = function (opts) {
-      fn.call(this, opts, fnName);
+    opts[fnName] = function (options) {
+      fn.call(this, options, fnName);
     }
   }
 }
@@ -28,14 +28,14 @@ exports.prepend = function prepend(opts, fnName, fn) {
 exports.append = function append(opts, fnName, fn) {
   if (opts[fnName]) {
     const oldFn = opts[fnName];
-    opts[fnName] = function (opts) {
-      const result = oldFn.call(this, opts);
-      fn.call(this, [opts, result], fnName);
+    opts[fnName] = function (options) {
+      const result = oldFn.call(this, options);
+      fn.call(this, [options, result], fnName);
       return result;
     }
   } else {
-    opts[fnName] = function (t) {
-      fn.call(this, opts, fnName)
+    opts[fnName] = function (options) {
+      fn.call(this, options, fnName)
     }
   }
 }

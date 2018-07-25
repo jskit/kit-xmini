@@ -8,6 +8,7 @@ const plugins = {
   stat: require('./stat/index'),
   debug: require('./debug/index'),
   report: require('./report/index'),
+  channel: require('./channel/index'),
 }
 
 const xApp = new XMini({ type: 'app' });
