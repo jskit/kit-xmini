@@ -1,6 +1,6 @@
 // 小程序的 storage 方法使用不完全一致，所以放在项目中引用
 
-import native from '../src/mini/native';
+// import native from '../src/mini/native';
 
 const noop = () => {};
 let inited;
@@ -10,18 +10,18 @@ let me = {};
 
 // wxapp 本地数据存储的大小限制为 10MB
 
-// const {
-//   setStorage,
-//   setStorageSync,
-//   getStorage,
-//   getStorageSync,
-//   removeStorage,
-//   removeStorageSync,
-//   clearStorage,
-//   clearStorageSync,
-//   getStorageInfo,
-//   getStorageInfoSync,
-// } = wx;
+const {
+  setStorage,
+  setStorageSync,
+  getStorage,
+  getStorageSync,
+  removeStorage,
+  removeStorageSync,
+  clearStorage,
+  clearStorageSync,
+  getStorageInfo,
+  getStorageInfoSync,
+} = wx;
 
 // let storageData = getStorageSync({ key: 'storageData' }).data || {};
 // console.log('storageData');
@@ -49,10 +49,9 @@ let me = {};
 let i = 1;
 module.exports = class Storage {
   constructor(store = 'x-mini') {
-    me = native.get().me;
     this.store = store || `store-${i++}`;
-    // const data = me.getStorageSync({ key: this.store }).data || {};
-    const data = me.getStorageSync(this.store) || {};
+    // const data = getStorageSync({ key: this.store }).data || {};
+    const data = getStorageSync(this.store) || {};
     storageData[this.store] = data;
   }
   set(key, value, time) {
@@ -67,7 +66,7 @@ module.exports = class Storage {
       [`${key}`]: data,
     });
     // console.log(JSON.stringify(storageData[this.store]));
-    me.setStorage({
+    setStorage({
       key: this.store,
       data: storageData[this.store],
       success(res) {
@@ -92,29 +91,29 @@ module.exports = class Storage {
   remove(key) {
     if (!key) return;
     delete storageData[this.store][key];
-    me.setStorage({
+    setStorage({
       key: this.store,
       data: storageData[this.store],
       success(res) {
       },
     });
-    // me.removeStorage({
+    // removeStorage({
     //   key,
     // });
   }
   clear(bool) {
     if (!(bool === true)) {
       storageData[this.store] = {};
-      return me.removeStorage({
+      return removeStorage({
         key: this.store,
       });
     } else {
       storageData = {};
-      me.clearStorage();
+      clearStorage();
     }
   }
   getStorageInfo() {
-    return me.getStorageInfo()
+    return getStorageInfo()
   }
 }
 

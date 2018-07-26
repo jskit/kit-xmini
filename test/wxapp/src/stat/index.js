@@ -1,5 +1,4 @@
 
-import native from '../mini/native';
 import {
   uuid,
 } from '../mini/utils';
@@ -36,6 +35,7 @@ function postAppOnLaunch() {
 exports.init = function(opts = {}) {
   console.log('tip: x-mini add stat');
   const {
+    storage,
     me,
     xApp,
     xPage,

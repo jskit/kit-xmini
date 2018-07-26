@@ -20,12 +20,14 @@ const plugins = {
   report: require('../src/report/index'),
 }
 
+const storage = new Storage('mini');
 const xApp = new XMini({ type: 'app' });
 const xPage = new XMini({ type: 'page' });
 
 function init(opts = {}) {
   const temp = {};
   native.init({
+    storage,
     me: opts.me,
     xApp,
     xPage,
@@ -60,18 +62,16 @@ const mini = init({
   me,
 });
 
-
-const storage = new Storage('mini');
-
-storage.set('test', {a:1}, 100);
-var aa = storage.get('test')
-console.warn(111, aa)
+// storage.set('test', {a:1}, 100);
+// var aa = storage.get('test')
+// console.warn(111, aa)
 
 module.exports = {
+  Storage,
   me,
   xApp,
   xPage,
-}
+};
 
 // const appConfig = typeof __wxConfig !== 'undefined' ? __wxConfig : require('/app.json');
 
