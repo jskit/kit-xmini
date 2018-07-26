@@ -1,12 +1,17 @@
-import { copy } from './utils';
+// import { copy } from './utils';
 
 // 缓存下外部变量，供内部统一调用
 
 let nativeObj = {};
 
 const native = {
-  init(data) {
-    nativeObj = data;
+  init(opts = {}) {
+    if (!opts.me) {
+      console.error('must be input "me"');
+      return this;
+    }
+    // this.me = opts.me;
+    nativeObj = opts;
   },
   set(obj) {
     Object.assign(nativeObj, obj);

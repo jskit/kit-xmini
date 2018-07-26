@@ -1,6 +1,16 @@
 
 import native from '../mini/native';
+import {
+  uuid,
+} from '../mini/utils';
+
+console.log(uuid(32))
+
 import log from './log';
+import {
+  getAppOptions,
+  getPageOptions,
+} from './channel';
 import {
   preAppOnLaunch,
   preAppOnUnlaunch,
@@ -36,17 +46,21 @@ exports.init = function(opts = {}) {
     $log: log,
   });
 
+  xApp.use("onError", preAppOnError);
+  xApp.use("onLaunch", getAppOptions);
   xApp.use("onLaunch", preAppOnLaunch);
   xApp.use("onLaunch", postAppOnLaunch, 'post');
-  xApp.use("onUnlaunch", preAppOnUnlaunch);
+  xApp.use("onShow", getAppOptions);
   xApp.use("onShow", preAppOnShow);
   xApp.use("onShow", postAppOnShow, 'post');
   xApp.use("onHide", preAppOnHide);
-  xApp.use("onError", preAppOnError);
+  xApp.use("onUnlaunch", preAppOnUnlaunch);
 
   xPage.use("onLoad", prePageOnLoad);
+  xPage.use("onLoad", getPageOptions);
   xPage.use("onUnload", prePageOnUnload);
   xPage.use("onShow", prePageOnShow);
+  xPage.use("onShow", getPageOptions);
   xPage.use("onHide", prePageOnHide);
   xPage.use("onReachBottom", prePageOnReachBottom);
   xPage.use("onPullDownRefresh", prePageOnPullDownRefresh);

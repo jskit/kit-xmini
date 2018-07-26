@@ -9,6 +9,39 @@ exports.isDef = function isDef(v) {
   return v !== 'undefined' && v !== null;
 }
 
+// function uuid1(userId) {
+//   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+//     const r = Math.random() * 16 | 0
+//     const v = c == 'x' ? r : (r & 0x3 | 0x8);
+//     return v.toString(16);
+//   })//.toUpperCase();
+// }
+
+// exports.url =
+//   '_~0123456789' +
+//   'abcdefghijklmnopqrstuvwxyz' +
+//   'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+// https://github.com/ai/nanoid/blob/master/non-secure.js
+function random (size) {
+  const result = []
+  while (0 < size--) {
+    result.push(Math.floor(Math.random() * 256))
+  }
+  return result
+}
+function uuid(size = 21) {
+  const url = '_~getRandomVcryp0123456789bfhijklqsuvwxzABCDEFGHIJKLMNOPQSTUWXYZ';
+  let id = ''
+  const bytes = random(size)
+  while (0 < size--) {
+    id += url[bytes[size] & 63]
+  }
+  return id
+}
+
+exports.uuid = uuid;
+
 // 内部插入-前 prepend
 exports.prepend = function prepend(opts, fnName, fn) {
   if (opts[fnName]) {

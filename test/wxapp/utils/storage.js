@@ -1,24 +1,31 @@
+// 小程序的 storage 方法使用不完全一致，所以放在项目中引用
 
-const {
-  setStorage,
-  setStorageSync,
-  getStorage,
-  getStorageSync,
-  removeStorage,
-  removeStorageSync,
-  clearStorage,
-  clearStorageSync,
-  getStorageInfo,
-  getStorageInfoSync,
-} = wx;
+import native from '../src/mini/native';
+
+const noop = () => {};
+let inited;
+// 数据都存在这里
+let storageData = {};
+let me = {};
 
 // wxapp 本地数据存储的大小限制为 10MB
 
-const noop = () => {};
-// 数据都存在这里
-let storageData = getStorageSync('storageData') || {};
-console.log('storageData');
-console.log(storageData);
+// const {
+//   setStorage,
+//   setStorageSync,
+//   getStorage,
+//   getStorageSync,
+//   removeStorage,
+//   removeStorageSync,
+//   clearStorage,
+//   clearStorageSync,
+//   getStorageInfo,
+//   getStorageInfoSync,
+// } = wx;
+
+// let storageData = getStorageSync({ key: 'storageData' }).data || {};
+// console.log('storageData');
+// console.log(storageData);
 // const storageInfo = getStorageInfoSync();
 // const {
 //   keys,
@@ -39,22 +46,30 @@ console.log(storageData);
 //   data: getStorageSync('storageData').data || {},
 // };
 
-class Storage {
+let i = 1;
+module.exports = class Storage {
+  constructor(store = 'x-mini') {
+    me = native.get().me;
+    this.store = store || `store-${i++}`;
+    // const data = me.getStorageSync({ key: this.store }).data || {};
+    const data = me.getStorageSync(this.store) || {};
+    storageData[this.store] = data;
+  }
   set(key, value, time) {
     // 单位秒
-    const timeout = +new Date() - 1 + time * 1000;
+    const timeout = Date.now() - 1 + time * 1000;
     console.log(timeout);
     const data = {
       value,
       timeout,
     };
-    Object.assign(storageData, {
+    Object.assign(storageData[this.store], {
       [`${key}`]: data,
     });
-    console.log(JSON.stringify(storageData));
-    setStorage({
-      key,
-      data: storageData,
+    // console.log(JSON.stringify(storageData[this.store]));
+    me.setStorage({
+      key: this.store,
+      data: storageData[this.store],
       success(res) {
         console.log('数据缓存成功');
         console.log(res);
@@ -63,10 +78,10 @@ class Storage {
   }
   get(key) {
     if (!key) return;
-    const temp = storageData[key] || {}
+    const temp = storageData[this.store][key] || {}
     // 缓存不存在
     if (!temp.timeout || !temp.value) return null;
-    const now = +new Date();
+    const now = Date.now();
     if (temp.timeout && temp.timeout < now) {
       // 缓存过期
       this.remove(key);
@@ -76,20 +91,36 @@ class Storage {
   }
   remove(key) {
     if (!key) return;
-    delete storageData[key];
-    removeStorage({
-      key,
+    delete storageData[this.store][key];
+    me.setStorage({
+      key: this.store,
+      data: storageData[this.store],
+      success(res) {
+      },
     });
+    // me.removeStorage({
+    //   key,
+    // });
   }
-  clear() {
-    storageData = {};
-    return clearStorage();
+  clear(bool) {
+    if (!(bool === true)) {
+      storageData[this.store] = {};
+      return me.removeStorage({
+        key: this.store,
+      });
+    } else {
+      storageData = {};
+      me.clearStorage();
+    }
   }
   getStorageInfo() {
-    return getStorageInfo()
+    return me.getStorageInfo()
   }
 }
 
-const storage = new Storage();
+// const storage = new Storage();
 
-module.exports = storage
+// export default storage
+
+// exports.storage = storage;
+// exports.Storage = Storage;

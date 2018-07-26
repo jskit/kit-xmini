@@ -12,12 +12,12 @@
 // x-mini/index.js
 import native from '../src/mini/native';
 import XMini from '../src/mini/index';
+import Storage from './storage';
 
 const plugins = {
   stat: require('../src/stat/index'),
   debug: require('../src/debug/index'),
   report: require('../src/report/index'),
-  channel: require('../src/channel/index'),
 }
 
 const xApp = new XMini({ type: 'app' });
@@ -59,6 +59,13 @@ wx = me;
 const mini = init({
   me,
 });
+
+
+const storage = new Storage('mini');
+
+storage.set('test', {a:1}, 100);
+var aa = storage.get('test')
+console.warn(111, aa)
 
 module.exports = {
   me,
