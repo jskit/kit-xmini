@@ -1,5 +1,6 @@
 
 import {
+  rewrite,
   prepend,
   append,
 } from './utils';

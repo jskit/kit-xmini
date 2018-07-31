@@ -8,6 +8,9 @@ exports.isUnDef = function isUnDef(v) {
 exports.isDef = function isDef(v) {
   return v !== 'undefined' && v !== null;
 }
+exports.isObject = function isObject(val) {
+  return val != null && typeof val === 'object' && Array.isArray(val) === false;
+};
 
 // function uuid1(userId) {
 //   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -41,6 +44,23 @@ function uuid(size = 21) {
 }
 
 exports.uuid = uuid;
+
+// 附写方法，
+// 若已存在，对数据参数进行格式改写
+// 若无，直接附加
+exports.rewrite = function rewrite(opts, fnName, fn) {
+  if (opts[fnName]) {
+    const oldFn = opts[fnName];
+    opts[fnName] = function (...rest) {
+      const newOpt = fn(...rest);
+      oldFn.call(this, newOpt);
+    };
+  } else {
+    opts[fnName] = function (options) {
+      fn.call(this, options, fnName);
+    }
+  }
+}
 
 // 内部插入-前 prepend
 exports.prepend = function prepend(opts, fnName, fn) {

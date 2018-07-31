@@ -3,9 +3,7 @@ import {
   uuid,
 } from '../mini/utils';
 
-console.log(uuid(32))
-
-import log from './log';
+import piwik from './piwik';
 import {
   getAppOptions,
   getPageOptions,
@@ -43,7 +41,18 @@ exports.init = function(opts = {}) {
   } = opts;
 
   Object.assign(me, {
-    $log: log,
+    piwikEvent: piwik.onTrackEvent,
+    onPageCreate: piwik.onPageCreate,
+    onPageDestroy: piwik.onPageDestroy,
+    updateTrackInfo: piwik.updateTrackInfo,
+    getTrackInfo: piwik.getTrackInfo,
+    getCurrentPagePath: () => {
+      let p = getCurrentPages();
+      if (p && p.length > 0) {
+        return p[p.length - 1];
+      }
+      return null;
+    },
   });
 
   xApp.use("onError", preAppOnError);

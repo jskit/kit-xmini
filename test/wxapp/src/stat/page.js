@@ -1,9 +1,9 @@
-
 import {
   isDef,
   isUnDef,
   isEmptyObject,
 } from '../mini/utils';
+import native from '../mini/native';
 
 // page 相关统计
 exports.prePageOnLoad = function prePageOnLoad(opts, fnName) {

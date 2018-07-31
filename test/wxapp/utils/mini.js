@@ -27,6 +27,7 @@ const xPage = new XMini({ type: 'page' });
 function init(opts = {}) {
   const temp = {};
   native.init({
+    appId: '',
     storage,
     me: opts.me,
     xApp,
@@ -67,6 +68,7 @@ const mini = init({
 // console.warn(111, aa)
 
 module.exports = {
+  storage,
   Storage,
   me,
   xApp,

@@ -1,3 +1,5 @@
+import native from './native';
+
 const config = {
   getLocation: false,
 };
@@ -5,11 +7,15 @@ const config = {
 const noop = () => {};
 
 exports.getUserInfo = function getUserInfo(cb = noop) {
-  if (wx.getSetting) {
-    wx.getSetting({
+  const {
+    me,
+    storage,
+  } = native.get();
+  if (me.getSetting) {
+    me.getSetting({
       success: function (res) {
         if (res.authSetting['scope.userInfo']) {
-          wx.getUserInfo({
+          me.getUserInfo({
             withCredentials: false,
             success: function (res) {
               cb(res);
@@ -22,7 +28,11 @@ exports.getUserInfo = function getUserInfo(cb = noop) {
 };
 
 exports.getNetworkType = function getNetworkType(cb = noop) {
-  wx.getNetworkType({
+  const {
+    me,
+    storage,
+  } = native.get();
+  me.getNetworkType({
     success: function(res) {
       cb(res);
       // scope.mini_network_type = res['networkType'];
@@ -35,7 +45,11 @@ exports.getNetworkType = function getNetworkType(cb = noop) {
 }
 
 exports.getSystemInfo = function getSystemInfo(cb = noop) {
-  wx.getSystemInfo({
+  const {
+    me,
+    storage,
+  } = native.get();
+  me.getSystemInfo({
     success: function(res) {
       cb(res);
     },
@@ -46,7 +60,11 @@ exports.getSystemInfo = function getSystemInfo(cb = noop) {
 }
 
 exports.getLocation = function getLocation(cb = noop) {
-  wx.getLocation({
+  const {
+    me,
+    storage,
+  } = native.get();
+  me.getLocation({
     type : 'wgs84',
     success: function(res) {
       cb(res);

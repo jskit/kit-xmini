@@ -12,7 +12,7 @@ App(xApp.entry({
   },
   onLaunch() {
     console.log('app.js on launch')
-    me.$log(111111)
+    // me.$log(111111)
 
     // wx.getSystemInfo({
     //   success: (res) => {
@@ -26,9 +26,9 @@ App(xApp.entry({
     // });
   },
   onShow(query) {
-    wx.$log('小程序启动花费时间', {
-      "花费时长" : Date.now() - time,
-    });
+    // me.$log('小程序启动花费时间', {
+    //   "花费时长" : Date.now() - time,
+    // });
     console.log('app.js onShow')
     console.log('query:', query);
   },
