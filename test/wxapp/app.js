@@ -26,9 +26,9 @@ App(xApp.entry({
     // });
   },
   onShow(query) {
-    // me.$log('小程序启动花费时间', {
-    //   "花费时长" : Date.now() - time,
-    // });
+    me.$log('小程序启动花费时间', {
+      "花费时长" : Date.now() - time,
+    });
     console.log('app.js onShow')
     console.log('query:', query);
   },

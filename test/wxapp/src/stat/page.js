@@ -19,18 +19,6 @@ exports.prePageOnLoad = function prePageOnLoad(opts, fnName) {
   });
 }
 
-exports.prePageOnUnload = function prePageOnUnload(opts, fnName) {
-  const app = getApp();
-
-  const { pageQuery, pagePath } = this;
-  // 统计页面关闭事件
-  const p = this.getPageName();
-  let param = stringify(pageQuery);
-  // my.onPageDestroy('pages/' + p + '/' + p + (param ? "?" + param : ''));
-  piwik.onPageDestroy(pagePath + (param ? '?' + param : ''));
-  // pageLog(app, this, 'page_unload');
-}
-
 exports.prePageOnShow = function prePageOnShow(opts, fnName) {
   const app = getApp();
   console.log('pre page.js onShow:', this);
@@ -53,6 +41,18 @@ exports.prePageOnShow = function prePageOnShow(opts, fnName) {
 exports.prePageOnHide = function prePageOnHide(opts, fnName) {
   const app = getApp();
   // pageLog(app, this, 'page_onhide');
+}
+
+exports.prePageOnUnload = function prePageOnUnload(opts, fnName) {
+  const app = getApp();
+
+  const { pageQuery, pagePath } = this;
+  // 统计页面关闭事件
+  const p = this.getPageName();
+  let param = stringify(pageQuery);
+  // my.onPageDestroy('pages/' + p + '/' + p + (param ? "?" + param : ''));
+  piwik.onPageDestroy(pagePath + (param ? '?' + param : ''));
+  // pageLog(app, this, 'page_unload');
 }
 
 exports.prePageOnReachBottom = function prePageOnReachBottom(opts, fnName) {

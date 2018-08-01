@@ -41,11 +41,24 @@ exports.init = function(opts = {}) {
   } = opts;
 
   Object.assign(me, {
-    piwikEvent: piwik.onTrackEvent,
-    onPageCreate: piwik.onPageCreate,
-    onPageDestroy: piwik.onPageDestroy,
-    updateTrackInfo: piwik.updateTrackInfo,
-    getTrackInfo: piwik.getTrackInfo,
+    $log: (...rest) => {
+      piwik.onTrackEvent(...rest);
+    },
+    $piwikEvent: (...rest) => {
+      piwik.piwikEvent(...rest);
+    },
+    onPageCreate: (...rest) => {
+      piwik.onPageCreate(...rest);
+    },
+    onPageDestroy: (...rest) => {
+      piwik.onPageDestroy(...rest);
+    },
+    updateTrackInfo: (...rest) => {
+      piwik.updateTrackInfo(...rest);
+    },
+    getTrackInfo: (...rest) => {
+      piwik.getTrackInfo(...rest);
+    },
     getCurrentPagePath: () => {
       let p = getCurrentPages();
       if (p && p.length > 0) {

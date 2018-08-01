@@ -59,16 +59,22 @@ class Piwik {
    * @param userId 用户Id
    * @param channel 渠道
    */
-  init(url, siteId, userId, channel, spm) {
-    if (!url) {
+  // url, siteId, userId, channel, spm
+  init(opts) {
+    if (!opts || opts.url) {
       return
     }
-    this.config.url = url;
-    this.config.siteId = siteId || 2;
-    this.config.userId = userId || '';
-    this.config.channel = channel || '';
-    this.config._spm = spm || '';
-
+    Object.assign(this.config, {
+      siteId: 2,
+      ...opts,
+      // url: opts.url,
+      // siteId: opts.siteId || 2,
+      // category: opts.category || 'miniapp',
+      // userId: opts.userId || '',
+      // openId: opts.openId || '',
+      // channel: opts.channel || '',
+      // _spm: opts.spm || '',
+    });
     this.default._channelId = this.config.channel || 'aliapp';
     this.default._spm = this.config._spm || 'aliapp';
   }

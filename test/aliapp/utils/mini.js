@@ -64,8 +64,9 @@ function init(opts = {}) {
 
 // utils/mini.js
 // 对wx变量进行处理
-const me = Object.assign({}, wx);
-wx = me;
+// const me = Object.assign({}, wx);
+// wx = me;
+const me = my;
 
 const mini = init({
   me,

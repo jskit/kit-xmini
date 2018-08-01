@@ -31,6 +31,7 @@ function init(opts = {}) {
   const temp = {};
   native.init({
     appId,
+    appName: 'hsq_aliapp',
     appConfig,
     storage,
     me: opts.me,

@@ -1,6 +1,7 @@
 // 小程序的 storage 方法使用不完全一致，所以放在项目中引用
 
 // import native from '../src/mini/native';
+// import { copy } from '../src/mini/utils';
 
 const noop = () => {};
 let inited;
@@ -54,7 +55,7 @@ module.exports = class Storage {
     const data = getStorageSync(this.store) || {};
     storageData[this.store] = data;
   }
-  set(key, value, time) {
+  set(key, value, time = 600) {
     // 单位秒
     const timeout = Date.now() - 1 + time * 1000;
     console.log(timeout);
