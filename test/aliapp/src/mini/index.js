@@ -1,9 +1,10 @@
 
 import {
+  rewrite,
   prepend,
   append,
 } from './utils';
-// import native form './native';
+// import native from './native';
 
 class XMini {
   constructor(opts = {}) {

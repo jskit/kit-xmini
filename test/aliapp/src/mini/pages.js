@@ -16,6 +16,7 @@ function pagesObj(allPages, tabPages) {
   }
 }
 
+// const appConfig = typeof __wxConfig !== 'undefined' ? __wxConfig : require('/app.json');
 function miniPages(appConfig = {}) {
   const { pages = [], tabBar = {} } = appConfig;
   const tabBarList = tabBar.items || tabBar.list || [];

@@ -12,6 +12,7 @@ function postAppOnLaunch() {
 }
 
 exports.init = function(opts = {}) {
+  console.log(':::x-mini add report');
   const {
     me,
     xApp,

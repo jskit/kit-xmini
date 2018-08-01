@@ -1,7 +1,7 @@
 
-function event(...rest) {
+function log(...rest) {
   // 自定义事件
-  console.log(JSON.stringify(rest));
+  console.info('log:', JSON.stringify(rest));
 }
 
-module.exports = event;
+module.exports = log;

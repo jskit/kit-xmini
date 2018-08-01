@@ -14,6 +14,7 @@ import {
   getUUID,
   miniInit,
 } from './fn';
+import piwik from './piwik';
 
 // import Log from './log';
 

@@ -1,4 +1,9 @@
 import {
+  isDef,
+  isUnDef,
+} from '../mini/utils';
+import native from '../mini/native';
+import {
   // getAccessToken,
   getNetworkType,
   getSystemInfo,
@@ -6,10 +11,12 @@ import {
   getUserInfo,
 } from '../mini/fn';
 import {
-  isDef,
-  isUnDef,
-} from '../mini/utils';
-// import Log from './Log';
+  getUUID,
+  miniInit,
+} from './fn';
+import piwik from './piwik';
+
+// import Log from './log';
 
 // app 相关统计
 // 生命周期统计
@@ -18,62 +25,65 @@ import {
 // 用户相关信息统计
 // 地理位置统计
 
-exports.getStatInfo = function getStatInfo(scope) {
-  // getNetworkType(function (res) {
-  //   console.log(res);
-  //   scope.mini_network_type = res['networkType'];
-  // });
-  // getSystemInfo(function (res){
-  //   console.log(res);
+function getMiniInfo() {
 
-  //   scope.mini_sdk_version = isUndef(res['SDKVersion']) ? '1.0.0' : res['SDKVersion'];
-  //   scope.mini_phone_model = res['model'];
-  //   scope.mini_pixel_ratio = res['pixelRatio'];
-  //   scope.mini_window_width = res['windowWidth'];
-  //   scope.mini_window_height = res['windowHeight'];
-  //   scope.mini_language = res['language'];
-  //   scope.mini_wechat_version = res['version'];
-  //   scope.mini_system = res['system'];
-  //   scope.mini_platform = res['platform'];
-  // });
+  // this.$log = new Log({
+  //   app: this,
+  //   // start,
+  // })
 
-  // if (config['getLocation']) {
-  //   console.log(res);
-  //   getLocation(function (res){
-  //     console.log(res);
-  //     scope.mini_lat = res['latitude'];
-  //     scope.mini_lng = res['longitude'];
-  //     scope.mini_speed = res['speed'];
-  //   });
-  // }
 
-  // getUserInfo(this);
+  getNetworkType(function (res) {
+    console.log(res);
+    scope.mini_network_type = res['networkType'];
+  });
+  getSystemInfo(function (res){
+    const systemInfo = {
+      sdk_version: isUndef(res['SDKVersion']) ? '1.0.0' : res['SDKVersion'],
+      phone_model: res['model'],
+      pixel_ratio: res['pixelRatio'],
+      window_width: res['windowWidth'],
+      window_height: res['windowHeight'],
+      language: res['language'],
+      wechat_version: res['version'],
+      system: res['system'],
+      platform: res['platform'],
+    };
+  });
+
+  if (config['getLocation']) {
+    console.log(res);
+    getLocation(function (res){
+      console.log(res);
+      scope.mini_lat = res['latitude'];
+      scope.mini_lng = res['longitude'];
+      scope.mini_speed = res['speed'];
+    });
+  }
+
+  getUserInfo(this);
 }
 
-exports.preAppOnLaunch = function preAppOnLaunch(opts, fnName) {
-  console.log('stat pre app.js onLaunch:', this);
-  // this.log = new Log({
-  //   app: this,
-  // })
-  // workspacesInit();
-  // this.log = new Log({
-  //   app: this,
-  //   start,
-  // });
+exports.getMiniInfo = getMiniInfo;
 
-  // this.mini_src = getSRCKey(this);
-  // this.mini_uuid = getUUIDKey(this);
-  // this.mini_timestamp = Date.now();
-  // this.mini_showtime = Date.now();
-  // this.mini_duration = 0;
-  // this.mini_error_count = 0;
-  // this.mini_page_count = 1;
-  // this.mini_first_page = 0;
-  // if (isDef(opts)) {
-  //   this.mini_showoption = opts;
-  // } else {
-  //   this.mini_showoption = {};
-  // }
+exports.preAppOnLaunch = function preAppOnLaunch(options, fnName) {
+  console.log('stat pre app.js onLaunch:', this);
+  const {
+    storage,
+  } = native.get();
+  const data = miniInit();
+
+  const logData = {
+    uuid: getUUID.call(this),
+    timestamp: Date.now(),
+    showtime: Date.now(),
+    error_count: 0,
+    page_count: 1,
+    first_page: 0,
+    showoption: options || {},
+  };
+
+  console.warn('miniInit:', logData);
 
   // getNetworkType(this);
   // // getSystemInfo(this);

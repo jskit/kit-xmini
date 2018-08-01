@@ -4,18 +4,24 @@
 
 let nativeObj = {};
 
+const appConfig = typeof __wxConfig !== 'undefined' ? __wxConfig : require('../../app.json');
 const native = {
   init(opts = {}) {
     if (!opts.me) {
       console.error('must be input "me"');
       return this;
     }
-    nativeObj = opts;
+
+    Object.assign(nativeObj, {
+      ...opts,
+      ...require('./pages')(opts.appConfig || appConfig),
+    });
   },
-  set(obj) {
-    Object.assign(nativeObj, obj);
-  },
+  // set(obj) {
+  //   Object.assign(nativeObj, obj);
+  // },
   get() {
+    // 不要拷贝，全局引用
     return nativeObj;
   },
 };

@@ -31,7 +31,7 @@ function postAppOnLaunch() {
 }
 
 exports.init = function(opts = {}) {
-  console.log('tip: x-mini add stat');
+  console.log(':::x-mini add stat');
   const {
     storage,
     me,
@@ -75,6 +75,3 @@ exports.init = function(opts = {}) {
   xPage.use("onPullDownRefresh", prePageOnPullDownRefresh);
   xPage.use("onShareAppMessage", postPageOnShareAppMessage, 'post');
 }
-
-
-

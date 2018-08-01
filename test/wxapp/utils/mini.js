@@ -13,12 +13,15 @@
 import native from '../src/mini/native';
 import XMini from '../src/mini/index';
 import Storage from './storage';
+import extend from '../src/mini/extend';
 
 const plugins = {
   stat: require('../src/stat/index'),
   debug: require('../src/debug/index'),
   report: require('../src/report/index'),
 }
+const appId = '';
+const appConfig = typeof __wxConfig !== 'undefined' ? __wxConfig : require('../app.json');
 
 const storage = new Storage('mini');
 const xApp = new XMini({ type: 'app' });
@@ -27,12 +30,17 @@ const xPage = new XMini({ type: 'page' });
 function init(opts = {}) {
   const temp = {};
   native.init({
-    appId: '',
+    appId,
+    appConfig,
     storage,
     me: opts.me,
     xApp,
     xPage,
     getLocation: opts.getLocation || false,
+  });
+  extend.init(native.get());
+  Object.assign(temp, {
+    extend,
   });
   // 缓存下全局变量，供内部使用
   for (const key in plugins) {

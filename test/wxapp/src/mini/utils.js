@@ -2,6 +2,24 @@ exports.copy = function(data) {
   return JSON.parse(JSON.stringify(data));
 }
 
+exports.stringify = function stringify(params, options = {}) {
+  const defaults = {
+    delimiter: '&',
+  };
+  const opts = Object.assign({}, defaults, options);
+  const { delimiter = defaults.delimiter } = opts;
+
+  const arr = [];
+  for (const key in params) {
+    if (!params[key]) {
+      delete params[key];
+    } else {
+      arr.push(`${key}=${encodeURIComponent(params[key])}`);
+    }
+  }
+  return arr.join(delimiter);
+}
+
 exports.isUnDef = function isUnDef(v) {
   return v === 'undefined' || v === null;
 }

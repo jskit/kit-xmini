@@ -3,6 +3,7 @@ exports.debug = function() {
 }
 
 exports.init = function(opts = {}) {
+  console.log(':::x-mini add debug');
   const {
     xApp,
     xPage,
