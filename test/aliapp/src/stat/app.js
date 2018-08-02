@@ -15,8 +15,7 @@ import {
   miniInit,
 } from './fn';
 import piwik from './piwik';
-
-// import Log from './log';
+import log from './log';
 
 // app 相关统计
 // 生命周期统计
@@ -91,29 +90,29 @@ exports.preAppOnLaunch = function preAppOnLaunch(options, fnName) {
   // // getUserInfo(this);
   // getAccessToken(this, 'launch');
 
-  // handle(this, 'app', 'launch');
+  // appLog(this, 'app', 'launch');
 }
 
 exports.preAppOnShow = function preAppOnShow(options) {
   console.log('pre app.js onShow:', this);
-  // this.mini_showtime = Date.now();
-  // if (isDef(options)) {
-  //   this.mini_showoption = options;
-  // } else {
-  //   this.mini_showoption = {};
-  // }
-  // getAccessToken(this, 'show');
-  // handle(this, 'app', 'show');
-
-  // if (isDef(options)) {
-  //   if (isDef(options['shareTicket'])) {
-  //     get(this, options['shareTicket'], 'click');
-  //   } else {
-  //     if (isDef(options['query']) && isDef(options['query']['ald_share_src'])) {
-  //       get(this, '0', 'click');
-  //     }
-  //   }
-  // }
+  const {
+    me,
+    appName,
+    storage,
+  } = native.get();
+  const userInfo = storage.get('userInfo') || {};
+  const channel = storage.get('channel') || {};
+  const logInfo = {
+    siteId: 2,
+    url: 'https://tongji.haoshiqi.net/piwik.php',
+    siteId: 6,
+    category: appName,     // 默认事件分类
+    userId: userInfo.userId || '',  // 用户Id
+    openId: userInfo.openId || '',  // 用于用户唯一标识
+    channel: channel.channel_id || '',
+    spm: channel.spm || '',
+  }
+  piwik.init(logInfo);
 }
 
 exports.postAppOnShow = function postAppOnShow() {
@@ -121,23 +120,13 @@ exports.postAppOnShow = function postAppOnShow() {
 }
 
 exports.preAppOnHide = function preAppOnHide(opts, fnName) {
-  // if (this.mini_is_first_open) {
-  //   this.mini_is_first_open = false;
-  // }
-  // this.mini_duration = Date.now() - this.mini_showtime;
-  // handle(this, 'app', 'hide');
+
 }
 
 exports.preAppOnUnlaunch = function preAppOnUnlaunch(opts, fnName) {
-  // this.mini_duration += Date.now() - this.mini_showtime;
-  // handle(this, 'app', 'unLaunch');
+
 }
 
 exports.preAppOnError = function preAppOnError(opts, fnName) {
-  // if (typeof this.mini_error_count === 'undefined') {
-  //   this.mini_error_count = 1;
-  // } else {
-  //   this.mini_error_count++;
-  // }
-  // start(this, 'event', 'error_message', JSON.stringify(opts));
+
 }

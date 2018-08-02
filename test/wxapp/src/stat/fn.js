@@ -5,7 +5,6 @@ import {
   uuid,
 } from '../mini/utils';
 
-
 function getUUID() {
   const {
     storage,

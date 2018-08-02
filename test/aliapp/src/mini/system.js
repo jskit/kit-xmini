@@ -7,9 +7,11 @@ import native from './native';
 exports.getSystemInfo = function getSystemInfo(cb = noop) {
   const {
     me,
+    storage,
   } = native.get();
   me.getSystemInfo({
     success: function(res) {
+      // storage.set(systemInfo, res);
       cb(res);
     },
     complete: function() {

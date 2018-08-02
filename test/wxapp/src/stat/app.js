@@ -83,6 +83,14 @@ exports.preAppOnLaunch = function preAppOnLaunch(options, fnName) {
   };
 
   console.warn('miniInit:', logData);
+
+  // getNetworkType(this);
+  // // getSystemInfo(this);
+  // // getLocation(this);
+  // // getUserInfo(this);
+  // getAccessToken(this, 'launch');
+
+  // appLog(this, 'app', 'launch');
 }
 
 exports.preAppOnShow = function preAppOnShow(options) {

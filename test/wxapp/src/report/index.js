@@ -1,5 +1,5 @@
 import report from './report';
-function preAppOnError(err) {
+function preAppOnError(err = '') {
   console.log('report error:')
   console.error(JSON.stringify(err));
 }
