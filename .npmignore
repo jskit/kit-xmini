@@ -10,6 +10,8 @@ yarn.lock
 package-lock.json
 node_modules
 test/*
+build/*
 client/*
+LICENSE
 *.yml
 project.config.json
