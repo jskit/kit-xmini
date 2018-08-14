@@ -6,6 +6,7 @@ import {
   isEmptyObject,
 } from '../mini/utils';
 import native from '../mini/native';
+import { storage } from '../mini/storage';
 import piwik from './piwik';
 import {
   // getAppOptions,
@@ -17,7 +18,6 @@ exports.prePageOnLoad = function prePageOnLoad(opts, fnName) {
   log.log('pre page.js onLoad: ', this);
   const {
     me,
-    storage,
   } = native.get();
 
   // 要求页面跳转要透传spm，返回时要恢复spm
@@ -37,7 +37,6 @@ exports.prePageOnShow = function prePageOnShow(opts, fnName) {
   // pageLog(app, this, 'page_onshow');
   const {
     me,
-    storage,
   } = native.get();
   const { pageQuery = {}, fullPagePath } = this;
 
@@ -66,7 +65,6 @@ exports.prePageOnUnload = function prePageOnUnload(opts, fnName) {
   const app = getApp();
   const {
     me,
-    storage,
   } = native.get();
   const { pageQuery, pagePath } = this;
   // 统计页面关闭事件
@@ -81,7 +79,6 @@ exports.prePageOnUnload = function prePageOnUnload(opts, fnName) {
 exports.prePageOnReachBottom = function prePageOnReachBottom(opts, fnName) {
   const {
     me,
-    storage,
   } = native.get();
   const app = getApp();
   // eventLog(app, 'event', 'reachbottom', 1);
@@ -93,7 +90,6 @@ exports.prePageOnReachBottom = function prePageOnReachBottom(opts, fnName) {
 exports.prePageOnPullDownRefresh = function prePageOnPullDownRefresh(opts, fnName) {
   const {
     me,
-    storage,
   } = native.get();
   const app = getApp();
   me.$log('pulldown_refresh', {
@@ -105,7 +101,6 @@ exports.prePageOnPullDownRefresh = function prePageOnPullDownRefresh(opts, fnNam
 exports.postPageOnShareAppMessage = function postPageOnShareAppMessage(arr, shareInfo) {
   const {
     me,
-    storage,
   } = native.get();
   me.$log('share_message', {
     pageName: this.getPageName(),

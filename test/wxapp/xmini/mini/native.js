@@ -4,19 +4,19 @@ import {
   // copy,
 } from '../mini/utils';
 import queue from '../mini/queue';
-// import { Storage } from './storage';
+import { storage } from './storage';
 // 缓存下外部变量，供内部统一调用
 
 let nativeObj = {};
 
-const appConfig = typeof __wxConfig !== 'undefined' ? __wxConfig : require('../../app.json');
+// const appConfig = typeof __wxConfig !== 'undefined' ? __wxConfig : require('../../app.json');
 const native = {
   init(opts = {}) {
-    if (!opts.me || !opts.storage) {
-      log.error('must be input "me" && "storage"');
+    if (!opts.me) {
+      log.error('must be input "me"');
       return this;
     }
-    const storage = opts.storage;
+    opts.storage = storage;
     opts.me.$uuid = function getUUID() {
       let uid = storage.get('uuid');
       if (!uid) {
@@ -67,12 +67,9 @@ const native = {
 
     Object.assign(nativeObj, {
       ...opts,
-      ...require('./pages')(opts.appConfig || appConfig),
+      ...require('./pages')(opts.appConfig),
     });
   },
-  // set(obj) {
-  //   Object.assign(nativeObj, obj);
-  // },
   get() {
     // 不要拷贝，全局引用
     return nativeObj;

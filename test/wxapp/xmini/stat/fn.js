@@ -1,5 +1,6 @@
 
 import native from '../mini/native';
+import { storage } from '../mini/storage';
 import $log from '../stat/log';
 import {
   log,
@@ -11,7 +12,6 @@ exports.miniInit = function miniInit(options, fnName) {
   // 获取缓存数据
   const {
     me,
-    storage,
   } = native.get();
 
   let systemInfo = storage.get('systemInfo');

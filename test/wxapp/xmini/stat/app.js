@@ -4,6 +4,7 @@ import {
   isUnDef,
 } from '../mini/utils';
 import native from '../mini/native';
+import { storage } from '../mini/storage';
 import {
   // getAccessToken,
   getNetworkType,
@@ -70,7 +71,6 @@ exports.preAppOnLaunch = function preAppOnLaunch(options, fnName) {
   const {
     me,
     appName,
-    storage,
   } = native.get();
   const data = miniInit();
 
@@ -119,7 +119,6 @@ exports.preAppOnShow = function preAppOnShow(options = {}) {
   const {
     me,
     appName,
-    storage,
   } = native.get();
   me.$appQuery = getAppOptions(options);
 }

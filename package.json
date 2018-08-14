@@ -10,7 +10,7 @@
   "scripts": {
     "clean": "rm -rf lib",
     "benchmark": "npm test && node benchmark",
-    "build": "rimraf lib && ./node_modules/.bin/babel src -d lib --ignore test",
+    "build": "node ./build/copy.js",
     "prepublish": "npm run clean",
     "test": "./node_modules/.bin/_mocha $npm_package_options_mocha",
     "mini": "./node_modules/.bin/_mocha $npm_package_options_mini",
@@ -34,5 +34,7 @@
   },
   "homepage": "https://github.com/jskit/kit-xmini#readme",
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {
+    "fs-extra": "^7.0.0"
+  }
 }
