@@ -111,9 +111,7 @@ class Piwik {
         params[key] = param[key];
       }
     }
-    Object.assign(this.config, {
-      ...params,
-    });
+    Object.assign(this.config, params);
   }
 
   getChannel() {
@@ -245,7 +243,7 @@ class Piwik {
         long: this.config.location.lon || 0,
       });
     }
-    return {
+    return Object.assign({
       idsite: this.config.siteId,
       rec: 1,
       _id: devId,
@@ -268,8 +266,7 @@ class Piwik {
         "3": ["cityName", this.config.cityName || null],
       }),
       cdt: parseInt(new Date() / 1000),
-      ...locate,
-    };
+    }, locate);
   }
 
   __check(data) {
