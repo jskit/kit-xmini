@@ -11,7 +11,7 @@
     "clean": "rm -rf lib",
     "benchmark": "npm test && node benchmark",
     "build": "node ./build/copy.js",
-    "prepublish": "npm run clean && npm run build",
+    "prepublishOnly": "npm run clean && npm run build",
     "test": "./node_modules/.bin/_mocha $npm_package_options_mocha",
     "mini": "./node_modules/.bin/_mocha $npm_package_options_mini",
     "lint": "./node_modules/.bin/eslint --ext .js src test"
