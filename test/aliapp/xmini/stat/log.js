@@ -3,7 +3,6 @@ import {
   log,
   copy,
 } from '../mini/utils';
-// import { Storage } from './storage';
 // 缓存下外部变量，供内部统一调用
 
 // function log(...rest) {

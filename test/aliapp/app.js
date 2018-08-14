@@ -10,7 +10,7 @@ App(xApp.entry({
   onError(err) {
     console.error(err);
   },
-  onLaunch() {
+  onLaunch(options) {
     console.warn('App onLaunch: ' + JSON.stringify(options));
     me.$logInit({
       siteId: 11,  // 2 用来测试 该站点为 11
@@ -27,15 +27,15 @@ App(xApp.entry({
       openId: '',
     });
   },
-  onShow(query) {
+  onShow(options) {
     console.warn('App onShow: ' + JSON.stringify(options));
     // my.$log('小程序启动花费时间', {
     //   "花费时长" : Date.now() - time,
     // });
-    let { query, scene } = options;
-    if (scene && !query && !extraData) {
-      query = {};
-    }
+    // let { query, scene } = options;
+    // if (scene && !query && !extraData) {
+    //   query = {};
+    // }
   },
   onHide() {
     console.log('App Hide');

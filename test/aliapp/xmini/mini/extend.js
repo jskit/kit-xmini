@@ -4,6 +4,7 @@ import {
   copy,
   // uuid,
 } from '../mini/utils';
+import { storage } from '../mini/storage';
 import native from '../mini/native';
 
 // prePageOnLoad
@@ -24,7 +25,6 @@ function pageQuery(options = {}, fnName) {
 exports.init = function(opts = {}) {
   log.warn(':::x-mini add extend');
   const {
-    storage,
     me,
     xApp,
     xPage,

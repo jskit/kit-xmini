@@ -1,4 +1,5 @@
 import native from './native';
+import { storage } from './storage';
 
 const config = {
   getLocation: false,
@@ -9,7 +10,6 @@ const noop = () => {};
 exports.getUserInfo = function getUserInfo(cb = noop) {
   const {
     me,
-    storage,
   } = native.get();
   if (me.getSetting) {
     me.getSetting({
@@ -30,7 +30,6 @@ exports.getUserInfo = function getUserInfo(cb = noop) {
 exports.getNetworkType = function getNetworkType(cb = noop) {
   const {
     me,
-    storage,
   } = native.get();
   me.getNetworkType({
     success: function(res) {
@@ -47,7 +46,6 @@ exports.getNetworkType = function getNetworkType(cb = noop) {
 exports.getSystemInfo = function getSystemInfo(cb = noop) {
   const {
     me,
-    storage,
   } = native.get();
   me.getSystemInfo({
     success: function(res) {
@@ -62,7 +60,6 @@ exports.getSystemInfo = function getSystemInfo(cb = noop) {
 exports.getLocation = function getLocation(cb = noop) {
   const {
     me,
-    storage,
   } = native.get();
   me.getLocation({
     type : 'wgs84',

@@ -50,7 +50,7 @@ let i = 1;
 class Storage {
   constructor(store = 'x-mini') {
     this.store = store || `store-${i++}`;
-    
+
     let data = {};
     if (typeof my !== 'undefined') {
       // aliapp

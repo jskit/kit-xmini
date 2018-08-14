@@ -10,7 +10,7 @@
 
 // 暂定封装小程序的方法
 // x-mini/index.js
-import { Storage, storage } from './storage';
+import { Storage, storage } from '../xmini/mini/storage';
 import native from '../xmini/mini/native';
 import XMini from '../xmini/mini/index';
 import extend from '../xmini/mini/extend';
@@ -29,7 +29,6 @@ function init(opts = {}) {
   const temp = {};
   native.init({
     ...opts,
-    storage,
     me: opts.me,
     xApp,
     xPage,

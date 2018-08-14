@@ -3,6 +3,7 @@ import {
   log,
   uuid,
 } from '../mini/utils';
+import { storage } from '../mini/storage';
 
 import piwik from './piwik';
 import {
@@ -34,7 +35,6 @@ function postAppOnLaunch() {
 exports.init = function(opts = {}) {
   log.warn(':::x-mini add stat');
   const {
-    storage,
     me,
     xApp,
     xPage,
