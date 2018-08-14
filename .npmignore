@@ -15,3 +15,4 @@ client/*
 LICENSE
 *.yml
 project.config.json
+.babelrc
