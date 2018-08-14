@@ -8,9 +8,9 @@
   "window": {
     "enableWK": "YES",
     "enableDSL": true,
-    "pullRefresh": true,
-    "defaultTitle": "微信小程序 DEMO",
+    "defaultTitle": "小程序",
     "backgroundColor": "#F5F5F9",
+    "pullRefresh": true,
     "allowsBounceVertical": true
   },
   "tabBar": {

@@ -10,29 +10,25 @@
 
 // 暂定封装小程序的方法
 // x-mini/index.js
-import native from '../src/mini/native';
-import XMini from '../src/mini/index';
-import Storage from './storage';
-import extend from '../src/mini/extend';
+import { Storage, storage } from './storage';
+import native from '../xmini/mini/native';
+import XMini from '../xmini/mini/index';
+import extend from '../xmini/mini/extend';
 
 const plugins = {
-  stat: require('../src/stat/index'),
-  debug: require('../src/debug/index'),
-  report: require('../src/report/index'),
+  stat: require('../xmini/stat/index'),
+  debug: require('../xmini/debug/index'),
+  report: require('../xmini/report/index'),
 }
-const appId = '';
-const appConfig = typeof __wxConfig !== 'undefined' ? __wxConfig : require('../app.json');
 
-const storage = new Storage('mini');
+// const storage = new Storage('mini');
 const xApp = new XMini({ type: 'app' });
 const xPage = new XMini({ type: 'page' });
 
 function init(opts = {}) {
   const temp = {};
   native.init({
-    appId,
-    appName: 'hsq_aliapp',
-    appConfig,
+    ...opts,
     storage,
     me: opts.me,
     xApp,
@@ -64,12 +60,31 @@ function init(opts = {}) {
 // ========================================
 
 // utils/mini.js
-// 对wx变量进行处理
-const me = Object.assign({}, wx);
-wx = me;
+const appId = '';
+const appName = 'iqg';
+let me = {};
+let host;
+let appConfig;
 
+// 对工具变量进行处理，方便输出
+if (typeof __wxConfig !== 'undefined') {
+  host = 'wxapp';
+  appConfig = __wxConfig;
+  me = Object.assign({}, wx);
+  wx = me;
+} else {
+  host = 'aliapp';
+  appConfig = require('../app.json');
+  me = my;
+}
+
+// 以下变量必须设置
 const mini = init({
+  host, // aliapp or wxapp
   me,
+  appId,
+  appName: `${appName}-${host}`,
+  appConfig,
 });
 
 // storage.set('test', {a:1}, 100);
@@ -83,19 +98,3 @@ module.exports = {
   xApp,
   xPage,
 };
-
-// const appConfig = typeof __wxConfig !== 'undefined' ? __wxConfig : require('/app.json');
-
-// const mini = new XMini({
-//   appConfig,
-//   me: wx,
-
-//   xPage(opts) {
-//     // 可以处理数据
-//     Page(opts);
-//   },
-//   getCurrentPages,
-//   deepLength: 10,
-// });
-
-// module.exports = mini;

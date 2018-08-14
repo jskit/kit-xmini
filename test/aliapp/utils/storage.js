@@ -6,7 +6,7 @@ const noop = () => {};
 let inited;
 // 数据都存在这里
 let storageData = {};
-let me = {};
+// let me = {};
 
 // wxapp 本地数据存储的大小限制为 10MB
 
@@ -21,7 +21,7 @@ const {
   clearStorageSync,
   getStorageInfo,
   getStorageInfoSync,
-} = my;
+} = typeof my !== 'undefined' ? my : wx;
 
 // let storageData = getStorageSync({ key: 'storageData' }).data || {};
 // console.log('storageData');
@@ -47,11 +47,18 @@ const {
 // };
 
 let i = 1;
-module.exports = class Storage {
+class Storage {
   constructor(store = 'x-mini') {
     this.store = store || `store-${i++}`;
-    const data = getStorageSync({ key: this.store }).data || {};
-    // const data = getStorageSync(this.store) || {};
+    
+    let data = {};
+    if (typeof my !== 'undefined') {
+      // aliapp
+      data = getStorageSync({ key: this.store }).data || {};
+    } else {
+      // wxapp
+      data = getStorageSync(this.store) || {};
+    }
     storageData[this.store] = data;
   }
   set(key, value, time) {
@@ -117,9 +124,9 @@ module.exports = class Storage {
   }
 }
 
-// const storage = new Storage();
+const storage = new Storage();
 
 // export default storage
 
-// exports.storage = storage;
-// exports.Storage = Storage;
+exports.storage = storage;
+exports.Storage = Storage;

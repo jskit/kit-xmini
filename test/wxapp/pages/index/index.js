@@ -6,7 +6,10 @@ import {
 Page(xPage.entry({
   data: {},
   onLoad() {
-    console.log(111)
+    console.log('page onLoad')
     // console.log(allPages)
+  },
+  onShow() {
+    console.log('page onShow', this)
   },
 }));
