@@ -23,7 +23,7 @@ class Piwik {
       isReportWorking: false,
       category: '',
       size: 1,
-      url: 'https://tongji.haoshiqi.net/piwik.php',
+      url: 'https://tongji.doweidu.com/piwik.php',
       siteId: 0,
       userId: '',
       channel: '',
