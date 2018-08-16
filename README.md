@@ -2,6 +2,9 @@
 
 此项目研究如何更方便的开发使用小程序，`x-mini` 助力实现以下功能
 
+-**注意**：如果模块只有一个输出值，就使用export default，如果模块有多个输出值，
+就不使用export default，export default与普通的export不要同时使用。(http://es6.ruanyifeng.com/#docs/style#%E6%A8%A1%E5%9D%97)
+
 经过测试，存在以下问题，
 
 - aliapp 不能引入 npm模块的es6格式，需要编译成es5
