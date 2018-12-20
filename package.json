@@ -17,10 +17,6 @@
     "mini": "./node_modules/.bin/_mocha $npm_package_options_mini",
     "lint": "./node_modules/.bin/eslint --ext .js src test"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://gitlab.iqianggou.com/xmini/x-mini.git"
-  },
   "keywords": [
     "mini-app",
     "aliapp",
@@ -30,10 +26,6 @@
   ],
   "author": "cloudyan <1395093509@qq.com>",
   "license": "MIT",
-  "bugs": {
-    "url": "https://gitlab.iqianggou.com/xmini/x-mini/issues"
-  },
-  "homepage": "https://gitlab.iqianggou.com/xmini/x-mini#readme",
   "dependencies": {},
   "devDependencies": {
     "babel-cli": "^6.26.0",
