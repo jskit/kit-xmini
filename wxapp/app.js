@@ -1,4 +1,4 @@
-import { xApp } from './xmini/index';
+import { xApp } from './utils/xmini';
 
 // console.log(xApp);
 

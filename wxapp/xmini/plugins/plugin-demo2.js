@@ -1,4 +1,4 @@
-import PluginBase from './core/plugin-base';
+import PluginBase from '../core/plugin-base';
 
 class PluginDemo extends PluginBase {
   name = 'demo2';

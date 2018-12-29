@@ -44,9 +44,7 @@ class XMini extends Core {
       Object.keys(methods).forEach(key => {
         const fnName = methods[key];
         if (!this[key] && plugin[key]) {
-          this[key] = function(...rest) {
-            return plugin[fnName](...rest);
-          }.bind(plugin);
+          this[key] = plugin[fnName].bind(plugin);
         } else {
           console.error(
             `${

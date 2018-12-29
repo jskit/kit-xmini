@@ -1,7 +1,7 @@
-import PluginBase from './core/plugin-base';
+import PluginBase from '../core/plugin-base';
 
 // import { compactObject } from '@jskit/qs';
-import { compactObject } from './utils/qs';
+import { compactObject } from '../utils/qs';
 
 /**
  * 处理小程序参数

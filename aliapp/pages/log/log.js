@@ -1,6 +1,6 @@
 //logs.js
 // const util = require('../../utils/util.js')
-import { xPage } from '../../xmini/index';
+import { xPage } from '../../utils/xmini';
 
 xPage({
   data: {
