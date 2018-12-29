@@ -1,0 +1,14 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/page1/page1",
+    "pages/page2/page2",
+    "pages/log/log"
+  ],
+  "window": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "返一半",
+    "navigationBarBackgroundColor": "#F73552",
+    "backgroundColor": "#f2f2f2"
+  }
+}

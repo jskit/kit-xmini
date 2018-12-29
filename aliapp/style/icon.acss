@@ -1,0 +1,16 @@
+@import "/style/iconfont";
+
+.iconfont {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "iconfont" !important;
+  /* font-size: 32rpx; */
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: inherit;
+  text-rendering: auto;
+  line-height: 1;
+}

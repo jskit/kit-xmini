@@ -1,0 +1,8 @@
+<!--pages/index/index.wxml-->
+<view class="page-index">
+   <view>iconfont 使用示例</view>
+
+  <text class="iconfont icon-close"></text>
+  <view class="iconfont icon-feedback"></view>
+</view>
+

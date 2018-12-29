@@ -1,2 +1,12 @@
-temp/*.js
-demo/*.js
+node_modules
+template
+packages/test
+temp
+entry-wc.js
+dist
+scripts
+lib
+coverage
+.eslintrc.js
+**/node_modules
+.temp
