@@ -1,4 +1,4 @@
-import PluginBase from '../core/plugin-base';
+  import PluginBase from '../core/plugin-base';
 import storage from '../core/storage';
 import xmini from '../core/xmini';
 

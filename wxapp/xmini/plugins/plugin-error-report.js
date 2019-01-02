@@ -13,22 +13,22 @@ class Plugin extends PluginBase {
     super(config);
   }
 
+  install(xm, options) {
+    //
+  }
+
   preOnError(err, ctx) {
     if (!err) return;
 
-    const pluginConfig = this.getConfig();
-    const config = xmini.getConfig();
-
-    // console.log('error-report');
-    // console.log(this.getGlobalConfig());
-    // console.log(this.getConfig());
+    const config = this.getConfig();
+    const xConfig = xmini.getConfig();
 
     // 错误上报
     xmini.me.httpRequest({
-      url: pluginConfig.reportURI,
+      url: config.reportURI,
       method: 'POST',
       data: {
-        platform: config.appName,
+        platform: xConfig.appName,
         value: JSON.stringify(err),
         // systemInfo: systemInfo,
       },

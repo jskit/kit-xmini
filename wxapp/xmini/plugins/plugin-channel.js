@@ -29,6 +29,8 @@ class Plugin extends PluginBase {
     this.bizParams = {};
   }
 
+  // install(xm) {}
+
   preAppOnLaunch(options = {}) {
     this.initChannel(options, 'App onLaunch');
   }
