@@ -1,6 +1,6 @@
 // utils
 
-// import { isObject, isArray } from './is';
+import { isArray } from './is';
 
 // '_~0123456789' +
 // 'abcdefghijklmnopqrstuvwxyz' +
@@ -250,4 +250,18 @@ export function toArray(list, start) {
     ret[i] = list[i + start];
   }
   return ret;
+}
+
+export function each(arr, callback) {
+  if (isArray(arr)) {
+    for (var i = 0, len = arr.length; i < len; i++) {
+      if (callback(arr[i], i, arr) === false) break;
+    }
+  } else {
+    for (var key in arr) {
+      if (arr.hasOwnProperty(key)) {
+        if (callback(arr[key], key, arr) === false) break;
+      }
+    }
+  }
 }

@@ -1,5 +1,8 @@
-import { APP_HOOKS, PAGE_HOOKS, isString, upperFirst, emitter } from '../utils/index';
-import Core from './core';
+import { APP_HOOKS, PAGE_HOOKS, upperFirst, emitter } from '../utils/index';
+// import Core from './core';
+import Bridge from './bridge';
+
+// const bridge = new Bridge();
 
 const noop = () => {};
 
@@ -13,37 +16,11 @@ const pageFns = PAGE_HOOKS.reduce((obj, key) => {
   return obj;
 }, {});
 
-// function each(arr, callback) {
-//   if (isArray(arr)) {
-//     for (const i = 0, len = arr.length; i < len; i++) {
-//       if (callback(arr[i], i, arr) === false) break;
-//     }
-//   } else {
-//     for (const key in arr) {
-//       if (arr.hasOwnProperty(key)) {
-//         if (callback(arr[key], key, arr) === false) break;
-//       }
-//     }
-//   }
-// }
-
-// function getMapNames(methodName) {
-//   var pluginMethodName = methodName;
-//   if (isArray(methodName)) {
-//     pluginMethodName = methodName[1];
-//     methodName = methodName[0];
-//   }
-//   return {
-//     xName: methodName,
-//     pluginName: pluginMethodName,
-//   };
-// }
-
 // Core 加入必备功能或插件，如 wxapp aliapp config支持 addPlugin 等
 // XMini 在此基础上扩展
-class XMini extends Core {
+class XMini extends Bridge {
   constructor(config = {}) {
-    super(config, true);
+    super(config);
   }
 
   init(config = {}) {
@@ -70,25 +47,27 @@ class XMini extends Core {
       emitter.on(key, fn.bind(plugin));
     });
     // 后面通过 bridge 来解决通信问题
-    Object.keys(methods).forEach(key => {
-      const fnName = methods[key];
-      if (!this[key] && plugin[key]) {
-        this[key] = plugin[fnName].bind(plugin);
-      } else {
-        console.error(
-          `${
-            plugin.name
-          } 下的公开方法 ${key} 存在冲突，请使用别名，修改对应插件的 methods 值`
-        );
-      }
-    });
-    console.log(`:::add plugin::: ${plugin.name}`);
+    this.addMethods(Object.keys(methods));
+    // Object.keys(methods).forEach(key => {
+    //   const fnName = methods[key];
+    //   if (!this[key] && plugin[key]) {
+    //     this[key] = plugin[fnName].bind(plugin);
+    //   } else {
+    //     console.error(
+    //       `${
+    //         plugin.name
+    //       } 下的公开方法 ${key} 存在冲突，请使用别名，修改对应插件的 methods 值`
+    //     );
+    //   }
+    // });
+    // console.log(`:::add plugin::: ${plugin.name}`);
     return this;
   }
 
   // addPlugin
   use(plugin, ...rest) {
-    const installedPlugins = (this._installedPlugins || (this._installedPlugins = []));
+    const installedPlugins =
+      this._installedPlugins || (this._installedPlugins = []);
     if (installedPlugins.indexOf(plugin) > -1) return this;
 
     if (typeof plugin.install === 'function') {
@@ -99,26 +78,6 @@ class XMini extends Core {
     installedPlugins.push(plugin);
     return this;
   }
-
-  // addMethods(pluginMethods) {
-  //   if (isString(pluginMethods)) pluginMethods = [pluginMethods];
-  //   each(pluginMethods, function(methodName) {
-  //     const names = getMapNames(methodName);
-  //     generateMethod(names.xName, names.pluginName);
-  //   });
-  // }
-
-  // addEvents(pluginEvents) {
-  //   if (isString(pluginEvents)) pluginEvents = [pluginEvents];
-  //   each(pluginEvents, function(methodName) {
-  //     const names = getMapNames(methodName);
-  //     generateEvent(names.xName, names.pluginName);
-  //   });
-  // }
-
-  // bindEvent(name, fn, ctx) {
-  //   emitter.$on(event, fn.bind(ctx));
-  // }
 
   create(options = {}, config = {}) {
     const { type, hooks, hooksFn, cb } = config;
