@@ -94,10 +94,10 @@ export default Plugin;
 // 支付宝 schema 传参在 options.query 这里取
 // alipay://platformapi/startApp?appId=2018051160096372&query=channel_id%3Dalipay_ant
 // alipays://platformapi/startApp?appId=2017112000051610&query=spm%3D222%26channel%3D333%26channel_id%3Dpoint&page=pages%2Findex%2Findex%3Fid%3D111
-// 参数结构如下,默认扫码打开scene为四个0，小程序列表打开 1001，无 query
+// 参数结构如下,默认扫码(打开scene为四个0，小程序列表打开为 1001，无 query)
 // options = { path: 'pages/index/index', query: { channel: 333, channel_id: 'point', spm: '222' }, scene: '0000' }
 
-// 支付宝小程序间跳转，参数在 referrerInfo，结构如下：
+// 支付宝小程序间跳转，参数在 referrerInfo 中，结构如下：
 // options = { path: 'pages/index/index', scene: '1037', referrerInfo: { appId: '来源的 appId,如2018051160096372', extraData: { channel_id: '', spm: '', refer: '来源页面,如pages/profile/profile' } } };
 // my.alert({
 //   title: 'onShow:' + JSON.stringify(options),
