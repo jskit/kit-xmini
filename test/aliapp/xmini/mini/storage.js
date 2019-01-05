@@ -64,7 +64,7 @@ class Storage {
   set(key, value, time) {
     // 单位秒
     const timeout = Date.now() - 1 + time * 1000;
-    console.log(timeout);
+    // console.log(timeout);
     const data = {
       value,
       timeout,
@@ -77,8 +77,8 @@ class Storage {
       key: this.store,
       data: storageData[this.store],
       success(res) {
-        console.log('数据缓存成功');
-        console.log(res);
+        // console.log('数据缓存成功');
+        // console.log(res);
       },
     });
   }

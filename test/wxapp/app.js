@@ -38,6 +38,6 @@ App(xApp.entry({
     }
   },
   onHide() {
-    console.log('App Hide');
+    // console.log('App Hide');
   },
 }));

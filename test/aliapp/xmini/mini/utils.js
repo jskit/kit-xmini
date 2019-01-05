@@ -4,16 +4,16 @@ exports.copy = function(data) {
 
 const log = {
   log: (...rest) => {
-    console.log(...rest);
+    // console.log(...rest);
   },
   info: (...rest) => {
-    console.info(...rest);
+    // console.info(...rest);
   },
   warn: (...rest) => {
-    console.warn(...rest);
+    // console.warn(...rest);
   },
   error: (...rest) => {
-    console.error(...rest);
+    // console.error(...rest);
   },
 };
 

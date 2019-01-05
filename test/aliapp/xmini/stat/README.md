@@ -109,8 +109,6 @@ updateChannel(options) {
   },
   updateCurrentPage() {
     const length = getCurrentPages().length;
-    console.log();
-    console.log(length);
     // my.alert({
     //   title: '刷新当前页面' + length,
     // });

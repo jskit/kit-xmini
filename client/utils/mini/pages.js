@@ -33,7 +33,7 @@ function pagesObj(allPages, tabPages) {
 
 const miniPages = pagesObj(pages, tabPages);
 
-console.log('注册页面：');
-console.log(miniPages);
+// console.log('注册页面：');
+// console.log(miniPages);
 
 module.exports = miniPages;

@@ -17,8 +17,8 @@ const {
 const noop = () => {};
 // 数据都存在这里
 let storageData = getStorageSync('storageData') || {};
-console.log('storageData');
-console.log(storageData);
+// console.log('storageData');
+// console.log(storageData);
 // const storageInfo = getStorageInfoSync();
 // const {
 //   keys,
@@ -43,7 +43,7 @@ export class Storage {
   set(key, value, time) {
     // 单位秒
     const timeout = +new Date() - 1 + time * 1000;
-    console.log(timeout);
+    // console.log(timeout);
     const data = {
       value,
       timeout,
@@ -51,13 +51,13 @@ export class Storage {
     Object.assign(storageData, {
       [`${key}`]: data,
     });
-    console.log(JSON.stringify(storageData));
+    // console.log(JSON.stringify(storageData));
     setStorage({
       key,
       data: storageData,
       success(res) {
-        console.log('数据缓存成功');
-        console.log(res);
+        // console.log('数据缓存成功');
+        // console.log(res);
       },
     });
   }

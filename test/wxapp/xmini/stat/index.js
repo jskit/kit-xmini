@@ -90,8 +90,8 @@ exports.init = function(opts = {}) {
   xPage.use("onShow", prePageOnShow);
   xPage.use("onShow", getPageOptions);
   xPage.use("onHide", prePageOnHide);
-  xPage.use("onScrollToLower", prePageOnReachBottom);
-  xPage.use("onReachBottom", prePageOnReachBottom);
+  // xPage.use("onScrollToLower", prePageOnReachBottom);
+  // xPage.use("onReachBottom", prePageOnReachBottom);
   xPage.use("onPullDownRefresh", prePageOnPullDownRefresh);
   xPage.use("onShareAppMessage", postPageOnShareAppMessage, 'post');
 }

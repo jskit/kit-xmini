@@ -11,19 +11,19 @@ App({
   onLaunch() {
     my.getSystemInfo({
       success: (res) => {
-        console.log(res);
+        // console.log(res);
       },
     });
     my.getNetworkType({
       success: (res) => {
-        console.log(res);
+        // console.log(res);
       },
     });
   },
   onShow(query) {
-    console.log('query:', query);
+    // console.log('query:', query);
   },
   onHide() {
-    console.log('App Hide');
+    // console.log('App Hide');
   },
 });
