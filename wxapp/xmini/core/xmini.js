@@ -28,8 +28,13 @@ class XMini extends Bridge {
     // rest.plugin = {};
     this.setConfig(rest);
     this.me = rest.me;
+    this.getCurrentPages = rest.getCurrentPages;
     // this.plugin = rest.plugin;
     this.addPlugin(plugins);
+  }
+
+  getCurrentPage() {
+
   }
 
   addPlugin(plugin) {
@@ -47,7 +52,7 @@ class XMini extends Bridge {
       emitter.on(key, fn.bind(plugin));
     });
     // 后面通过 bridge 来解决通信问题
-    this.addMethods(Object.keys(methods));
+    this.addMethods(methods, plugin);
     // Object.keys(methods).forEach(key => {
     //   const fnName = methods[key];
     //   if (!this[key] && plugin[key]) {

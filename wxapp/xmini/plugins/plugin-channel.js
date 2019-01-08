@@ -2,23 +2,26 @@ import PluginBase from '../core/plugin-base';
 
 // import { compactObject } from '@jskit/qs';
 import { compactObject } from '../utils/qs';
+import xmini from '../core/xmini';
 
-function toMap(arr) {
-  return arr.reduce((obj, item) => {
-    obj[item] = true;
+// function toMap(arr = []) {
+//   return arr.reduce((obj, item) => {
+//     obj[item] = true;
+//     return obj;
+//   }, {})
+// }
+
+function channelFilter(params, filters) {
+  return Object.keys(params).reduce((obj, key) => {
+    if (filters[key]) {
+      obj[key] = params[key];
+    }
     return obj;
-  }, {})
-}
-
-const channelFilter = (options, filters) => {
-  const filtersMap = toMap(filters);
-  return Object.keys(options).filter(key => {
-    return filtersMap[options[key]];
-  })
+  }, {});
 }
 
 /**
- * 小程序业务渠道参数处理
+ * 小程序业务渠道&参数处理(如果扩展可以支持业务之外的参数处理)
  * 支持业务参数配置 spm channel_id 等，可新增
  * 支持参数的 parse stringify merge 操作
  *
@@ -34,15 +37,11 @@ class Plugin extends PluginBase {
     prePageOnShow: 'prePageOnShow',
   };
 
-  methods = {
-    getChannel: 'getChannel',
-    setChannel: 'setChannel',
-  };
+  methods = ['getChannel', 'setChannel'];
 
-  constructor(config) {
-    const { filters = [] } = options;
+  constructor(config = {}) {
     super(config);
-    this.startParams = channelFilter(config, filters);
+    this.startParams = this.setChannel(config);
   }
 
   // install(xm) {}
@@ -68,6 +67,13 @@ class Plugin extends PluginBase {
     return this;
   }
 
+  channelFilter(params, filters) {
+    if (!filters) {
+      filters = this.getConfig();
+    }
+    return channelFilter(params, filters);
+  }
+
   setChannel(options) {
     // 内部变量全是用channel 而不要用channel_id
     if (typeof options !== 'object') return;
@@ -76,12 +82,14 @@ class Plugin extends PluginBase {
     // 每次启动时，获取参数设置为默认值，之后透传当前页面的配置，若无则使用默认值替代
     // 其值为api、分享或页面使用
     // 仅仅取有效的参数值
-    let { channel_id = '', channel = channel_id, spm = '', ...rest } = channelFilter(options, filters);
-    this.startParams = compactObject({
-      channel,
-      spm,
-      ...rest,
-    });
+
+    // 目前 channel 与 channel_id 保持同步
+    let { channel_id = '', channel = channel_id, ...rest } = this.channelFilter(options);
+    const temp = { channel_id, channel, ...rest };
+    this.startParams = {
+      ...this.getConfig(),
+      ...compactObject(temp),
+    };
     return this;
 
     // 如果业务参数更新，需要刷新页面数据，渠道更新，不用刷新数据
@@ -99,8 +107,20 @@ class Plugin extends PluginBase {
     // - 默认参数 config
     // - 启动参数 startParams
     // - 指定 url 页面参数，默认为当前页面
-    const pageQuery = {};
-    return { ...this.getConfig(), ...this.startParams, ...pageQuery };
+
+    // 获取业务渠道参数，由全局参数以及page参数运算得出
+    // 提供给API、forward以及统计使用
+    const { pageQuery = {} } = this.getCurPage();
+    const current = compactObject(this.channelFilter(pageQuery));
+    return { ...this.getConfig(), ...this.startParams, ...current };
+  }
+
+  getCurPage() {
+    const pages = xmini.getCurrentPages();
+    const length = pages.length;
+    if (!length) return {};
+    const currentPage = pages[length - 1] || {};
+    return currentPage;
   }
 }
 

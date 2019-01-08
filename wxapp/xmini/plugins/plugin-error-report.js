@@ -9,9 +9,7 @@ class Plugin extends PluginBase {
     preAppOnError: 'preOnError',
   };
 
-  methods = {
-    errReport: 'errReport',
-  };
+  methods = ['errReport'];
 
   constructor(config) {
     super(config);
@@ -32,7 +30,7 @@ class Plugin extends PluginBase {
 
     const config = this.getConfig();
     const xminiConfig = xmini.getConfig();
-    const systemInfo = xmini.getSystemInfo();
+    const systemInfo = xmini.me.$getSystemInfo();
 
     // 错误上报
     // 要记录报错信息，平台信息以及当前页面

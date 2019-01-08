@@ -7,10 +7,14 @@ class Plugin extends PluginBase {
     super(...rest);
   }
 
+  getCurrentPages() {
+    return getCurrentPages();
+  }
+
   // 兼容处理微信小程序和支付宝小程序的差异
   me() {
     /* eslint no-global-assign: 0 */
-    wx = Object.assign({}, me);
+    wx = Object.assign({}, wx);
     const me = wx;
     me.httpRequest = me.request;
     me.$storage = storage;

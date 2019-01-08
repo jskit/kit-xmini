@@ -45,15 +45,15 @@ class BridgeCore extends Core {
     this._messageHandlers = {};
     this._responseCallbacks = {};
     this._uniqueId = 1;
-    this._doSend = (message, responseCallback) => {
-      if (responseCallback) {
-        const callbackId =
-          'cb_' + this._uniqueId++ + '_' + new Date().getTime();
-        this._responseCallbacks[callbackId] = responseCallback;
-        message.callbackId = callbackId;
-      }
-      _sendMessageQueue.push(message);
-    };
+    // this._doSend = (message, responseCallback) => {
+    //   if (responseCallback) {
+    //     const callbackId =
+    //       'cb_' + this._uniqueId++ + '_' + new Date().getTime();
+    //     this._responseCallbacks[callbackId] = responseCallback;
+    //     message.callbackId = callbackId;
+    //   }
+    //   _sendMessageQueue.push(message);
+    // };
   }
 
   // 注册方法，通过此方法注册公开方法，提供给外部(native/other)来使用
@@ -120,11 +120,11 @@ class BridgeCore extends Core {
   }
 
   // 向外暴露的工具方法，批量注册方法以及事件
-  addMethods(pluginMethods) {
+  addMethods(pluginMethods, plugin) {
     if (isString(pluginMethods)) pluginMethods = [pluginMethods];
     each(pluginMethods, methodName => {
       const names = getMapNames(methodName);
-      this._generateMethod(names.callName, names.realName);
+      this._generateMethod(names.callName, names.realName, plugin);
     });
   }
 
@@ -136,7 +136,10 @@ class BridgeCore extends Core {
   //   });
   // }
 
-  _generateMethod(callName, realName) {
+  _generateMethod(callName, realName, plugin) {
+    this.registerHandler(callName, function(...rest) {
+      return plugin[realName](...rest);
+    });
     this[callName] = args => {
       console.log(`called ${realName}`, args);
       args = dealArgs(args || {});

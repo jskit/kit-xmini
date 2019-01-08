@@ -7,18 +7,16 @@ import PluginErrorReport from '../xmini/plugins/plugin-error-report';
 import PluginDemo1 from '../xmini/plugins/plugin-demo1';
 import PluginDemo2 from '../xmini/plugins/plugin-demo2';
 
-/* eslint no-global-assign: 0 */
-const me = miniapp.me();
-
 xm.init({
   appId: 123,
   appName: 'test',
-  me,
+  me: miniapp.me(),
+  getCurrentPages: miniapp.getCurrentPages,
   plugins: [
     new PluginChannel({
       spm: 'wxapp',
       channel: 'wxapp',
-      filters: ['spm', 'channel'],
+      channel_id: 'wxapp',
     }),
     new PluginErrorReport({ reportURI: 'https://tongji.doweidu.com/log.php' }),
     new PluginDemo1({ siteId: 2 }),

@@ -9,7 +9,11 @@ xPage({
   onReady() {},
   onShow() {
     console.log('page index: onShow');
-    console.log(xmini.getChannel());
+    xmini.getChannel({
+      complete(res) {
+        console.log(res);
+      }
+    })
   },
   onHide() {},
   onUnload() {},

@@ -7,6 +7,10 @@ class Plugin extends PluginBase {
     super(...rest);
   }
 
+  getCurrentPages() {
+    return getCurrentPages();
+  }
+
   me() {
     const me = my;
     // 兼容处理微信小程序和支付宝小程序的差异
