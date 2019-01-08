@@ -9,6 +9,10 @@ class Plugin extends PluginBase {
     preAppOnError: 'preOnError',
   };
 
+  methods = {
+    errReport: 'errReport',
+  };
+
   constructor(config) {
     super(config);
   }
@@ -17,20 +21,28 @@ class Plugin extends PluginBase {
     //
   }
 
+  errReport(err) {
+    this.preOnError(err);
+  }
+
   preOnError(err, ctx) {
     if (!err) return;
+    // err 的数据格式是？
+    console.log(err);
 
     const config = this.getConfig();
-    const xConfig = xmini.getConfig();
+    const xminiConfig = xmini.getConfig();
+    const systemInfo = xmini.getSystemInfo();
 
     // 错误上报
+    // 要记录报错信息，平台信息以及当前页面
     xmini.me.httpRequest({
       url: config.reportURI,
       method: 'POST',
       data: {
-        platform: xConfig.appName,
+        platform: xminiConfig.appName,
         value: JSON.stringify(err),
-        // systemInfo: systemInfo,
+        systemInfo: JSON.stringify(systemInfo),
       },
       dataType: 'json',
       success: function(res) {},

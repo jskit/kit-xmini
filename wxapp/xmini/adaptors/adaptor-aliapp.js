@@ -8,10 +8,19 @@ class Plugin extends PluginBase {
   }
 
   me() {
+    const me = my;
     // 兼容处理微信小程序和支付宝小程序的差异
     // source.httpRequest = source.request;
-    my.$storage = storage;
-    return my;
+    me.$storage = storage;
+    me.$getSystemInfo = () => {
+      let systemInfo = storage.get('systemInfo');
+      if (!systemInfo) {
+        systemInfo = me.getSystemInfoSync();
+        storage.set('systemInfo', systemInfo, 86400 * 365);
+      }
+      return systemInfo;
+    }
+    return me;
   }
 }
 

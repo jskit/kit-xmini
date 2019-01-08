@@ -1,6 +1,7 @@
 import xm from '../xmini/core/xmini';
 // import { App, Page } from '../xmini/utils/mockMini';
-import miniapp from '../xmini/plugins/plugin-wxapp';
+import miniapp from '../xmini/adaptors/adaptor-wxapp';
+
 import PluginChannel from '../xmini/plugins/plugin-channel';
 import PluginErrorReport from '../xmini/plugins/plugin-error-report';
 import PluginDemo1 from '../xmini/plugins/plugin-demo1';
@@ -17,6 +18,7 @@ xm.init({
     new PluginChannel({
       spm: 'wxapp',
       channel: 'wxapp',
+      filters: ['spm', 'channel'],
     }),
     new PluginErrorReport({ reportURI: 'https://tongji.doweidu.com/log.php' }),
     new PluginDemo1({ siteId: 2 }),
@@ -24,25 +26,7 @@ xm.init({
   ],
 });
 
-// console.log(xmini.getConfig());
-
 export const xmini = xm;
 
 export const xApp = xm.xApp;
 export const xPage = xm.xPage;
-
-// const { xApp, xPage } = xmini;
-// console.log(xmini.prototype);
-// console.log(xmini.test());
-
-// xApp({
-//   onShow() {
-//     console.log('page: onShow');
-//   },
-// });
-
-// xPage({
-//   onShow() {
-//     console.log('page: onShow');
-//   },
-// });
