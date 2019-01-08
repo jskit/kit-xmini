@@ -1,6 +1,6 @@
 import { APP_HOOKS, PAGE_HOOKS, upperFirst, emitter } from '../utils/index';
-// import Core from './core';
-import Bridge from './bridge';
+import Core from './core';
+// import Bridge from './bridge';
 
 // const bridge = new Bridge();
 
@@ -18,7 +18,7 @@ const pageFns = PAGE_HOOKS.reduce((obj, key) => {
 
 // Core 加入必备功能或插件，如 wxapp aliapp config支持 addPlugin 等
 // XMini 在此基础上扩展
-class XMini extends Bridge {
+class XMini extends Core {
   constructor(config = {}) {
     super(config);
   }
@@ -33,10 +33,6 @@ class XMini extends Bridge {
     this.addPlugin(plugins);
   }
 
-  getCurrentPage() {
-
-  }
-
   addPlugin(plugin) {
     if (Array.isArray(plugin)) {
       plugin.forEach(p => {
@@ -45,26 +41,30 @@ class XMini extends Bridge {
       return this;
     }
 
-    const { events = {}, methods = {} } = plugin;
+    const { events = {}, methods = [] } = plugin;
     Object.keys(events).forEach(key => {
       const cbName = events[key];
       const fn = plugin[cbName];
       emitter.on(key, fn.bind(plugin));
     });
     // 后面通过 bridge 来解决通信问题
-    this.addMethods(methods, plugin);
-    // Object.keys(methods).forEach(key => {
-    //   const fnName = methods[key];
-    //   if (!this[key] && plugin[key]) {
-    //     this[key] = plugin[fnName].bind(plugin);
-    //   } else {
-    //     console.error(
-    //       `${
-    //         plugin.name
-    //       } 下的公开方法 ${key} 存在冲突，请使用别名，修改对应插件的 methods 值`
-    //     );
-    //   }
-    // });
+    // this.addMethods(methods, plugin);
+    methods.forEach(methodName => {
+      let pluginMethodName = methodName;
+      if (Array.isArray(methodName)) {
+        pluginMethodName = methodName[1];
+        methodName = methodName[0];
+      }
+      if (!this[methodName] && plugin[pluginMethodName]) {
+        this[methodName] = plugin[pluginMethodName].bind(plugin);
+      } else {
+        console.error(
+          `插件 ${
+            plugin.name
+          } 下的公开方法 ${methodName} 存在冲突，请使用别名，修改对应插件的 methods 值`
+        );
+      }
+    });
     // console.log(`:::add plugin::: ${plugin.name}`);
     return this;
   }
