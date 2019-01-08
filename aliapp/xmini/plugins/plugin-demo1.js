@@ -1,4 +1,5 @@
-import PluginBase from './core/plugin-base';
+import PluginBase from '../core/plugin-base';
+import xmini from '../core/xmini';
 
 class PluginDemo extends PluginBase {
   name = 'demo1';
@@ -14,7 +15,7 @@ class PluginDemo extends PluginBase {
 
   preOnShow(e, ctx) {
     console.log('plugin-1: preOnShow');
-    console.log('xxx', this.getGlobalConfig());
+    console.log('xxx', xmini.getConfig());
     // console.log(this);
     // console.log(PluginBase.getConfig());
     console.log('get:', this.getConfig());

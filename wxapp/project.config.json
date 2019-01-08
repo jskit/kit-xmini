@@ -14,7 +14,7 @@
 		"autoAudits": false
 	},
 	"compileType": "miniprogram",
-	"libVersion": "2.4.1",
+	"libVersion": "2.4.3",
 	"appid": "wxa82d96e272ed521e",
 	"projectname": "xmini-wxapp",
 	"debugOptions": {

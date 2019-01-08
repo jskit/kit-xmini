@@ -23,6 +23,9 @@
     - 支持全局配置
     - 支持调度中心，用来和各个插件通信、调用等
 - plugins
+  - 每个插件
+    - 实现有 hooks 方法，混入到生命周期内执行
+    - 实现有功能方法，向外提供服务
   - plugin-base
     - 支持 呼叫调度中心，通过 xmini 调度来完成以下功能
       - 支持 获取全局配置等
@@ -32,15 +35,18 @@
     - 实现通过引入 xmini 或 继承 core 来实现
   - plugin-channel
     - 支持业务参数、渠道等的获取，传递、合并等
-    - 实现通过结合 @jskit/qs 的 parse，merge，stringify 来处理
+    - 实现通过结合 @jskit/qs 的 parse，stringify，merge 来处理
+    - 向外提供当前 channel 数据等
   - plugin-work
     - 针对指定任务提供一个工作队列服务，来序列、可控数量的完成要做的工作
     - 可以用 work 来实现，针对 request、大计算提供分片队列服务
+    - 向外提供 request 队列服务
+    - 向外提供大计算量服务
   - plugin-storage
     - 提供统一的小程序持久缓存
   - plugin-tongji
     - 封装统计事件等行为，将通用配置及自定义配置上报到统计 api
-  - plugin-error-report
+  - plugin-error-report √
     - 错误收集上报
 - demo 示例
   - demo-wxapp

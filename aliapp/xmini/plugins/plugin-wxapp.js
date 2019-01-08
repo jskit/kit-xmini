@@ -1,6 +1,8 @@
-import PluginBase from './core/plugin-base';
+import PluginBase from '../core/plugin-base';
+import storage from '../core/storage';
 
 class Plugin extends PluginBase {
+  name = 'wxapp';
   constructor(...rest) {
     super(...rest);
   }
@@ -11,6 +13,7 @@ class Plugin extends PluginBase {
     const source = wx;
     source.httpRequest = source.request;
     wx = Object.assign({}, source);
+    wx.$storage = storage;
     return wx;
   }
 }

@@ -1,11 +1,10 @@
-import xm from './core/xmini';
-// import { App, Page } from './utils/mockMini';
-import PluginDemo1 from './plugins/plugin-demo1';
-import PluginDemo2 from './plugins/plugin-demo2';
-import PluginErrorReport from './plugins/plugin-error-report';
-import PluginChannel from './plugins/plugin-channel';
-
-import miniapp from './plugins/plugin-aliapp';
+import xm from '../xmini/core/xmini';
+// import { App, Page } from '../xmini/utils/mockMini';
+import miniapp from '../xmini/plugins/plugin-aliapp';
+import PluginChannel from '../xmini/plugins/plugin-channel';
+import PluginErrorReport from '../xmini/plugins/plugin-error-report';
+import PluginDemo1 from '../xmini/plugins/plugin-demo1';
+import PluginDemo2 from '../xmini/plugins/plugin-demo2';
 
 /* eslint no-global-assign: 0 */
 const me = miniapp.me();
@@ -19,9 +18,9 @@ xm.init({
       spm: 'aliapp',
       channel: 'aliapp',
     }),
+    new PluginErrorReport({ reportURI: 'https://tongji.doweidu.com/log.php' }),
     new PluginDemo1({ siteId: 2 }),
     new PluginDemo2({ url: 'www.baidu.com' }),
-    new PluginErrorReport({ reportURI: 'https://tongji.doweidu.com/log.php' }),
   ],
 });
 
