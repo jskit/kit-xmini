@@ -37,7 +37,10 @@ class Plugin extends PluginBase {
     prePageOnShow: 'prePageOnShow',
   };
 
-  methods = ['getChannel', 'setChannel'];
+  methods = {
+    getChannel: 'getChannel',
+    setChannel: 'setChannel',
+  };
 
   constructor(config = {}) {
     super(config);

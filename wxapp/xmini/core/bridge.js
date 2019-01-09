@@ -1,8 +1,8 @@
-// 为插件机制提供一种通信方案
+// 提供一种通信方案
 // 默认通信为直接通信，可选消息模式通信
-// core 通过 bridge 来增强自身的能力，支持注册方法、调用方法
-// plugin 的公有方法通过在 core 上注册来暴露方法，通过唯一的 key 来记录对应的方法
-// plugin 调用非自身的功能方法，也通过 core 得调用方法来间接调用
+// 通过在 bridge 上注册方法等来增强自身的能力，支持注册方法、调用方法
+// plugin 的公有方法通过在 bridge 上注册来暴露方法，通过唯一的 key 来记录对应的方法
+// plugin 调用非自身的功能方法，也通过 bridge 得调用方法来间接调用
 import { isString, isArray, isFunction, each } from '../utils/index';
 import Core from './core';
 
@@ -37,7 +37,7 @@ function dealArgs(args) {
   return args;
 }
 
-class BridgeCore extends Core {
+class Bridge extends Core {
   constructor(config = {}) {
     super(config);
     const _sendMessageQueue = [];
@@ -161,4 +161,4 @@ class BridgeCore extends Core {
   }
 }
 
-export default BridgeCore;
+export default Bridge;

@@ -9,7 +9,9 @@ class Plugin extends PluginBase {
     preAppOnError: 'preOnError',
   };
 
-  methods = ['errReport'];
+  methods = {
+    errReport: 'errReport',
+  };
 
   constructor(config) {
     super(config);

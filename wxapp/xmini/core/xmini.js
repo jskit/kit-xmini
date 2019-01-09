@@ -41,7 +41,7 @@ class XMini extends Core {
       return this;
     }
 
-    const { events = {}, methods = [] } = plugin;
+    const { events = {}, methods = {} } = plugin;
     Object.keys(events).forEach(key => {
       const cbName = events[key];
       const fn = plugin[cbName];
@@ -49,19 +49,15 @@ class XMini extends Core {
     });
     // 后面通过 bridge 来解决通信问题
     // this.addMethods(methods, plugin);
-    methods.forEach(methodName => {
-      let pluginMethodName = methodName;
-      if (Array.isArray(methodName)) {
-        pluginMethodName = methodName[1];
-        methodName = methodName[0];
-      }
-      if (!this[methodName] && plugin[pluginMethodName]) {
-        this[methodName] = plugin[pluginMethodName].bind(plugin);
+    Object.keys(methods).forEach(key => {
+      const fnName = methods[key];
+      if (!this[key] && plugin[key]) {
+        this[key] = plugin[fnName].bind(plugin);
       } else {
         console.error(
           `插件 ${
             plugin.name
-          } 下的公开方法 ${methodName} 存在冲突，请使用别名，修改对应插件的 methods 值`
+          } 下的公开方法 ${key} 存在冲突，请使用别名，修改对应插件的 methods 值`
         );
       }
     });
