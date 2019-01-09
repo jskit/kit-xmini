@@ -34,7 +34,7 @@ class Plugin extends PluginBase {
     preAppOnLaunch: 'preAppOnLaunch',
     preAppOnShow: 'preAppOnShow',
     prePageOnLoad: 'prePageOnLoad',
-    prePageOnShow: 'prePageOnShow',
+    // prePageOnShow: 'prePageOnShow',
   };
 
   methods = {
@@ -55,10 +55,15 @@ class Plugin extends PluginBase {
   preAppOnShow(options = {}) {
     this.initChannel(options, 'App onShow');
   }
-  prePageOnLoad(query = {}) {
-    // console.log(query);
+  prePageOnLoad(query = {}, ctx) {
+    // console.warn(ctx);
+    // ctx.$query = query;
+    // `不允许重写 ${ctx.$getPageName()} 中的 onLoad 方法的 query 参数`，但暂时无法控制
+    Object.defineProperty(ctx, '$query', {
+      value: query,
+      writable: false
+    });
   }
-  prePageOnShow() {}
 
   initChannel(options = {}, type) {
     // console.log(options, type);
@@ -113,17 +118,9 @@ class Plugin extends PluginBase {
 
     // 获取业务渠道参数，由全局参数以及page参数运算得出
     // 提供给API、forward以及统计使用
-    const { pageQuery = {} } = this.getCurPage();
-    const current = compactObject(this.channelFilter(pageQuery));
+    const { query = {} } = xmini.me.$getPageInfo();;
+    const current = compactObject(this.channelFilter(query));
     return { ...this.getConfig(), ...this.startParams, ...current };
-  }
-
-  getCurPage() {
-    const pages = xmini.getCurrentPages();
-    const length = pages.length;
-    if (!length) return {};
-    const currentPage = pages[length - 1] || {};
-    return currentPage;
   }
 }
 

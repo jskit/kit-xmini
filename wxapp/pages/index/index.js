@@ -3,7 +3,9 @@ import { xPage, xmini } from '../../utils/xmini';
 
 xPage({
   data: {},
-  onLoad(options) {
+  onLoad(query) {
+    query.id = 123;
+    console.log(wx.$getPageInfo());
     console.log('page index: onLoad');
   },
   onReady() {},

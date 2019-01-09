@@ -35,8 +35,8 @@ class PluginDemo extends PluginBase {
   //   return result;
   // }
 
-  preOnShow(e, ctx) {
-    console.log('plugin-2: preOnShow');
+  preOnShow(opts, ctx) {
+    // console.log('plugin-2: preOnShow');
   }
 
   postOnHide(e, ctx) {

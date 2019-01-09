@@ -1,10 +1,17 @@
 import PluginBase from '../core/plugin-base';
 import storage from '../core/storage';
 
+// 适配小程序方法等
+// 增强方法或属性全使用$开头
+//   - $storage   优化缓存设置
+//   - $getSystemInfo  获取系统信息
+//   - $getCurPage() 获取当前页面
+//   - $getPageInfo() 获取当前页面信息，如 pageName pagePath pageQuery
+
 class Plugin extends PluginBase {
   name = 'wxapp';
-  constructor(...rest) {
-    super(...rest);
+  constructor(config = {}) {
+    super(config);
   }
 
   getCurrentPages() {
@@ -26,6 +33,23 @@ class Plugin extends PluginBase {
       }
       return systemInfo;
     }
+    me.$getCurPage = () => {
+      const pages = getCurrentPages();
+      const length = pages.length;
+      if (!length) return {};
+      const currentPage = pages[length - 1] || {};
+      return currentPage;
+    }
+    me.$getPageInfo = () => {
+      const currentPage = me.$getCurPage();
+      const { route = '', $query = {} } = currentPage;
+      return {
+        query: { ...$query },
+        pagePath: route,
+        pageName: route.split('/').reverse()[0] || '',
+      }
+    }
+
     return me;
   }
 }
