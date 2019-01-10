@@ -1,6 +1,6 @@
 import PluginBase from '../core/plugin-base';
 import storage from '../core/storage';
-// import queue from '../core/queue';
+import queue from '../core/queue';
 
 // 适配小程序方法等
 // 增强方法或属性全使用$开头
@@ -10,7 +10,7 @@ import storage from '../core/storage';
 //   - $getPageInfo() 获取当前页面信息，如 pageName pagePath pageQuery
 
 class Plugin extends PluginBase {
-  name = 'wxapp';
+  name = 'aliapp';
   constructor(config = {}) {
     super(config);
   }
@@ -21,16 +21,12 @@ class Plugin extends PluginBase {
 
   // 兼容处理微信小程序和支付宝小程序的差异
   me() {
-    /* eslint no-global-assign: 0 */
-    wx = Object.assign({}, wx);
-    const me = wx;
-    // const request = me.request;
+    const me = my;
     // Object.defineProperty(me, 'request', {
     //   get() {
-    //     return queue(request, 10);
+    //     return queue(me.request, 10);
     //   },
     // });
-    me.httpRequest = me.request;
     me.$storage = storage;
     me.$getSystemInfo = () => {
       let systemInfo = storage.get('systemInfo');

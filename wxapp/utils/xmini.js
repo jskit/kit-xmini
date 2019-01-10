@@ -2,10 +2,9 @@ import xm from '../xmini/core/xmini';
 // import { App, Page } from '../xmini/utils/mockMini';
 import miniapp from '../xmini/adaptors/adaptor-wxapp';
 
-import PluginChannel from '../xmini/plugins/plugin-channel';
 import PluginErrorReport from '../xmini/plugins/plugin-error-report';
-import PluginDemo1 from '../xmini/plugins/plugin-demo1';
-import PluginDemo2 from '../xmini/plugins/plugin-demo2';
+import PluginChannel from '../xmini/plugins/plugin-channel';
+import PluginPiwik from '../xmini/plugins/plugin-piwik';
 
 xm.init({
   appId: 123,
@@ -13,14 +12,19 @@ xm.init({
   me: miniapp.me(),
   getCurrentPages: miniapp.getCurrentPages,
   plugins: [
+    new PluginErrorReport({
+      reportURI: 'https://tongji.doweidu.com/log.php',
+    }),
     new PluginChannel({
       spm: 'wxapp',
       channel: 'wxapp',
       channel_id: 'wxapp',
     }),
-    new PluginErrorReport({ reportURI: 'https://tongji.doweidu.com/log.php' }),
-    new PluginDemo1({ siteId: 2 }),
-    new PluginDemo2({ url: 'www.baidu.com' }),
+    new PluginPiwik({
+      piwik: {
+        reportURI: 'https://tongji.doweidu.com/piwik.php',
+      },
+    }),
   ],
 });
 

@@ -1,6 +1,44 @@
 # xmini
 
-配置及使用
+## usage
+
+```js
+// /utils/xmini.js
+import xm from '../xmini/core/xmini';
+// import { App, Page } from '../xmini/utils/mockMini';
+import miniapp from '../xmini/adaptors/adaptor-wxapp';
+
+import PluginChannel from '../xmini/plugins/plugin-channel';
+import PluginErrorReport from '../xmini/plugins/plugin-error-report';
+import PluginDemo1 from '../xmini/plugins/plugin-demo1';
+import PluginDemo2 from '../xmini/plugins/plugin-demo2';
+
+/* eslint no-global-assign: 0 */
+const me = miniapp.me();
+
+xm.init({
+  appId: 123,
+  appName: 'test',
+  me,
+  plugins: [
+    new PluginChannel({
+      spm: 'wxapp',
+      channel: 'wxapp',
+    }),
+    new PluginErrorReport({ reportURI: 'https://tongji.doweidu.com/log.php' }),
+    new PluginDemo1({ siteId: 2 }),
+    new PluginDemo2({ url: 'www.baidu.com' }),
+  ],
+});
+
+export const xmini = xm;
+
+export const xApp = xm.xApp;
+export const xPage = xm.xPage;
+
+```
+
+## 设计规划、开发说明
 
 - const xmini = new Core();
   - 使用单例 xmini
@@ -22,6 +60,8 @@
     - 实现集成，通过配置来适配各项目
     - 支持全局配置
     - 支持调度中心，用来和各个插件通信、调用等
+- adaptors
+  - 适配器，适配 wxapp aliapp，处理差异
 - plugins
   - 每个插件
     - 实现有 hooks 方法，混入到生命周期内执行

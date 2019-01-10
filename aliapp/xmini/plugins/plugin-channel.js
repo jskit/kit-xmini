@@ -2,11 +2,28 @@ import PluginBase from '../core/plugin-base';
 
 // import { compactObject } from '@jskit/qs';
 import { compactObject } from '../utils/qs';
+import xmini from '../core/xmini';
+
+// function toMap(arr = []) {
+//   return arr.reduce((obj, item) => {
+//     obj[item] = true;
+//     return obj;
+//   }, {})
+// }
+
+function channelFilter(params, filters) {
+  return Object.keys(params).reduce((obj, key) => {
+    if (filters[key]) {
+      obj[key] = params[key];
+    }
+    return obj;
+  }, {});
+}
 
 /**
- * 处理小程序参数
- * 支持配置必备业务参数透传
- * 支持参数的 parse stringify merge 等操作
+ * 小程序业务渠道&参数处理(如果扩展可以支持业务之外的参数处理)
+ * 支持业务参数配置 spm channel_id 等，可新增
+ * 支持参数的 parse stringify merge 操作
  *
  * @class Plugin
  * @extends {PluginBase}
@@ -17,16 +34,17 @@ class Plugin extends PluginBase {
     preAppOnLaunch: 'preAppOnLaunch',
     preAppOnShow: 'preAppOnShow',
     prePageOnLoad: 'prePageOnLoad',
-    prePageOnShow: 'prePageOnShow',
+    // prePageOnShow: 'prePageOnShow',
   };
 
   methods = {
     getChannel: 'getChannel',
+    setChannel: 'setChannel',
   };
 
-  constructor(config) {
+  constructor(config = {}) {
     super(config);
-    this.bizParams = {};
+    this.startParams = this.setChannel(config);
   }
 
   // install(xm) {}
@@ -37,21 +55,34 @@ class Plugin extends PluginBase {
   preAppOnShow(options = {}) {
     this.initChannel(options, 'App onShow');
   }
-  prePageOnLoad(query = {}) {
-    console.log(query);
+  prePageOnLoad(query = {}, ctx) {
+    // console.warn(ctx);
+    // ctx.$query = query;
+    // `不允许重写 ${ctx.$getPageName()} 中的 onLoad 方法的 query 参数`，但暂时无法控制
+    Object.defineProperty(ctx, '$query', {
+      value: query,
+      writable: false,
+    });
   }
-  prePageOnShow() {}
 
   initChannel(options = {}, type) {
-    console.log(options, type);
+    // console.log(options, type);
     const { path = '', query, referrerInfo = {}, scene, shareTicket } = options;
     const { extraData } = referrerInfo;
     console.log(path, query, scene, shareTicket);
     console.log(extraData);
-    this.updateChannel(query || extraData);
+    this.setChannel(query || extraData);
+    return this;
   }
 
-  updateChannel(options) {
+  channelFilter(params, filters) {
+    if (!filters) {
+      filters = this.getConfig();
+    }
+    return channelFilter(params, filters);
+  }
+
+  setChannel(options) {
     // 内部变量全是用channel 而不要用channel_id
     if (typeof options !== 'object') return;
     // 此参数，在切换到后台后，再切换回来，参数丢失了
@@ -59,11 +90,17 @@ class Plugin extends PluginBase {
     // 每次启动时，获取参数设置为默认值，之后透传当前页面的配置，若无则使用默认值替代
     // 其值为api、分享或页面使用
     // 仅仅取有效的参数值
-    let { channel_id = '', spm = '' } = options;
-    this.bizParams = compactObject({
-      channel: channel_id,
-      spm,
-    });
+
+    // 目前 channel 与 channel_id 保持同步
+    let { channel_id = '', channel = channel_id, ...rest } = this.channelFilter(
+      options
+    );
+    const temp = { channel_id, channel, ...rest };
+    this.startParams = {
+      ...this.getConfig(),
+      ...compactObject(temp),
+    };
+    return this;
 
     // 如果业务参数更新，需要刷新页面数据，渠道更新，不用刷新数据
 
@@ -74,11 +111,18 @@ class Plugin extends PluginBase {
     // }
   }
 
-  getChannel(pageUrl = '') {
-    // 获取当前业务参数
-    // 由默认参数 config、启动参数 bizParams 以及当前页面参数 pageQuery 叠加而成
-    const pageQuery = {};
-    return { ...this.getConfig(), ...this.bizParams, ...pageQuery };
+  getChannel(url = '') {
+    // 获取传入 url 的业务参数，如果没传，则获取当前[页面]的业务参数
+    // 参数由以下三部分数据合成(需要提供给 piwik 以及 api 使用)
+    // - 默认参数 config
+    // - 启动参数 startParams
+    // - 指定 url 页面参数，默认为当前页面
+
+    // 获取业务渠道参数，由全局参数以及page参数运算得出
+    // 提供给API、forward以及统计使用
+    const { query = {} } = xmini.me.$getPageInfo();
+    const current = compactObject(this.channelFilter(query));
+    return { ...this.getConfig(), ...this.startParams, ...current };
   }
 }
 

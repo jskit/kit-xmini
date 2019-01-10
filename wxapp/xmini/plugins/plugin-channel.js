@@ -61,7 +61,7 @@ class Plugin extends PluginBase {
     // `不允许重写 ${ctx.$getPageName()} 中的 onLoad 方法的 query 参数`，但暂时无法控制
     Object.defineProperty(ctx, '$query', {
       value: query,
-      writable: false
+      writable: false,
     });
   }
 
@@ -69,8 +69,8 @@ class Plugin extends PluginBase {
     // console.log(options, type);
     const { path = '', query, referrerInfo = {}, scene, shareTicket } = options;
     const { extraData } = referrerInfo;
-    // console.log(path, query, scene, shareTicket);
-    // console.log(extraData);
+    console.log(path, query, scene, shareTicket);
+    console.log(extraData);
     this.setChannel(query || extraData);
     return this;
   }
@@ -92,7 +92,9 @@ class Plugin extends PluginBase {
     // 仅仅取有效的参数值
 
     // 目前 channel 与 channel_id 保持同步
-    let { channel_id = '', channel = channel_id, ...rest } = this.channelFilter(options);
+    let { channel_id = '', channel = channel_id, ...rest } = this.channelFilter(
+      options
+    );
     const temp = { channel_id, channel, ...rest };
     this.startParams = {
       ...this.getConfig(),
@@ -118,7 +120,7 @@ class Plugin extends PluginBase {
 
     // 获取业务渠道参数，由全局参数以及page参数运算得出
     // 提供给API、forward以及统计使用
-    const { query = {} } = xmini.me.$getPageInfo();;
+    const { query = {} } = xmini.me.$getPageInfo();
     const current = compactObject(this.channelFilter(query));
     return { ...this.getConfig(), ...this.startParams, ...current };
   }

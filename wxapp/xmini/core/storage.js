@@ -1,18 +1,18 @@
 const {
   setStorage,
-  setStorageSync,
-  getStorage,
+  // setStorageSync,
+  // getStorage,
   getStorageSync,
   removeStorage,
-  removeStorageSync,
+  // removeStorageSync,
   clearStorage,
-  clearStorageSync,
+  // clearStorageSync,
   getStorageInfo,
-  getStorageInfoSync,
+  // getStorageInfoSync,
 } = typeof my !== 'undefined' ? my : wx;
 
-const noop = () => {};
-let inited;
+// const noop = () => {};
+// let inited;
 // 数据都存在这里
 let storageData = {};
 // let me = {};
@@ -57,7 +57,7 @@ class Storage {
   }
   get(key) {
     if (!key) return;
-    const temp = storageData[this.store][key] || {}
+    const temp = storageData[this.store][key] || {};
     // 缓存不存在
     if (!temp.timeout || !temp.value) return null;
     const now = Date.now();
@@ -74,8 +74,7 @@ class Storage {
     setStorage({
       key: this.store,
       data: storageData[this.store],
-      success(res) {
-      },
+      success(res) {},
     });
     // removeStorage({
     //   key,
@@ -93,7 +92,7 @@ class Storage {
     }
   }
   getStorageInfo() {
-    return getStorageInfo()
+    return getStorageInfo();
   }
 }
 

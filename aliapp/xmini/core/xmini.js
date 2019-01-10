@@ -1,6 +1,6 @@
 import { APP_HOOKS, PAGE_HOOKS, upperFirst, emitter } from '../utils/index';
-// import Core from './core';
-import Bridge from './bridge';
+import Core from './core';
+// import Bridge from './bridge';
 
 // const bridge = new Bridge();
 
@@ -18,7 +18,7 @@ const pageFns = PAGE_HOOKS.reduce((obj, key) => {
 
 // Core 加入必备功能或插件，如 wxapp aliapp config支持 addPlugin 等
 // XMini 在此基础上扩展
-class XMini extends Bridge {
+class XMini extends Core {
   constructor(config = {}) {
     super(config);
   }
@@ -28,6 +28,7 @@ class XMini extends Bridge {
     // rest.plugin = {};
     this.setConfig(rest);
     this.me = rest.me;
+    this.getCurrentPages = rest.getCurrentPages;
     // this.plugin = rest.plugin;
     this.addPlugin(plugins);
   }
@@ -47,19 +48,19 @@ class XMini extends Bridge {
       emitter.on(key, fn.bind(plugin));
     });
     // 后面通过 bridge 来解决通信问题
-    this.addMethods(Object.keys(methods));
-    // Object.keys(methods).forEach(key => {
-    //   const fnName = methods[key];
-    //   if (!this[key] && plugin[key]) {
-    //     this[key] = plugin[fnName].bind(plugin);
-    //   } else {
-    //     console.error(
-    //       `${
-    //         plugin.name
-    //       } 下的公开方法 ${key} 存在冲突，请使用别名，修改对应插件的 methods 值`
-    //     );
-    //   }
-    // });
+    // this.addMethods(methods, plugin);
+    Object.keys(methods).forEach(key => {
+      const fnName = methods[key];
+      if (!this[key] && plugin[key]) {
+        this[key] = plugin[fnName].bind(plugin);
+      } else {
+        console.error(
+          `插件 ${
+            plugin.name
+          } 下的公开方法 ${key} 存在冲突，请使用别名，修改对应插件的 methods 值`
+        );
+      }
+    });
     // console.log(`:::add plugin::: ${plugin.name}`);
     return this;
   }
@@ -89,9 +90,9 @@ class XMini extends Bridge {
       const oldFn = newOpts[key] || noop;
       newOpts[key] = function(opts) {
         // 这里应该使用 this 而不是 newOpts
-        emitter.emit(`pre${type}${upperFirst(key)}`, opts);
+        emitter.emit(`pre${type}${upperFirst(key)}`, opts, this);
         const result = oldFn.call(this, opts);
-        emitter.emit(`post${type}${upperFirst(key)}`, opts);
+        emitter.emit(`post${type}${upperFirst(key)}`, opts, this);
         return result;
       };
     });

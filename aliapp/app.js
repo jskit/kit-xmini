@@ -5,7 +5,7 @@ import { xApp } from './utils/xmini';
 xApp({
   onError(err) {},
   onShow() {
-    console.log(121212);
+    console.log('app onShow');
     // 模拟错误信息
     // xxx;
   },
