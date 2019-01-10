@@ -23,7 +23,7 @@ class Piwik {
       isReportWorking: false,
       category: '',
       size: 1,
-      url: 'https://tongji.haoshiqi.net/piwik.php',
+      url: 'https://tongji.doweidu.com/piwik.php',
       siteId: 0,
       userId: '',
       channel: '',
@@ -111,9 +111,7 @@ class Piwik {
         params[key] = param[key];
       }
     }
-    Object.assign(this.config, {
-      ...params,
-    });
+    Object.assign(this.config, params);
   }
 
   getChannel() {
@@ -245,11 +243,11 @@ class Piwik {
         long: this.config.location.lon || 0,
       });
     }
-    return {
+    return Object.assign({
       idsite: this.config.siteId,
       rec: 1,
       _id: devId,
-      uid: this.config.userId,
+      uid: '',
       res: this.config.screen || '',
       r: this.__random(6),
       h: date.getHours(),
@@ -259,17 +257,18 @@ class Piwik {
 
       cvar: JSON.stringify({
         "1": ["channel", this.config.channel],
-        "2": ["cityName", this.config.cityName],
+        "2": ["city_name", this.config.cityName],
         "3": ["spm", this.config.spm],
+        "4": ["user_id", this.config.userId || ''],
       }),
       _cvar: JSON.stringify({
         "1": ["spm", this.config.spm],
         "2": ["openid", this.config.openId || null],
-        "3": ["cityName", this.config.cityName || null],
+        "3": ["city_name", this.config.cityName || null],
+        "4": ["user_id", this.config.userId || ''],
       }),
       cdt: parseInt(new Date() / 1000),
-      ...locate,
-    };
+    }, locate);
   }
 
   __check(data) {

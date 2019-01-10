@@ -44,6 +44,24 @@ const native = {
       return systemInfo;
     };
 
+    opts.me.$getCurPage = function getCurPage() {
+      const pages = getCurrentPages();
+      const length = pages.length;
+      if (!length) return {};
+      const currentPage = pages[length - 1] || {};
+      return currentPage;
+    };
+
+    opts.me.$getPageInfo = function getPageInfo() {
+      const currentPage = opts.me.$getCurPage();
+      const { route = '', pageQuery = {} } = currentPage;
+      return {
+        pageQuery: { ...pageQuery },
+        pagePath: route,
+        pageName: route.split('/').reverse()[0] || '',
+      };
+    };
+
     if (opts.me) {
       if (opts.host === 'aliapp') {
         const concurrency = 10;

@@ -10,6 +10,7 @@ Page(xPage.entry({
     // console.log(allPages)
   },
   onShow() {
+    console.log(aa);
     // console.log('page onShow', this)
   },
 }));

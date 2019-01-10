@@ -24,6 +24,7 @@ function report(err) {
       platform: appName,
       value: err,
       systemInfo: me.$getSystemInfo('string'),
+      pageInfo: JSON.stringify(me.$getPageInfo()),
     },
     dataType: 'json',
     success: function(res) {
