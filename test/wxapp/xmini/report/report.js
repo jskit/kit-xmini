@@ -17,6 +17,7 @@ function report(err) {
   }
   log.error(err);
   const request = host === 'aliapp' ? 'httpRequest' : 'request';
+  const pageInfo = me.$getPageInfo();
   me[request]({
     url: 'https://tongji.doweidu.com/log.php',
     method: 'POST',
@@ -24,7 +25,8 @@ function report(err) {
       platform: appName,
       value: err,
       systemInfo: me.$getSystemInfo('string'),
-      pageInfo: JSON.stringify(me.$getPageInfo()),
+      pagePath: pageInfo.pagePath,
+      pageQuery: JSON.stringify(pageInfo.pageQuery),
     },
     dataType: 'json',
     success: function(res) {

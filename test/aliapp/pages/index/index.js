@@ -10,6 +10,8 @@ Page(xPage.entry({
     // console.log(allPages)
   },
   onShow() {
+    debugger;
+    console.log(this);
     console.log(aa);
     // aa.toFix(2);
     // console.log('page onShow', this)
