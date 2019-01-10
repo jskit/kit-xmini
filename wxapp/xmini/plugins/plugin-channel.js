@@ -11,15 +11,6 @@ import xmini from '../core/xmini';
 //   }, {})
 // }
 
-function channelFilter(params, filters) {
-  return Object.keys(params).reduce((obj, key) => {
-    if (filters[key]) {
-      obj[key] = params[key];
-    }
-    return obj;
-  }, {});
-}
-
 /**
  * 小程序业务渠道&参数处理(如果扩展可以支持业务之外的参数处理)
  * 支持业务参数配置 spm channel_id 等，可新增
@@ -40,6 +31,8 @@ class Plugin extends PluginBase {
   methods = {
     getChannel: 'getChannel',
     setChannel: 'setChannel',
+    getChannelFilter: 'getChannelFilter',
+    filterObj: 'filterObj',
   };
 
   constructor(config = {}) {
@@ -65,6 +58,15 @@ class Plugin extends PluginBase {
     });
   }
 
+  filterObj(params, filters) {
+    return Object.keys(params).reduce((obj, key) => {
+      if (filters[key]) {
+        obj[key] = params[key];
+      }
+      return obj;
+    }, {});
+  }
+
   initChannel(options = {}, type) {
     // console.log(options, type);
     const { path = '', query, referrerInfo = {}, scene, shareTicket } = options;
@@ -75,11 +77,15 @@ class Plugin extends PluginBase {
     return this;
   }
 
+  getChannelFilter() {
+    return this.getConfig();
+  }
+
   channelFilter(params, filters) {
     if (!filters) {
       filters = this.getConfig();
     }
-    return channelFilter(params, filters);
+    return this.filterObj(params, filters);
   }
 
   setChannel(options) {
