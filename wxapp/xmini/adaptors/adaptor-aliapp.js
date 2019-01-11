@@ -1,5 +1,5 @@
 import PluginBase from '../core/plugin-base';
-import storage from '../core/storage';
+import Storage from '../core/storage';
 // import queue from '../core/queue';
 
 class Plugin extends PluginBase {
@@ -21,7 +21,7 @@ class Plugin extends PluginBase {
     //     return queue(me.request, 10);
     //   },
     // });
-    me.$storage = storage;
+    me.$storage = new Storage('aliapp');
     me.$getSystemInfo = () => {
       let systemInfo = storage.get('systemInfo');
       if (!systemInfo) {

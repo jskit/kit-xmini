@@ -1,43 +1,10 @@
-import PluginBase from '../core/plugin-base';
-import { xmini } from '../core/xmini';
-import { stringify, hexMD5 } from '../utils/index';
-
-const cityIdMap = {
-  安徽省: '01',
-  浙江省: '02',
-  江西省: '03',
-  江苏省: '04',
-  吉林省: '05',
-  青海省: '06',
-  福建省: '07',
-  黑龙江省: '08',
-  河南省: '09',
-  河北省: '10',
-  湖南省: '11',
-  湖北省: '12',
-  新疆维吾尔自治区: '13',
-  西藏自治区: '14',
-  甘肃省: '15',
-  广西壮族自治区: '16',
-  贵州省: '18',
-  辽宁省: '19',
-  内蒙古自治区: '20',
-  宁夏回族自治区: '21',
-  北京市: '22',
-  上海市: '23',
-  山西省: '24',
-  山东省: '25',
-  陕西省: '26',
-  天津市: '28',
-  云南省: '29',
-  广东省: '30',
-  海南省: '31',
-  四川省: '32',
-  重庆市: '33',
-};
+import PluginBase from '../../core/plugin-base';
+import { xmini } from '../../core/xmini';
+import { stringify, hexMD5 } from '../../utils/index';
+import { cityMap } from './cityMap';
 
 /**
- * piwik 数据统计
+ * piwik 数据统计（负责实现数据上报）
  * 支持配置必备业务参数透传
  * 参考 https://p-2q9b.tower.im/p/2fl2
  * https://developer.matomo.org/guides/tracking-api-clients
@@ -62,6 +29,7 @@ const cityIdMap = {
 class Plugin extends PluginBase {
   name = 'piwik';
   events = {};
+  requestCount = 0;
   methods = {
     piwikInit: 'piwikInit',
     piwikReport: 'piwikReport',
@@ -70,6 +38,28 @@ class Plugin extends PluginBase {
   _caches = [];
   constructor(config) {
     super(config);
+  }
+  upLog(data) {
+    let retryTimes = 0;
+    const upData = function () {
+      this.requestCount++;
+      data['rq_c'] = this.requestCount;
+      wx.request({
+        url : 'https://piwik.php',
+        data,
+        method,
+        success : function() {
+        },
+        fail : function() {
+          if (retryTimes < 2) {
+            retryTimes++;
+            data['retryTimes'] = retryTimes;
+            upData();
+          }
+        }
+      });
+    }
+    upData();
   }
   piwikInit(opts = {}) {
     if (!opts.reportURI || !opts.siteId || !opts.token_auth) {
@@ -94,7 +84,7 @@ class Plugin extends PluginBase {
       rec: 1,
     });
   }
-  piwikupdate(opts = {}) {
+  piwikUpdate(opts = {}) {
     // 只允许更新以下值
     const whiteList = {
       openId: 1,
@@ -186,15 +176,43 @@ class Plugin extends PluginBase {
       complete() {},
     });
   }
-  _trackPageView() {}
+  _trackPageView(pageURL, pageName) {
+    // 统计页面 url 以及页面名称
+    const temp = {
+      urlref: 'refer',
+      _ref: 'refer',
+      action_name: pageName,
+      url: pageName,
+    };
+    this.report(temp);
+  }
   _setCustomVar() {}
-  _trackEvent() {}
+  // 事件统计
+  _trackEvent(actionId, value = '') {
+    const temp = {
+      action_name: actionId,
+      url: '',
+      e_c: '',
+      e_a: '',
+      e_n: '',
+    };
+    this.report();
+  }
   _getRegionId(city) {
     if (!city) return '';
     return cityIdMap[city.toLowerCase()];
   }
+  push() {},
   // page
   pv(...rest) {
+    // 需要上报当前 url 以及 refer
+    // action_name
+    const pageInfo = xmini.me.$getPageInfo();
+    this.piwikUpdate({
+      path: pageInfo.pagePath,
+      refer: pageInfo.refer || 'istoppage',
+      ...xmini.getChannel(),
+    })
     this._trackPageView(...rest);
   }
   //
@@ -208,80 +226,3 @@ class Plugin extends PluginBase {
 }
 
 export default Plugin;
-
-/**
-文档说明
-https://developer.matomo.org/api-reference/tracking-api
-
-{
-  // 必须参数 init方法设定
-  idsite: 2, // 网站 id，2 用来测试
-  rec: 1, // 必须设置为1
-  reportURI: 'https://your-piwik-domain.example/piwik.php', // 上报 url
-  token_auth: '',
-
-  // 推荐参数
-  action_name: '', // 事件名称，用户上报PV、UV时的页面路径
-  url: '',
-  // 访客的唯一ID
-  // 必须是长度16位十六进制字符串。每个访客必须分配不同的唯一ID，并且分配后不能改变。
-  // APP、H5使用piwik生成的ID
-  // 支付宝小程序使用 user_id + idsite 前端生成ID，微信小程序使用 openid + idsite 前端生成ID
-  _id: '',
-  rand: '',
-  r: '', // 6位随机数字，用于清除浏览器请求的缓存
-  apiv: 1, // 当前始终设置为1
-
-  // 可选用户信息
-  uid: '', // 生成的唯一ID
-  urlref: '', // 完整的HTTP Referrer URL，若无，则设置为 istoppage
-  // 自定义变量
-  cvar: JSON.stringify({
-    1: ['channel', this.config.channel],
-    2: ['city_name', this.config.cityName],
-    3: ['spm', this.config.spm],
-    4: ['user_id', this.config.userId || ''],
-  }),
-  _idvc: '', // 该访客总计访问的次数，间隔在1小时内的访问为一次连续的访问，超过1小时则加1。若不支持本地缓存，则不传
-  _viewts: '', // 该访客上次访问时间的UNIX时间戳（秒为单位）。若不支持本地缓存则不传。
-  _refts: '', // 该访客上次访问时间的UNIX时间戳（秒为单位）。若不支持本地缓存，则不传。
-  _idn: 0, // 未知，默认0
-  res: '', // 访客访问设备的分辨率
-  ua: '',
-  cid: '',
-  new_visit: '',
-
-  // 可选的操作信息
-  _cvar: JSON.stringify({
-    1: ['spm', this.config.spm],
-    2: ['openid', this.config.openId || null],
-    3: ['city_name', this.config.cityName || null],
-    4: ['user_id', this.config.userId || ''],
-  }),
-  link: '',
-
-  // 可选的事件跟踪
-  e_c: '', // 事件的类别，不能为空。如：视频、音乐、游戏等
-  e_a: '', // 事件的行为，不能为空。如：播放、暂停、持续时长
-  e_n: '', // 事件的名称，如：电影名，歌曲名等
-  // e_v: '',
-
-  // 其他参数
-  token_auth: '', 长度为32位的用户授权串，用于接口授权验证。
-  cdt: '', 覆盖请求的日期时间
-  country: '',
-  region: '',
-  city: '',
-  lat: '',
-  long: '',
-  ping: '',
-
-  // 其他参数
-  send_image: 0, // 如果设置为0，则返回http请求而不是返回一张图片
-  ping: 0, // 如果设置为1，则该请求是不记录任何活动的心跳检查请求
-
-  // 批量跟踪
-  requests: [],
-}
-
-*/

@@ -32,7 +32,9 @@ class Plugin extends PluginBase {
 
     const config = this.getConfig();
     const xminiConfig = xmini.getConfig();
-    const systemInfo = xmini.me.$getSystemInfo();
+    const { me } = xmini;
+    const systemInfo = me.$getSystemInfo();
+    const pageInfo = me.$getPageInfo();
 
     // 错误上报
     // 要记录报错信息，平台信息以及当前页面
@@ -40,9 +42,11 @@ class Plugin extends PluginBase {
       url: config.reportURI,
       method: 'POST',
       data: {
-        platform: xminiConfig.appName,
+        ...systemInfo,
+        pagePath: pageInfo.pagePath,
+        pageQuery: JSON.stringify(pageInfo.pageQuery),
+        appName: xminiConfig.appName,
         value: JSON.stringify(err),
-        systemInfo: JSON.stringify(systemInfo),
       },
       dataType: 'json',
       success: function(res) {},

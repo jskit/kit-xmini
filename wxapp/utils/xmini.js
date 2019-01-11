@@ -34,3 +34,4 @@ export const xmini = xm;
 
 export const xApp = xm.xApp;
 export const xPage = xm.xPage;
+export const xComponent = xm.xPage;

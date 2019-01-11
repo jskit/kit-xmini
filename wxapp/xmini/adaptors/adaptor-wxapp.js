@@ -1,5 +1,6 @@
 import PluginBase from '../core/plugin-base';
-import storage from '../core/storage';
+import { storage, storageSystem } from '../core/storage';
+import { uuid } from '../utils/index';
 // import queue from '../core/queue';
 
 // 适配小程序方法等
@@ -32,13 +33,54 @@ class Plugin extends PluginBase {
     // });
     me.httpRequest = me.request;
     me.$storage = storage;
+    me.$getUUID = () => {
+      let uid = storageSystem.get('uuid');
+      if (!uid) {
+        uid = uuid(32);
+        storageSystem.set('uuid', uid, 0);
+        // $log.set({ is_first_open: true });
+      }
+      // console.warn(':::uuid:', uid);
+      return uid;
+    },
     me.$getSystemInfo = () => {
-      let systemInfo = storage.get('systemInfo');
+      let systemInfo = storageSystem.get('systemInfo');
       if (!systemInfo) {
         systemInfo = me.getSystemInfoSync();
-        storage.set('systemInfo', systemInfo, 86400 * 365);
+        storageSystem.set('systemInfo', systemInfo, 86400 * 365);
       }
       return systemInfo;
+    };
+    me.$getNetworkType = (cb) => {
+      let natworkType = storageSystem.get('natworkType');
+      if (!natworkType) {
+        me.getNetworkType({
+          success(res) {
+            storageSystem.set('natworkType', res.natworkType);
+            cb && cb(res.natworkType);
+          }
+        });
+      } else {
+        cb && cb(natworkType);
+      }
+    };
+    me.$getLocation = (cb) => {
+      let location = storageSystem.get('location');
+      if (!location) {
+        me.getLocation({
+          type: 'wgs84',
+          success(res) {
+            // 缓存15分钟
+            storageSystem.set('location', res, 900);
+            cb && cb(res);
+          },
+          fail(err) {
+            cb && cb({});
+          },
+        });
+      } else {
+        cb && cb(location);
+      }
     };
     me.$getCurPage = () => {
       const pages = getCurrentPages();
@@ -49,9 +91,9 @@ class Plugin extends PluginBase {
     };
     me.$getPageInfo = () => {
       const currentPage = me.$getCurPage();
-      const { route = '', $query = {} } = currentPage;
+      const { route = '', $pageQuery = {} } = currentPage;
       return {
-        query: { ...$query },
+        pageQuery: { ...$pageQuery },
         pagePath: route,
         pageName: route.split('/').reverse()[0] || '',
       };

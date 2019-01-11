@@ -50,9 +50,9 @@ class Plugin extends PluginBase {
   }
   prePageOnLoad(query = {}, ctx) {
     // console.warn(ctx);
-    // ctx.$query = query;
+    // ctx.$pageQuery = query;
     // `不允许重写 ${ctx.$getPageName()} 中的 onLoad 方法的 query 参数`，但暂时无法控制
-    Object.defineProperty(ctx, '$query', {
+    Object.defineProperty(ctx, '$pageQuery', {
       value: query,
       writable: false,
     });
@@ -126,8 +126,8 @@ class Plugin extends PluginBase {
 
     // 获取业务渠道参数，由全局参数以及page参数运算得出
     // 提供给API、forward以及统计使用
-    const { query = {} } = xmini.me.$getPageInfo();
-    const current = compactObject(this.channelFilter(query));
+    const { pageQuery = {} } = xmini.me.$getPageInfo();
+    const current = compactObject(this.channelFilter(pageQuery));
     return { ...this.getConfig(), ...this.startParams, ...current };
   }
 }

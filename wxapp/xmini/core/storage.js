@@ -18,11 +18,13 @@ let storageData = {};
 // let me = {};
 
 // wxapp 本地数据存储的大小限制为 10MB
+// 把业务数据和系统数据分离
 
 let i = 1;
-class Storage {
-  constructor(store = 'x-mini') {
+export class Storage {
+  constructor(store = 'x-mini', time = 600) {
     this.store = store || `store-${i++}`;
+    this._time = (Number.isInteger(time) && time > 0) ? time : 600;
 
     let data = {};
     if (typeof my !== 'undefined') {
@@ -34,8 +36,9 @@ class Storage {
     }
     storageData[this.store] = data;
   }
-  set(key, value, time) {
-    // 单位秒
+  set(key, value, time = 0) {
+    // 单位秒，默认 10 分钟，-1表示一年
+    if (time) time = this._time;
     const timeout = Date.now() - 1 + time * 1000;
     console.log(timeout);
     const data = {
@@ -96,4 +99,10 @@ class Storage {
   }
 }
 
-export default new Storage();
+export const storage = new Storage();
+
+// 系统相关
+export const storageSystem = new Storage('system', 31536000);
+
+// 统计数据
+export const storageStat = new Storage('stat', 31536000);
