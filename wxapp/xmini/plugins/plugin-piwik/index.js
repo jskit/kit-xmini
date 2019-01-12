@@ -1,5 +1,5 @@
 import PluginBase from '../../core/plugin-base';
-import { xmini } from '../../core/xmini';
+import xmini from '../../core/xmini';
 import { stringify, hexMD5 } from '../../utils/index';
 import { cityMap } from './cityMap';
 
@@ -202,7 +202,6 @@ class Plugin extends PluginBase {
     if (!city) return '';
     return cityIdMap[city.toLowerCase()];
   }
-  push() {},
   // page
   pv(...rest) {
     // 需要上报当前 url 以及 refer

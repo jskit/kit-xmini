@@ -57,11 +57,16 @@ class Plugin extends PluginBase {
         me.getNetworkType({
           success(res) {
             storageSystem.set('natworkType', res.natworkType);
-            cb && cb(res.natworkType);
-          }
+            cb && cb(res);
+          },
+          fail(err) {
+            cb && cb({});
+          },
         });
       } else {
-        cb && cb(natworkType);
+        cb && cb({
+          natworkType,
+        });
       }
     };
     me.$getLocation = (cb) => {

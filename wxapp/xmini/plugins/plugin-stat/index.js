@@ -1,6 +1,6 @@
 import PluginBase from '../../core/plugin-base';
-import { xmini } from '../../core/xmini';
-import { emit } from 'cluster';
+import xmini from '../../core/xmini';
+import { emitter } from '../../utils/index';
 
 function workspaceInit() {}
 
@@ -12,12 +12,22 @@ function workspaceInit() {}
  */
 class Plugin extends PluginBase {
   name = 'stat';
-  events = {};
+  events = {
+    preAppOnError: 'preAppOnError',
+    preAppOnLaunch: 'preAppOnLaunch',
+    preAppOnShow: 'preAppOnShow',
+    preAppOnHide: 'preAppOnHide',
+    preAppOnUnlaunch: 'preAppOnUnlaunch',
+    prePageOnLoad: 'prePageOnLoad',
+    prePageOnReady: 'prePageOnReady',
+    prePageOnShow: 'prePageOnShow',
+    prePageOnHide: 'prePageOnHide',
+    prePageOnUnload: 'prePageOnUnload',
+  };
   methods = {
-    getStatData: 'getData',
+    // getStatData: 'getData',
   };
   _data = {};
-  _stat = [];
   constructor(config) {
     super(config);
   }
@@ -27,48 +37,66 @@ class Plugin extends PluginBase {
   getData(key) {
     return key ? this._data[key] : { ...this._data };
   }
-  getStatData(options) {
-    const data = this._stat;
-    this._stat = [];
-    return data;
-  }
-  log(type, value) {
+  log(type, action, value) {
     // 数据类型，app page component event
     // 每触发一次抛出一次数据，数据可以被其他插件接收（通过特定的形式）
-    const temp = this.getData();
-    // this._stat.push(temp);
-    // emit(temp);
+    let temp = {};
+    switch(type) {
+      case 'page':
+        temp = this.getData();
+        break;
+      case 'app':
+        temp = this.getData();
+        break;
+      case 'event':
+        this.setData({
+          ev: '',
+          ct: '',
+        });
+        temp = this.getData();
+        break;
+      default:
+        // do nothing...
+    }
+
+    const log = {
+      type,
+      action,
+      value: temp,
+    };
+    console.warn(log);
+    emitter.emit('stat', log, this);
   }
   preAppOnError(err) {
-    if (typeof this.mini_error_count === 'undefined') {
-      this.mini_error_count = 1;
-    } else {
-      this.mini_error_count++;
-    }
+    let count = this.getData('mini_error_count') || 0;
+    this.setData({
+      mini_error_count: count + 1,
+    });
+    // 错误信息单独上报处理
+    console.error(err);
     this.log('event', 'error_message', JSON.stringify(err));
   }
   preAppOnLaunch(options) {
-    const { me } = xmini;
     workspaceInit();
+    console.log(xmini);
 
     this.setData({
-      mini_uuid: xmini.me.$getUUID();
-      mini_timestamp: Date.now();
-      mini_showtime: Date.now();
-      mini_duration: 0;
-      mini_error_count: 0;
-      mini_page_count: 1;
-      mini_first_page: 0;
+      mini_uuid: xmini.me.$getUUID(),
+      mini_timestamp: Date.now(),
+      mini_showtime: Date.now(),
+      mini_duration: 0,
+      mini_error_count: 0,
+      mini_page_count: 1,
+      mini_first_page: 0,
+      mini_showoption: options,
     });
 
-    this.setShowOptions(options);
-
-    me.$getNetworkType(res => {
+    xmini.me.$getNetworkType(res => {
       this.setData({
-        mini_network_type: res.networkType,
+        mini_network_type: res.networkType || 'fail',
       });
     });
-    const systemInfo = me.$getSystemInfo();
+    const systemInfo = xmini.me.$getSystemInfo();
     this.setData({
       mini_host: systemInfo['app'], // 当前运行的客户端 alipay wechat
       mini_platform: systemInfo['platform'], // 客户端平台 Android iOS
@@ -84,7 +112,7 @@ class Plugin extends PluginBase {
       mini_window_width: systemInfo['windowWidth'], // 可使用窗口宽高
       mini_window_height: systemInfo['windowHeight'],
     });
-    me.$getLocation(res => {
+    xmini.me.$getLocation(res => {
       this.setData({
         mini_lat: res.latitude || 0,
         mini_lng: res.longitude || 0,
@@ -96,26 +124,25 @@ class Plugin extends PluginBase {
     this.log('app', 'launch');
   }
   preAppOnShow(options = {}) {
-    this.mini_showtime = Date.now();
-    this.setShowOptions(options);
+    this.setData({
+      mini_showtime: Date.now(),
+      mini_showoption: options,
+    });
     // log('app', 'show');
     if (options['shareTicket']) {
 
     }
-  },
-  setShowOptions(options = {}) {
-    this.mini_showoption = options;
   }
   preAppOnHide() {
     this.setData({
-      mini_duration: Date.now() - this.getData('mini_showtime');
+      mini_duration: Date.now() - this.getData('mini_showtime'),
     });
     // if (this.mini_is_first_open) this.mini_is_first_open = false;
     this.log('app', 'hide');
   }
   preAppOnUnlaunch() {
     this.setData({
-      mini_duration: Date.now() - this.getData('mini_showtime');
+      mini_duration: Date.now() - this.getData('mini_showtime'),
     });
     this.log('app', 'unLaunch');
   }
