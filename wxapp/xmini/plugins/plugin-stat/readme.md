@@ -7,37 +7,71 @@
 
 收集尽可能多的数据(数据命名，使用下划线，更清晰，统一加 `mini_` 前缀)
 
-- preAppOnLaunch
-  - 平台初始化，暂无处理
-  - 初始化数据 uuid timestamp showtime duration error_count page_count first_page show_options
-  - getNetworkType 获取网络状态信息
-    - network_type
-  - getSystemInfo 获取系统信息，拆分保存
-    - sdk_version ? SDKVersion : '1.0.0'
-    - phone_model
-    - pixel_ratio
-    - window_width
-    - window_height
-    - language
-    - wechat_version
-    - system
-    - platform
-  - getLocation 获取定位信息，wgs84
-    - latitude
-    - longitude
-    - speed
-  - getUserInfo 获取用户信息
-- preAppOnShow
-  - shareTicket 获取分享票据
-- preAppOnHide
-  - this.mini_duration = Date.now() - this.mini_showtime;
-- preAppOnUnlaunch
-  - this.mini_duration = Date.now() - this.mini_showtime;
-- preAppOnError
-  - this.mini_error_count++;
-  - this.error_message, value;
+以下为每个阶段所能收集到的数据，收集后直接产出
 
-## 详细数据
+- app
+  - onError
+    - 直接产出错误信息 error_message
+    - 更新错误数量 error_count
+  - onLaunch
+    - 结合条件判断
+      - 当前app是否已经上报过
+    - 同步获取系统信息 systemInfo
+    - 异步获取定位信息 location（可更新）
+    - 异步获取网络状态信息 networkType（可更新）
+    - 生成唯一标识 uuid
+    - 获取用户信息[有或没有]（可更新）
+    - 获取启动参数 showOptions
+    - 其他信息 初始化一些基础信息
+      - timestamp = Date.now()
+      - showtime = Date.now()
+      - duration = Date.now()
+      - error_count = 0
+      - page_count = 1
+      - first_page = 1
+      - launchTimes++
+  - onShow
+    - 获取分享票据 shareTicket 等
+    - 获取启动参数 showOptions
+    - 计算启动时长 startupTime
+    - showTimes++
+  - onHide
+    - 计算使用时长 duration = Data.now() - showtime
+    - hideTimes++
+  - onUnlaunch
+    - 计算使用时长 duration = Data.now() - showtime
+    - hideTimes++
+- page/component
+  - onLoad
+    - 获取页面参数，pageQuery
+  - onReady
+    - 计算页面准备时间
+  - onShow
+    - 结合条件判断
+      - 当前页面是否已经上报过
+      - page_count++
+      - error_count = 0
+    - start_time = 0
+    - 是否是第一个页面
+    - 设置 last_page 为当前页面
+    - 触发上报 pv
+  - onHide
+    - 计算当前页面时长 Data.now() - start_time
+  - onUnload
+    - 计算当前页面时长 Data.now() - start_time
+  - onShareAppMessage
+
+注意事项
+
+- 能收集哪些数据
+- 什么时候触发上报
+
+- mini_duration 在 app page 上报时，代表意义不同
+- onLoad 页面加载时触发。一个页面只会调用一次，可以在 onLoad 的参数中获取打开当前页面路径中的参数。
+- onReady 页面初次渲染完成时触发。一个页面只会调用一次，代表页面已经准备妥当，可以和视图层进行交互。
+- onShow 页面显示/切入前台时触发。
+
+## 数据详细
 
 以下为收集数据的字段命名、缩写，以及解释
 
@@ -58,7 +92,7 @@ app.mini_sdk_version = isUnDef(sdkVersion) ? '1.0.0' : sdkVersion;
   as_c: showTimes,
   ah_c: hideTimes,
 
-  // 公共
+  // 公共数据
   nt: app.mini_network_type
   ht: app.mini_host, // systemInfo['app'] 当前运行的客户端 alipay wechat
   pf: app.mini_platform, // systemInfo['platform'] 客户端平台 Android iOS
@@ -69,8 +103,8 @@ app.mini_sdk_version = isUnDef(sdkVersion) ? '1.0.0' : sdkVersion;
   sb: app.mini_phone_brand, // systemInfo['brand'] 手机品牌
   apm: app.mini_phone_model, // systemInfo['model'] 手机型号
   apr: app.mini_pixel_ratio, // systemInfo['pixelRatio'] 设备像素比
-  // sw: app.mini_screen_width, // systemInfo['screenWidth'] 屏幕宽高
-  // sh: app.mini_screen_height, // systemInfo['screenHeight']
+  sw: app.mini_screen_width, // systemInfo['screenWidth'] 屏幕宽高
+  sh: app.mini_screen_height, // systemInfo['screenHeight']
   ww: app.mini_window_width, // systemInfo['windowWidth'] 可使用窗口宽高
   wh: app.mini_window_height, // systemInfo['windowHeight']
 
@@ -96,7 +130,7 @@ app.mini_sdk_version = isUnDef(sdkVersion) ? '1.0.0' : sdkVersion;
 }
 ```
 
-## 统计事件
+## 数据产出格式
 
 ```js
 log('app', 'show');
@@ -112,20 +146,6 @@ sendEvent(action, value = '') {
   log('event', action, JSON.stringify(value));
 }
 ```
-
-- app
-  - onError
-  - onLaunch
-  - onShow
-  - onHide
-  - onUnlaunch
-- page/component
-  - onLoad
-  - onReady
-  - onShow
-  - onHide
-  - onUnload
-  - onShareAppMessage
 
 ```js
 const { xmini } = 'xmini';

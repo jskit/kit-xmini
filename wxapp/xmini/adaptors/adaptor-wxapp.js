@@ -51,24 +51,26 @@ class Plugin extends PluginBase {
       }
       return systemInfo;
     };
-    me.$getNetworkType = (cb) => {
-      let natworkType = storageSystem.get('natworkType');
-      if (!natworkType) {
-        me.getNetworkType({
-          success(res) {
-            storageSystem.set('natworkType', res.natworkType);
-            cb && cb(res);
-          },
-          fail(err) {
-            cb && cb({});
-          },
-        });
-      } else {
-        cb && cb({
-          natworkType,
-        });
-      }
-    };
+
+    // 此方法没必要缓存，因为网络状态随时可手动变
+    // me.$getNetworkType = (cb) => {
+    //   let natworkType = storageSystem.get('natworkType');
+    //   if (!natworkType) {
+    //     me.getNetworkType({
+    //       success(res) {
+    //         storageSystem.set('natworkType', res.natworkType);
+    //         cb && cb(res);
+    //       },
+    //       fail(err) {
+    //         cb && cb({});
+    //       },
+    //     });
+    //   } else {
+    //     cb && cb({
+    //       natworkType,
+    //     });
+    //   }
+    // };
     me.$getLocation = (cb) => {
       let location = storageSystem.get('location');
       if (!location) {

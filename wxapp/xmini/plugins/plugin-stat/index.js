@@ -40,6 +40,17 @@ class Plugin extends PluginBase {
   log(type, action, value) {
     // 数据类型，app page component event
     // 每触发一次抛出一次数据，数据可以被其他插件接收（通过特定的形式）
+    // 不同的触发，产生的数据也不同，需要按类别进行过滤处理
+    // 参考百度统计，输出规范化的数据
+    // _hmt.push(['_trackPageview', pageURL]);
+    // _hmt.push(['_trackEvent', category, action, opt_label, opt_value]);
+    // _hmt.push(['_setCustomVar', index, name, value, opt_scope]);
+    // _hmt.push(['_setAccount', siteId);
+    // _hmt.push(['_setAutoPageview', false]);
+
+    // _trackPageview, pageURL
+    // _trackEvent, category, action, value
+    // _setCustomVar, index, name, value
     let temp = {};
     switch(type) {
       case 'page':
@@ -79,6 +90,7 @@ class Plugin extends PluginBase {
   preAppOnLaunch(options) {
     workspaceInit();
     console.log(xmini);
+    const that = this;
 
     this.setData({
       mini_uuid: xmini.me.$getUUID(),
@@ -91,10 +103,17 @@ class Plugin extends PluginBase {
       mini_showoption: options,
     });
 
-    xmini.me.$getNetworkType(res => {
-      this.setData({
-        mini_network_type: res.networkType || 'fail',
-      });
+    xmini.me.getNetworkType({
+      success(res) {
+        that.setData({
+          mini_network_type: res.networkType || 'no_name',
+        });
+      },
+      fail(err) {
+        that.setData({
+          mini_network_type: 'fail',
+        });
+      },
     });
     const systemInfo = xmini.me.$getSystemInfo();
     this.setData({
