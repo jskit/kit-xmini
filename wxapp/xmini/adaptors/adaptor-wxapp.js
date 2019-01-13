@@ -34,10 +34,11 @@ class Plugin extends PluginBase {
     me.httpRequest = me.request;
     me.$storage = storage;
     me.$getUUID = () => {
+      debugger;
       let uid = storageSystem.get('uuid');
       if (!uid) {
         uid = uuid(32);
-        storageSystem.set('uuid', uid, 0);
+        storageSystem.set('uuid', uid);
         // $log.set({ is_first_open: true });
       }
       // console.warn(':::uuid:', uid);

@@ -129,7 +129,7 @@ class Plugin extends PluginBase {
       // mini_platform: systemInfo['platform'], // 平台、终端
       mini_os: systemInfo['platform'], // 客户端平台 Android iOS
       mini_os_version: systemInfo['system'], // 操作系统版本
-      mini_host: systemInfo['app'], // 当前运行的客户端 alipay wechat
+      mini_host: systemInfo['app'] || 'wechat', // 当前运行的客户端 alipay wechat
       mini_host_version: systemInfo['version'], // 宿主版本号
       mini_sdk_version: systemInfo['SDKVersion'] || '1.0.0', // 客户端基础库版本
       mini_language: systemInfo['language'], // 设置的语言
@@ -184,9 +184,9 @@ class Plugin extends PluginBase {
   }
   prePageOnShow(opts = {}, ctx) {
     this.setData({
-      page_count: this.getData('page_count') + 1,
-      start_time: 0,
-      last_page: ctx.route,
+      mini_page_count: this.getData('mini_page_count') + 1,
+      mini_start_time: 0,
+      mini_last_page: ctx.route,
     });
     this.log('page', 'show');
   }

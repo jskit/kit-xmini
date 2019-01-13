@@ -30,7 +30,7 @@ export class Storage {
     if (typeof my !== 'undefined') {
       // aliapp
       data = getStorageSync({ key: this.store }).data || {};
-    } else if (typeof my !== 'undefined') {
+    } else if (typeof wx !== 'undefined') {
       // wxapp
       data = getStorageSync(this.store) || {};
     }
@@ -38,7 +38,7 @@ export class Storage {
   }
   set(key, value, time = 0) {
     // 单位秒，默认 10 分钟，-1表示一年
-    if (time) time = this._time;
+    if (!time) time = this._time;
     const timeout = Date.now() - 1 + time * 1000;
     console.log(timeout);
     const data = {
