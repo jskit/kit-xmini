@@ -83,8 +83,6 @@ class Plugin extends PluginBase {
     this.setData({
       mini_error_count: count + 1,
     });
-    // 错误信息单独上报处理
-    console.error(err);
     this.log('event', 'error_message', JSON.stringify(err));
   }
   preAppOnLaunch(options) {
@@ -92,6 +90,7 @@ class Plugin extends PluginBase {
     console.log(xmini);
     const that = this;
 
+    // 初始化
     this.setData({
       mini_uuid: xmini.me.$getUUID(),
       mini_timestamp: Date.now(),
@@ -101,8 +100,10 @@ class Plugin extends PluginBase {
       mini_page_count: 1,
       mini_first_page: 0,
       mini_showoption: options,
+      // launchTimes++ ?
     });
 
+    // 异步获取网络以及定位相关信息
     xmini.me.getNetworkType({
       success(res) {
         that.setData({
@@ -115,11 +116,20 @@ class Plugin extends PluginBase {
         });
       },
     });
+    xmini.me.$getLocation(res => {
+      this.setData({
+        mini_lat: res.latitude || 0,
+        mini_lng: res.longitude || 0,
+        mini_speed: res.speed || 0,
+      });
+    });
+    // 同步获取系统信息
     const systemInfo = xmini.me.$getSystemInfo();
     this.setData({
+      // mini_platform: systemInfo['platform'], // 平台、终端
+      mini_os: systemInfo['platform'], // 客户端平台 Android iOS
+      mini_os_version: systemInfo['system'], // 操作系统版本
       mini_host: systemInfo['app'], // 当前运行的客户端 alipay wechat
-      mini_platform: systemInfo['platform'], // 客户端平台 Android iOS
-      mini_system_version: systemInfo['system'], // 操作系统版本
       mini_host_version: systemInfo['version'], // 宿主版本号
       mini_sdk_version: systemInfo['SDKVersion'] || '1.0.0', // 客户端基础库版本
       mini_language: systemInfo['language'], // 设置的语言
@@ -131,13 +141,7 @@ class Plugin extends PluginBase {
       mini_window_width: systemInfo['windowWidth'], // 可使用窗口宽高
       mini_window_height: systemInfo['windowHeight'],
     });
-    xmini.me.$getLocation(res => {
-      this.setData({
-        mini_lat: res.latitude || 0,
-        mini_lng: res.longitude || 0,
-        mini_speed: res.speed || 0,
-      });
-    });
+    // 用户信息，需要业务设定，登录后有
     // getUserInfo();
 
     this.log('app', 'launch');
@@ -146,11 +150,14 @@ class Plugin extends PluginBase {
     this.setData({
       mini_showtime: Date.now(),
       mini_showoption: options,
+      // showTimes++ ？
     });
-    // log('app', 'show');
     if (options['shareTicket']) {
 
     }
+    // 上报启动时长(注意保活)
+    // this.log('event', '启动时长', Date.now() - )
+    // log('app', 'show');
   }
   preAppOnHide() {
     this.setData({
@@ -166,13 +173,21 @@ class Plugin extends PluginBase {
     this.log('app', 'unLaunch');
   }
 
-  prePageOnLoad() {
+  prePageOnLoad(query = {}) {
+    this.setData({
+      mini_page_query: query,
+    });
     this.log('page', 'load');
   }
   prePageOnReady() {
     this.log('page', 'ready');
   }
-  prePageOnShow() {
+  prePageOnShow(opts = {}, ctx) {
+    this.setData({
+      page_count: this.getData('page_count') + 1,
+      start_time: 0,
+      last_page: ctx.route,
+    });
     this.log('page', 'show');
   }
   prePageOnHide() {

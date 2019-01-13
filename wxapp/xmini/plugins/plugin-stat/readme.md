@@ -7,33 +7,36 @@
 
 收集尽可能多的数据(数据命名，使用下划线，更清晰，统一加 `mini_` 前缀)
 
-以下为每个阶段所能收集到的数据，收集后直接产出
+- 每个阶段能收集到哪些数据
+- 什么时候向外提供这些数据
+- 什么时候触发上报
 
 - app
   - onError
-    - 直接产出错误信息 error_message
-    - 更新错误数量 error_count
+    - 产出错误信息 error_message
+    - 记录错误总数量 error_count
+    - emit('event', 'error_message', JSON.stringify(err))
   - onLaunch
     - 结合条件判断
       - 当前app是否已经上报过
-    - 同步获取系统信息 systemInfo
-    - 异步获取定位信息 location（可更新）
-    - 异步获取网络状态信息 networkType（可更新）
-    - 生成唯一标识 uuid
-    - 获取用户信息[有或没有]（可更新）
-    - 获取启动参数 showOptions
-    - 其他信息 初始化一些基础信息
+    - 基础信息初始化
+      - 生成uuid, 唯一标识
       - timestamp = Date.now()
       - showtime = Date.now()
-      - duration = Date.now()
+      - duration = 0
       - error_count = 0
       - page_count = 1
       - first_page = 1
-      - launchTimes++
+      - launchTimes++ ?
+    - 同步获取系统信息 systemInfo
+    - 异步获取定位信息 location（可更新）
+    - 异步获取网络状态信息 networkType（可更新）
+    - 获取用户信息[有或没有]（提供给业务更新）
+    - 获取启动参数 showOptions（获取 referer 信息）
   - onShow
     - 获取分享票据 shareTicket 等
-    - 获取启动参数 showOptions
-    - 计算启动时长 startupTime
+    - 获取启动参数 showOptions（获取 referer 信息）
+    - 计算并 event 上报启动时长 startupTime(注意保活机制)
     - showTimes++
   - onHide
     - 计算使用时长 duration = Data.now() - showtime
@@ -43,14 +46,13 @@
     - hideTimes++
 - page/component
   - onLoad
-    - 获取页面参数，pageQuery
+    - 获取页面参数，pageQuery（获取 referer 信息）
   - onReady
     - 计算页面准备时间
   - onShow
     - 结合条件判断
       - 当前页面是否已经上报过
       - page_count++
-      - error_count = 0
     - start_time = 0
     - 是否是第一个页面
     - 设置 last_page 为当前页面
@@ -63,8 +65,10 @@
 
 注意事项
 
-- 能收集哪些数据
-- 什么时候触发上报
+- 获取启动相关 referer 信息，有多处，一个是 app onShow，一个是 page onLoad
+- 获取页面跳转相关 referer 信息，就是上一页
+
+其他问题
 
 - mini_duration 在 app page 上报时，代表意义不同
 - onLoad 页面加载时触发。一个页面只会调用一次，可以在 onLoad 的参数中获取打开当前页面路径中的参数。

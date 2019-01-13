@@ -7,6 +7,24 @@
 
 上报数据
 
+- 配置型数据，只配置一次或有更新时触发
+  - 自身配置的数据
+    - 配置信息
+  - 以及 stat 收集的数据
+    - 系统信息
+    - 用户信息
+- 日志型数据，有无更新，只要产生数据，都作一次上报
+  - _trackPageView
+    - pageUrl
+  - _trackCustomVar
+    - index
+    - name
+    - value
+  - _trackEvent 启动时长
+    - category
+    - action
+    - value
+
 ```js
 const date = new Date();
 const data = this.getPiwikData();
