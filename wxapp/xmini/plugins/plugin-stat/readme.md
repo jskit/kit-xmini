@@ -8,14 +8,19 @@
 收集尽可能多的数据(数据命名，使用下划线，更清晰，统一加 `mini_` 前缀)
 
 - 每个阶段能收集到哪些数据
-- 什么时候向外提供这些数据
-- 什么时候触发上报
+  - 打开次数
+  - 启动时长、app停留时长、页面停留时长
+  - 打开页面的数量、入口页面、离开页面
+- 收集的数据怎么向外提供
+  - 通过触发 stat_update 向外提供（此时提供的数据，会setData）
+- 什么时候上报数据
+  - 通过触发 log ，提示要上报数据（此时的数据，不setData）
 
 - app
   - onError
     - 产出错误信息 error_message
     - 记录错误总数量 error_count
-    - emit('event', 'error_message', JSON.stringify(err))
+    emit('stat', ['event', 'error_message', JSON.stringify(err)], this);
   - onLaunch
     - 结合条件判断
       - 当前app是否已经上报过
@@ -28,15 +33,18 @@
       - page_count = 1
       - first_page = 1
       - launchTimes++ ?
+      - 获取启动参数 showOptions（获取 referer 信息）
     - 同步获取系统信息 systemInfo
     - 异步获取定位信息 location（可更新）
     - 异步获取网络状态信息 networkType（可更新）
     - 获取用户信息[有或没有]（提供给业务更新）
-    - 获取启动参数 showOptions（获取 referer 信息）
+    emit('stat', ['config', this.getData()], this); 不论同步或异步，数据更新后要发送通知
   - onShow
     - 获取分享票据 shareTicket 等
     - 获取启动参数 showOptions（获取 referer 信息）
+    emit('stat', ['config', this.getData()], this);
     - 计算并 event 上报启动时长 startupTime(注意保活机制)
+      emit('event', '启动时长', 'time')
     - showTimes++
   - onHide
     - 计算使用时长 duration = Data.now() - showtime
@@ -47,6 +55,7 @@
 - page/component
   - onLoad
     - 获取页面参数，pageQuery（获取 referer 信息）
+    emit('stat', ['config', this.getData()], this); 更新当前页面相关信息，如 referer query 等
   - onReady
     - 计算页面准备时间
   - onShow
@@ -57,8 +66,11 @@
     - 是否是第一个页面
     - 设置 last_page 为当前页面
     - 触发上报 pv
+    emit('stat', ['config', this.getData()], this); 更新当前页面相关信息
+    emit('pv', 'pageUrl')
   - onHide
     - 计算当前页面时长 Data.now() - start_time
+    emit(event) 上报页面浏览时长
   - onUnload
     - 计算当前页面时长 Data.now() - start_time
   - onShareAppMessage

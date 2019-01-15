@@ -32,7 +32,8 @@ class Plugin extends PluginBase {
     super(config);
   }
   setData(options = {}) {
-    return Object.assign(this._data, options);
+    emitter.emit('stat_update', { ...options }, this);
+    Object.assign(this._data, options);
   }
   getData(key) {
     return key ? this._data[key] : { ...this._data };
@@ -51,43 +52,37 @@ class Plugin extends PluginBase {
     // _trackPageview, pageURL
     // _trackEvent, category, action, value
     // _setCustomVar, index, name, value
-    let temp = {};
+    let temp = this.getData();
+    // 触发 更新 事件 以及 log
     switch(type) {
-      case 'page':
-        temp = this.getData();
-        break;
-      case 'app':
-        temp = this.getData();
-        break;
       case 'event':
-        this.setData({
-          ev: '',
-          ct: '',
-        });
-        temp = this.getData();
+      case 'app':
+      case 'page':
+        emitter.emit('log', {
+          type,
+          action,
+          value,
+        }, this);
         break;
       default:
+        emitter.emit('log', {
+          type,
+          action,
+          value,
+        }, this);
         // do nothing...
     }
-
-    const log = {
-      type,
-      action,
-      value: temp,
-    };
-    console.warn(log);
-    emitter.emit('stat', log, this);
   }
   preAppOnError(err) {
     let count = this.getData('mini_error_count') || 0;
     this.setData({
       mini_error_count: count + 1,
     });
-    this.log('event', 'error_message', JSON.stringify(err));
+    this.log('app', 'error', JSON.stringify(err));
+    // emitter.emit('stat', ['_trackEvent', 'error_message', JSON.stringify(err)], this);
   }
   preAppOnLaunch(options) {
     workspaceInit();
-    console.log(xmini);
     const that = this;
 
     // 初始化

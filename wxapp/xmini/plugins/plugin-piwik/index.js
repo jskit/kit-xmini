@@ -1,6 +1,6 @@
 import PluginBase from '../../core/plugin-base';
 import xmini from '../../core/xmini';
-import { stringify, hexMD5 } from '../../utils/index';
+import { stringify, hexMD5, emitter } from '../../utils/index';
 import { cityMap } from './cityMap';
 
 /**
@@ -34,10 +34,24 @@ class Plugin extends PluginBase {
     piwikInit: 'piwikInit',
     piwikReport: 'piwikReport',
   };
+  _data = {};
   _piwik = [];
   _caches = [];
   constructor(config) {
     super(config);
+    emitter.on('stat_update', res => {
+      this.setData(res);
+    });
+    emitter.on('log', res => {
+      this.piwikReport(res);
+    });
+  }
+  setData(config = {}) {
+    Object.assign(this._data, config);
+    console.log('config: ', this._data);
+  }
+  getData(key) {
+    return key ? this._data[key] : { ...this._data };
   }
   upLog(data) {
     let retryTimes = 0;
@@ -48,15 +62,15 @@ class Plugin extends PluginBase {
         url : 'https://piwik.php',
         data,
         method,
-        success : function() {
+        success(res) {
         },
-        fail : function() {
+        fail(err) {
           if (retryTimes < 2) {
             retryTimes++;
             data['retryTimes'] = retryTimes;
             upData();
           }
-        }
+        },
       });
     }
     upData();
@@ -144,14 +158,15 @@ class Plugin extends PluginBase {
       systemInfo: '',
     };
   }
-  piwikReport() {
+  piwikReport(log = {}) {
     const temp = this._caches;
     const data = {
       token_auth: '5db85cb262e7423aa6bdca05a0283643',
       requests: [...temp],
     };
 
-    this._send(data);
+    console.log('report: ', log);
+    // this._send(log);
   }
   _send(data) {
     const that = this;
@@ -211,7 +226,7 @@ class Plugin extends PluginBase {
       path: pageInfo.pagePath,
       refer: pageInfo.refer || 'istoppage',
       ...xmini.getChannel(),
-    })
+    });
     this._trackPageView(...rest);
   }
   //

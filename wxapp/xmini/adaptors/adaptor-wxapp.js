@@ -10,6 +10,7 @@ import { uuid } from '../utils/index';
 //   - $getCurPage() 获取当前页面
 //   - $getPageInfo() 获取当前页面信息，如 pageName pagePath pageQuery
 
+// 微信小程序是否是并发6个，怎么判断，目前在开发者工具上是6个（这个可能和浏览器有关系 http/1.1）
 class Plugin extends PluginBase {
   name = 'wxapp';
   constructor(config = {}) {
@@ -34,7 +35,6 @@ class Plugin extends PluginBase {
     me.httpRequest = me.request;
     me.$storage = storage;
     me.$getUUID = () => {
-      debugger;
       let uid = storageSystem.get('uuid');
       if (!uid) {
         uid = uuid(32);
@@ -104,6 +104,7 @@ class Plugin extends PluginBase {
         pageQuery: { ...$pageQuery },
         pagePath: route,
         pageName: route.split('/').reverse()[0] || '',
+        referer: '',
       };
     };
 

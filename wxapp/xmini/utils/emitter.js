@@ -47,6 +47,7 @@ export class Emitter {
     return this.on(name, on, context);
   }
 
+  // name, value, context
   emit(name) {
     const data = [].slice.call(arguments, 1);
     const evtArr = ((this._events || (this._events = {}))[name] || []).slice();
@@ -54,7 +55,7 @@ export class Emitter {
     const len = evtArr.length;
 
     for (i; i < len; i++) {
-      evtArr[i].fn.apply(evtArr[i].ctx, data);
+      evtArr[i].fn.apply(evtArr[i].context, data);
     }
 
     return this;

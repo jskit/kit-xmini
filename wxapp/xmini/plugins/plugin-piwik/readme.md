@@ -5,25 +5,54 @@
 
 ## plugin-piwik
 
-上报数据
+分以下场景进行数据的上报，参考百度统计、piwik 文档
 
-- 配置型数据，只配置一次或有更新时触发
-  - 自身配置的数据
-    - 配置信息
-  - 以及 stat 收集的数据
-    - 系统信息
-    - 用户信息
-- 日志型数据，有无更新，只要产生数据，都作一次上报
-  - _trackPageView
-    - pageUrl
-  - _trackCustomVar
-    - index
-    - name
-    - value
-  - _trackEvent 启动时长
-    - category
-    - action
-    - value
+- common 公共数据，只要上报就要带上
+  - 配置数据
+  - 系统、用户相关数据
+- _trackPageView
+  - pageUrl
+- _trackCustomVar 自定义变量
+  - index
+  - name
+  - value
+- _trackEvent 自定义事件
+  - category
+  - action
+  - value
+
+具体上报需要包含的数据（都包含公共数据）
+
+```js
+// pv 上报
+{
+  action_name: pageName,
+  url: 'http://' + pagePath, // 当前 url
+  urlref: 'refer' || 'istoppage', // 上一页
+  _ref: 'loadRefer',  // 入口来源页面
+}
+
+// 自定义事件上报
+{
+  action_name: action,
+  url: 'http://' + pagePath,
+  e_c: category, // 事件类型[点击、曝光、加载]
+  e_a: action, // 事件Id，具体事件名称
+  e_n: value, // 数据
+}
+
+// 自定义变量上报
+{
+  action_name: action,
+  url: 'http://' + pagePath,
+  e_c: category, // 事件类型[点击、曝光、加载]
+  e_a: action, // 事件Id，具体事件名称
+  e_n: value, // 数据
+}
+
+```
+
+## 详细数据
 
 ```js
 const date = new Date();
@@ -86,25 +115,6 @@ const data = this.getPiwikData();
 
 使用示例
 
-统计 pv 需要上传
-
-```js
-{
-  urlref: 'refer' || 'istoppage',
-  _ref: 'loadRefer',
-  action_name: pageName,
-  url: 'http://' + pagePath,
-}
-
-// 统计事件需要上传
-{
-  url: 'http://' + pagePath,
-  action_name: action,
-  e_c: category, // 事件类型[点击、曝光、加载]
-  e_a: action, // 事件Id，具体事件名称
-  e_n: value, // 数据
-}
-```
 
 自定义数据
 
