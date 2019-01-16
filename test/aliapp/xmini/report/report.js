@@ -17,14 +17,17 @@ function report(err) {
   }
   log.error(err);
   const request = host === 'aliapp' ? 'httpRequest' : 'request';
+  const pageInfo = me.$getPageInfo();
+  const systemInfo = me.$getSystemInfo() || {};
   me[request]({
     url: 'https://tongji.doweidu.com/log.php',
     method: 'POST',
     data: {
-      platform: appName,
+      ...systemInfo,
+      pagePath: pageInfo.pagePath,
+      pageQuery: JSON.stringify(pageInfo.pageQuery),
+      appName: appName,
       value: err,
-      systemInfo: me.$getSystemInfo('string'),
-      pageInfo: JSON.stringify(me.$getPageInfo()),
     },
     dataType: 'json',
     success: function(res) {
