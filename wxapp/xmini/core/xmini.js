@@ -40,7 +40,7 @@ class XMini extends Core {
       });
       return this;
     }
-
+    this.use(plugin);
     const { events = {}, methods = {} } = plugin;
     Object.keys(events).forEach(key => {
       const cbName = events[key];

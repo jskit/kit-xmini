@@ -39,6 +39,9 @@ class Plugin extends PluginBase {
   _caches = [];
   constructor(config) {
     super(config);
+
+  }
+  install() {
     emitter.on('stat_update', res => {
       this.setData(res);
     });
@@ -48,7 +51,6 @@ class Plugin extends PluginBase {
   }
   setData(config = {}) {
     Object.assign(this._data, config);
-    console.log('config: ', this._data);
   }
   getData(key) {
     return key ? this._data[key] : { ...this._data };
@@ -56,12 +58,20 @@ class Plugin extends PluginBase {
   upLog(data) {
     let retryTimes = 0;
     const { httpRequest } = xmini.me;
-    const reportURI = this.getConfig('reportURI');
+    const { reportURI, token_auth } = this.getConfig();
+
+    data = {
+      token_auth,
+      requests: [
+        stringify(this._common()),
+      ],
+    };
+    // debugger;
     const upData = () => {
       this.requestCount++;
-      data['rq_c'] = this.requestCount;
+      // data['rq_c'] = this.requestCount;
       httpRequest({
-        url: reportURI,
+        url: `${reportURI}?spm=wxapp&channel=wxapp`,
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,8 +84,10 @@ class Plugin extends PluginBase {
         fail(err) {
           if (retryTimes < 2) {
             retryTimes++;
-            data['retryTimes'] = retryTimes;
-            upData();
+            // data['retryTimes'] = retryTimes;
+            setTimeout(() => {
+              upData();
+            }, 1000)
           }
         },
       });
@@ -83,7 +95,7 @@ class Plugin extends PluginBase {
     upData();
   }
   piwikInit(opts = {}) {
-    if (!opts.reportURI || !opts.siteId || !opts.token_auth) {
+    if (!opts.reportURI || !opts.siteId || !opts.authToken) {
       console.error(
         `请检查 plugin ${
           this.name
@@ -94,14 +106,17 @@ class Plugin extends PluginBase {
     // 只允许设置以下值
     const whiteList = {
       size: 1,
-      idsite: 1,
+      siteId: 1,
       reportURI: 1,
-      token_auth: 1,
+      authToken: 1,
     };
 
-    const config = xmini.filterObj(opts, whiteList);
+    // const config = xmini.filterObj(opts, whiteList);
     this.setConfig({
-      ...config,
+      size: config.size,
+      idsite: config.siteId,
+      reportURI: config.reportURI,
+      token_auth: config.authToken,
       rec: 1,
     });
   }
@@ -119,54 +134,57 @@ class Plugin extends PluginBase {
     };
     // ['screen', 'userId', 'openId', 'location', 'cityName', 'path', 'refer', 'channel', 'spm']
     const config = xmini.filterObj(opts, whiteList);
-    this.setConfig(config);
+    this.setData(config);
   }
-  getPiwikId() {}
-  piwikCommon() {
+  getPiwikId() {
+    return '';
+  }
+  _common() {
     const date = new Date();
     const config = this.getConfig();
-    const devId = hexMD5(config.uuid + config.siteId).substr(8, 16);
-    const data = {
-      idsite: config.siteId,
+    const data = this.getData();
+    const devId = hexMD5(data.uuid + config.idsite).substr(8, 16);
+    const temp = {
+      idsite: config.idsite,
       rec: 1,
       _id: devId, // 支付宝小程序使用 user_id + idsite 前端生成ID，微信小程序使用 openid + idsite 前端生成ID
-      token_auth: '',
+      token_auth: config.token_auth,
       ...xmini.getChannel(),
 
       uid: '',
-      res: this.config.screen || '',
-      r: this.__random(6),
+      res: data.screen || '',
+      // r: this.__random(6),
       h: date.getHours(),
       m: date.getMinutes(),
       s: date.getSeconds(),
       send_image: 0,
 
       cvar: JSON.stringify({
-        1: ['channel', config.channel],
-        2: ['city_name', config.cityName],
-        3: ['spm', config.spm],
-        4: ['user_id', config.userId || ''],
+        1: ['channel', data.channel],
+        2: ['city_name', data.cityName],
+        3: ['spm', data.spm],
+        4: ['user_id', data.userId || ''],
       }),
       _cvar: JSON.stringify({
-        1: ['spm', config.spm],
-        2: ['openid', config.openId || null],
-        3: ['city_name', config.cityName || null],
-        4: ['user_id', config.userId || ''],
+        1: ['spm', data.spm],
+        2: ['openid', data.openId || null],
+        3: ['city_name', data.cityName || null],
+        4: ['user_id', data.userId || ''],
       }),
       cdt: parseInt(date / 1000),
 
-      country: 'cn',
-      region: '',
-      city: location.provinceId,
-      lat: location.lat || 0,
-      long: location.long || 0,
+      // country: 'cn',
+      // region: '',
+      // city: location.provinceId,
+      // lat: location.lat || 0,
+      // long: location.long || 0,
     };
 
     // 支付宝版本低时，取不到省市相关信息
     const piwikId = this.getPiwikId();
     if (piwikId) {
-      const { location = {} } = config;
-      Object.assign(data, {
+      const { location = {} } = data;
+      Object.assign(temp, {
         country: 'cn',
         region: piwikId,
         city: location.provinceId,
@@ -175,18 +193,21 @@ class Plugin extends PluginBase {
       })
     }
 
-    return data;
+    return temp;
   }
   piwikReport(log = {}) {
     // 上报数据，先经过数组，然后指定时间间隔内合并上报一次
     const temp = this._caches;
-    const data = {
-      token_auth: '5db85cb262e7423aa6bdca05a0283643',
-      requests: [...temp],
-    };
+    // const data = {
+    //   token_auth: '',
+    //   requests: [...temp],
+    // };
 
     console.log('report: ', log);
-    // this.upLog(log);
+
+    this.upLog({
+      url: 'string',
+    });
     // this._send(log);
   }
   // _send(data) {
