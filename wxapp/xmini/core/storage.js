@@ -1,3 +1,4 @@
+// 小程序的 storage 方法使用方式不完全一致，统一处理
 const {
   setStorage,
   // setStorageSync,
