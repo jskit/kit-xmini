@@ -21,14 +21,13 @@ function report(err) {
   const request = host === 'aliapp' ? 'httpRequest' : 'request';
   const pageInfo = me.$getPageInfo();
   const systemInfo = me.$getSystemInfo() || {};
-  const os = systemInfo['platform'] === 'iPhone OS' ? 'iOS' : systemInfo['platform']
+  const os = systemInfo['platform'] === 'iPhone OS' ? 'iOS' : systemInfo['platform'];
 
   me[request]({
     url: 'https://tongji.doweidu.com/log.php',
     method: 'POST',
     data: {
       miniappType,
-      system: systemInfo['platform'], // 客户端平台 Android iOS
       os, // 客户端平台 Android iOS
       osVersion: systemInfo['system'], // 操作系统版本
       host: systemInfo['app'] || 'wechat', // 当前运行的客户端 alipay wechat
