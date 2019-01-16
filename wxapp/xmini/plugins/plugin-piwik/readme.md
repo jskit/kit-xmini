@@ -10,6 +10,7 @@
 - common 公共数据，只要上报就要带上
   - 配置数据
   - 系统、用户相关数据
+  - 包含自定义变量相关数据
 - _trackPageView
   - pageUrl
 - _trackCustomVar 自定义变量
@@ -23,8 +24,11 @@
 
 具体上报需要包含的数据（都包含公共数据）
 
+- 上报的每个数据，都会和公共数据合并，之后存入数组
+- 频度控制上报速度
+
 ```js
-// pv 上报
+// pv 上报(page onShow 时上报)
 {
   action_name: pageName,
   url: 'http://' + pagePath, // 当前 url
@@ -32,7 +36,7 @@
   _ref: 'loadRefer',  // 入口来源页面
 }
 
-// 自定义事件上报
+// 自定义事件上报（随时上报）
 {
   action_name: action,
   url: 'http://' + pagePath,
@@ -41,7 +45,7 @@
   e_n: value, // 数据
 }
 
-// 自定义变量上报
+// 自定义变量上报（存储到公共数据内）
 {
   action_name: action,
   url: 'http://' + pagePath,
@@ -104,7 +108,7 @@ const data = this.getPiwikData();
     4: ['user_id', data.userId || ''],
   }),
 
-  country; 'cn',
+  country: 'cn',
   region: '',
   city: location.provinceId,
   lat: location.lat || 0,

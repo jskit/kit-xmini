@@ -29,7 +29,7 @@ xm.init({
     new PluginStat({}),
     new PluginPiwik({
       size: 10,
-      time: '', // 时间间隔
+      // time: '', // 上报时间间隔
       idsite: 2, // 测试用 2，本站点使用 5
       reportURI: 'https://tongji.doweidu.com/piwik.php',
       token_auth: '5db85cb262e7423aa6bdca05a0283643',

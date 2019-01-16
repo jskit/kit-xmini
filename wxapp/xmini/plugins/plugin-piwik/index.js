@@ -55,14 +55,21 @@ class Plugin extends PluginBase {
   }
   upLog(data) {
     let retryTimes = 0;
-    const upData = function () {
+    const { httpRequest } = xmini.me;
+    const reportURI = this.getConfig('reportURI');
+    const upData = () => {
       this.requestCount++;
       data['rq_c'] = this.requestCount;
-      wx.request({
-        url : 'https://piwik.php',
-        data,
-        method,
+      httpRequest({
+        url: reportURI,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        data: JSON.stringify(data),
+        dataType: 'json',
         success(res) {
+          // 成功就销毁数据，失败就多尝试两次，还失败就暂存
         },
         fail(err) {
           if (retryTimes < 2) {
@@ -114,51 +121,64 @@ class Plugin extends PluginBase {
     const config = xmini.filterObj(opts, whiteList);
     this.setConfig(config);
   }
+  getPiwikId() {}
   piwikCommon() {
-    // const date = new Date();
-    // const devId = hexMD5(this.config.uuid + this.config.siteId).substr(8, 16);
-    // const piwikId = this.__getRegionId(this.config.location.provinceId || '');
+    const date = new Date();
+    const config = this.getConfig();
+    const devId = hexMD5(config.uuid + config.siteId).substr(8, 16);
+    const data = {
+      idsite: config.siteId,
+      rec: 1,
+      _id: devId, // 支付宝小程序使用 user_id + idsite 前端生成ID，微信小程序使用 openid + idsite 前端生成ID
+      token_auth: '',
+      ...xmini.getChannel(),
 
-    // idsite: this.config.siteId,
-    // rec: 1,
-    // _id: devId,
-    // uid: '',
-    // res: this.config.screen || '',
-    // r: this.__random(6),
-    // h: date.getHours(),
-    // m: date.getMinutes(),
-    // s: date.getSeconds(),
-    // send_image: 0,
+      uid: '',
+      res: this.config.screen || '',
+      r: this.__random(6),
+      h: date.getHours(),
+      m: date.getMinutes(),
+      s: date.getSeconds(),
+      send_image: 0,
 
-    // cvar: JSON.stringify({
-    //   "1": ["channel", this.config.channel],
-    //   "2": ["city_name", this.config.cityName],
-    //   "3": ["spm", this.config.spm],
-    //   "4": ["user_id", this.config.userId || ''],
-    // }),
-    // _cvar: JSON.stringify({
-    //   "1": ["spm", this.config.spm],
-    //   "2": ["openid", this.config.openId || null],
-    //   "3": ["city_name", this.config.cityName || null],
-    //   "4": ["user_id", this.config.userId || ''],
-    // }),
-    // cdt: parseInt(new Date() / 1000),
+      cvar: JSON.stringify({
+        1: ['channel', config.channel],
+        2: ['city_name', config.cityName],
+        3: ['spm', config.spm],
+        4: ['user_id', config.userId || ''],
+      }),
+      _cvar: JSON.stringify({
+        1: ['spm', config.spm],
+        2: ['openid', config.openId || null],
+        3: ['city_name', config.cityName || null],
+        4: ['user_id', config.userId || ''],
+      }),
+      cdt: parseInt(date / 1000),
 
-    return {
-      _id: '',
-      user_id: '',
-      channel: '',
-      spm: '',
-      statId: '',
-      city: '',
-      lat: '',
-      long: '',
-      time: '',
-      version: '',
-      systemInfo: '',
+      country: 'cn',
+      region: '',
+      city: location.provinceId,
+      lat: location.lat || 0,
+      long: location.long || 0,
     };
+
+    // 支付宝版本低时，取不到省市相关信息
+    const piwikId = this.getPiwikId();
+    if (piwikId) {
+      const { location = {} } = config;
+      Object.assign(data, {
+        country: 'cn',
+        region: piwikId,
+        city: location.provinceId,
+        lat: location.lat || 0,
+        long: location.lon || 0,
+      })
+    }
+
+    return data;
   }
   piwikReport(log = {}) {
+    // 上报数据，先经过数组，然后指定时间间隔内合并上报一次
     const temp = this._caches;
     const data = {
       token_auth: '5db85cb262e7423aa6bdca05a0283643',
@@ -166,38 +186,39 @@ class Plugin extends PluginBase {
     };
 
     console.log('report: ', log);
+    // this.upLog(log);
     // this._send(log);
   }
-  _send(data) {
-    const that = this;
-    const { reportURI } = this.getConfig();
-    const { httpRequest } = xmini.me;
-    httpRequest({
-      url: `${reportURI}?${stringify(xmini.getChannel())}`,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data: JSON.stringify(data),
-      dataType: 'json',
-      success(res) {
-        if (callback && typeof callback === 'function') {
-          callback();
-        }
-      },
-      fail(err) {
-        that._cache = that._cache.concat(data);
-      },
-      complete() {},
-    });
-  }
+  // _send(data) {
+  //   const that = this;
+  //   const { reportURI } = this.getConfig();
+  //   const { httpRequest } = xmini.me;
+  //   httpRequest({
+  //     url: `${reportURI}?${stringify(xmini.getChannel())}`,
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     data: JSON.stringify(data),
+  //     dataType: 'json',
+  //     success(res) {
+  //       if (callback && typeof callback === 'function') {
+  //         callback();
+  //       }
+  //     },
+  //     fail(err) {
+  //       that._cache = that._cache.concat(data);
+  //     },
+  //     complete() {},
+  //   });
+  // }
   _trackPageView(pageURL, pageName) {
     // 统计页面 url 以及页面名称
     const temp = {
-      urlref: 'refer',
-      _ref: 'refer',
       action_name: pageName,
       url: pageName,
+      urlref: 'refer',
+      _ref: 'refer',
     };
     this.report(temp);
   }
