@@ -1,70 +1,47 @@
 // 小程序的 storage 方法使用不完全一致，所以放在项目中引用
 
-// import native from '../src/mini/native';
-
+// wxapp 本地数据存储的大小限制为 10MB
+// 把业务数据和系统数据分离
 const noop = () => {};
 let inited;
 // 数据都存在这里
 let storageData = {};
 // let me = {};
-
-// wxapp 本地数据存储的大小限制为 10MB
+let i = 1;
 
 const {
   setStorage,
-  setStorageSync,
-  getStorage,
+  // setStorageSync,
+  // getStorage,
   getStorageSync,
   removeStorage,
-  removeStorageSync,
+  // removeStorageSync,
   clearStorage,
-  clearStorageSync,
+  // clearStorageSync,
   getStorageInfo,
-  getStorageInfoSync,
+  // getStorageInfoSync,
 } = typeof my !== 'undefined' ? my : wx;
 
-// let storageData = getStorageSync({ key: 'storageData' }).data || {};
-// console.log('storageData');
-// console.log(storageData);
-// const storageInfo = getStorageInfoSync();
-// const {
-//   keys,
-//   currentSize,
-//   limitSize,
-// } = storageInfo;
-// console.log(storageInfo)
-// storageInfo.keys().forEach((key, index) => {
-//   console.log(key);
-// })
-// const cache = {
-//   set(key, value, time) {
-
-//   },
-//   get(key) {
-//     return cache
-//   },
-//   data: getStorageSync('storageData').data || {},
-// };
-
-let i = 1;
 class Storage {
-  constructor(store = 'x-mini') {
+  constructor(store = 'x-mini', time = 600) {
     this.store = store || `store-${i++}`;
+    this._time = (Number.isInteger(time) && time > 0) ? time : 600;
 
     let data = {};
     if (typeof my !== 'undefined') {
       // aliapp
       data = getStorageSync({ key: this.store }).data || {};
-    } else {
+    } else if (typeof wx !== 'undefined') {
       // wxapp
       data = getStorageSync(this.store) || {};
     }
     storageData[this.store] = data;
   }
-  set(key, value, time) {
-    // 单位秒
+  set(key, value, time = 0) {
+    // 单位秒，默认 10 分钟，-1表示一年
+    if (!time) time = this._time;
     const timeout = Date.now() - 1 + time * 1000;
-    // console.log(timeout);
+    console.log(timeout);
     const data = {
       value,
       timeout,
@@ -77,14 +54,14 @@ class Storage {
       key: this.store,
       data: storageData[this.store],
       success(res) {
-        // console.log('数据缓存成功');
-        // console.log(res);
+        console.log('数据缓存成功');
+        console.log(res);
       },
     });
   }
   get(key) {
     if (!key) return;
-    const temp = storageData[this.store][key] || {}
+    const temp = storageData[this.store][key] || {};
     // 缓存不存在
     if (!temp.timeout || !temp.value) return null;
     const now = Date.now();
@@ -101,8 +78,7 @@ class Storage {
     setStorage({
       key: this.store,
       data: storageData[this.store],
-      success(res) {
-      },
+      success(res) {},
     });
     // removeStorage({
     //   key,
@@ -120,7 +96,7 @@ class Storage {
     }
   }
   getStorageInfo() {
-    return getStorageInfo()
+    return getStorageInfo();
   }
 }
 
