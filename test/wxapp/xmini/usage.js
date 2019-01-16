@@ -10,15 +10,15 @@
 
 // 暂定封装小程序的方法
 // x-mini/index.js
-import { Storage, storage } from '../xmini/mini/storage';
-import native from '../xmini/mini/native';
-import XMini from '../xmini/mini/index';
-import extend from '../xmini/mini/extend';
+import { Storage, storage } from '../npm/x-mini/lib/mini/storage';
+import native from '../npm/x-mini/lib/mini/native';
+import XMini from '../npm/x-mini/lib/mini/index';
+import extend from '../npm/x-mini/lib/mini/extend';
 
 const plugins = {
-  stat: require('../xmini/stat/index'),
-  debug: require('../xmini/debug/index'),
-  report: require('../xmini/report/index'),
+  stat: require('../npm/x-mini/lib/stat/index'),
+  debug: require('../npm/x-mini/lib/debug/index'),
+  report: require('../npm/x-mini/lib/report/index'),
 }
 
 // const storage = new Storage('mini');
