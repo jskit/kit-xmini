@@ -54,11 +54,16 @@ class XMini extends Core {
       if (!this[key] && plugin[key]) {
         this[key] = plugin[fnName].bind(plugin);
       } else {
-        console.error(
-          `插件 ${
-            plugin.name
-          } 下的公开方法 ${key} 存在冲突，请使用别名，修改对应插件的 methods 值`
-        );
+        if (!this[key]) {
+          console.error(`插件 ${plugin.name} 下的公开方法 ${key} 不存在`);
+        }
+        if (plugin[key]) {
+          console.error(
+            `插件 ${
+              plugin.name
+            } 下的公开方法 ${key} 存在冲突，请使用别名，修改对应插件的 methods 值`
+          );
+        }
       }
     });
     // console.log(`:::add plugin::: ${plugin.name}`);

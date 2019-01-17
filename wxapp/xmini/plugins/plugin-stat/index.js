@@ -32,7 +32,7 @@ class Plugin extends PluginBase {
     super(config);
   }
   setData(options = {}) {
-    emitter.emit('stat_update', { ...options }, this);
+    emitter.emit('stat_data', { ...options }, this);
     Object.assign(this._data, options);
   }
   getData(key) {
@@ -52,25 +52,43 @@ class Plugin extends PluginBase {
     // _trackPageview, pageURL
     // _trackEvent, category, action, value
     // _setCustomVar, index, name, value
-    let temp = this.getData();
+    // let temp = this.getData();
     // 触发 更新 事件 以及 log
-    switch(type) {
+    switch (type) {
       case 'event':
-      case 'app':
-      case 'page':
-        emitter.emit('log', {
-          type,
-          action,
-          value,
-        }, this);
+        emitter.emit(
+          'stat_log',
+          {
+            type,
+            action,
+            value,
+          },
+          this
+        );
         break;
+      // case 'app':
+      // case 'page':
+      //   emitter.emit(
+      //     'stat_log',
+      //     {
+      //       type: 'event',
+      //       action: type,
+      //       value: action,
+      //     },
+      //     this
+      //   );
+      //   break;
       default:
-        emitter.emit('log', {
-          type,
-          action,
-          value,
-        }, this);
-        // do nothing...
+        emitter.emit(
+          'stat_log',
+          {
+            type,
+            action,
+            value,
+          },
+          this
+        );
+      // do nothing...
     }
   }
   preAppOnError(err) {
@@ -78,7 +96,7 @@ class Plugin extends PluginBase {
     this.setData({
       mini_error_count: count + 1,
     });
-    this.log('app', 'error', JSON.stringify(err));
+    this.log('event', 'error', JSON.stringify(err));
     // emitter.emit('stat', ['_trackEvent', 'error_message', JSON.stringify(err)], this);
   }
   preAppOnLaunch(options) {
@@ -122,24 +140,24 @@ class Plugin extends PluginBase {
     const systemInfo = xmini.me.$getSystemInfo();
     this.setData({
       // mini_platform: systemInfo['platform'], // 平台、终端
-      mini_os: systemInfo['platform'], // 客户端平台 Android iOS
-      mini_os_version: systemInfo['system'], // 操作系统版本
-      mini_host: systemInfo['app'] || 'wechat', // 当前运行的客户端 alipay wechat
-      mini_host_version: systemInfo['version'], // 宿主版本号
-      mini_sdk_version: systemInfo['SDKVersion'] || '1.0.0', // 客户端基础库版本
-      mini_language: systemInfo['language'], // 设置的语言
-      mini_phone_brand: systemInfo['brand'], // 手机品牌
-      mini_phone_model: systemInfo['model'], // 手机型号
-      mini_pixel_ratio: systemInfo['pixelRatio'], // 设备像素比
-      mini_screen_width: systemInfo['screenWidth'], // 屏幕宽高
-      mini_screen_height: systemInfo['screenHeight'],
-      mini_window_width: systemInfo['windowWidth'], // 可使用窗口宽高
-      mini_window_height: systemInfo['windowHeight'],
+      mini_os: systemInfo.platform, // 客户端平台 Android iOS
+      mini_os_version: systemInfo.system, // 操作系统版本
+      mini_host: systemInfo.app || 'wechat', // 当前运行的客户端 alipay wechat
+      mini_host_version: systemInfo.version, // 宿主版本号
+      mini_sdk_version: systemInfo.SDKVersion || '1.0.0', // 客户端基础库版本
+      mini_language: systemInfo.language, // 设置的语言
+      mini_phone_brand: systemInfo.brand, // 手机品牌
+      mini_phone_model: systemInfo.model, // 手机型号
+      mini_pixel_ratio: systemInfo.pixelRatio, // 设备像素比
+      mini_screen_width: systemInfo.screenWidth, // 屏幕宽高
+      mini_screen_height: systemInfo.screenHeight,
+      mini_window_width: systemInfo.windowWidth, // 可使用窗口宽高
+      mini_window_height: systemInfo.windowHeight,
     });
     // 用户信息，需要业务设定，登录后有
     // getUserInfo();
 
-    this.log('app', 'launch');
+    this.log('event', 'app', 'launch');
   }
   preAppOnShow(options = {}) {
     this.setData({
@@ -147,8 +165,7 @@ class Plugin extends PluginBase {
       mini_showoption: options,
       // showTimes++ ？
     });
-    if (options['shareTicket']) {
-
+    if (options.shareTicket) {
     }
     // 上报启动时长(注意保活)
     // this.log('event', '启动时长', Date.now() - )
@@ -159,23 +176,23 @@ class Plugin extends PluginBase {
       mini_duration: Date.now() - this.getData('mini_showtime'),
     });
     // if (this.mini_is_first_open) this.mini_is_first_open = false;
-    this.log('app', 'hide');
+    this.log('event', 'app', 'hide');
   }
   preAppOnUnlaunch() {
     this.setData({
       mini_duration: Date.now() - this.getData('mini_showtime'),
     });
-    this.log('app', 'unLaunch');
+    this.log('event', 'app', 'unLaunch');
   }
 
   prePageOnLoad(query = {}) {
     this.setData({
       mini_page_query: query,
     });
-    this.log('page', 'load');
+    this.log('event', 'page', 'load');
   }
   prePageOnReady() {
-    this.log('page', 'ready');
+    this.log('event', 'page', 'ready');
   }
   prePageOnShow(opts = {}, ctx) {
     this.setData({
@@ -183,13 +200,17 @@ class Plugin extends PluginBase {
       mini_start_time: 0,
       mini_last_page: ctx.route,
     });
-    this.log('page', 'show');
+    // 此处存储当前 path 路径，并上报一次 pv
+    // this.log('event', 'page', 'show');
+    // this.log('pv', 'pageName', url);
+    const { pageName, pagePath } = xmini.me.$getPageInfo();
+    this.log('pv', pageName, pagePath);
   }
   prePageOnHide() {
-    this.log('page', 'hide');
+    this.log('event', 'page', 'hide');
   }
   prePageOnUnload() {
-    this.log('page', 'unload');
+    this.log('event', 'page', 'unload');
   }
 }
 

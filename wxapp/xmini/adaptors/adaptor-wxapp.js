@@ -43,7 +43,7 @@ class Plugin extends PluginBase {
       }
       // console.warn(':::uuid:', uid);
       return uid;
-    },
+    };
     me.$getSystemInfo = () => {
       let systemInfo = storageSystem.get('systemInfo');
       if (!systemInfo) {
@@ -72,7 +72,7 @@ class Plugin extends PluginBase {
     //     });
     //   }
     // };
-    me.$getLocation = (cb) => {
+    me.$getLocation = cb => {
       let location = storageSystem.get('location');
       if (!location) {
         me.getLocation({
