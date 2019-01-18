@@ -105,12 +105,18 @@ xPage({
 })(Page);
 ```
 
-## 插件
+## 适配扩展及插件
 
-- plugin-error-report 错误上报
-- plugin-channel 渠道跟踪
-- plugin-stat 数据收集
-- plugin-piwik 统计数据上报
+- adaptors 包含差异化封装以及功能扩展
+  - adaptor-wxapp
+  - adaptor-aliapp
+- plugins
+  - [x] plugin-error-report 错误上报
+  - [x] plugin-channel 渠道跟踪
+  - [ ] plugin-stat 数据收集（是否可以无埋点）
+  - [ ] plugin-piwik 统计数据上报到 piwik
+  - [ ] formId 解决方案
+  - [ ] 封装请求队列
 
 ## Testing
 
