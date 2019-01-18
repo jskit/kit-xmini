@@ -1,6 +1,6 @@
 {
   "name": "@xmini/x-mini",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "封装小程序",
   "main": "lib/index.js",
   "scripts": {
