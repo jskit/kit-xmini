@@ -1,5 +1,5 @@
 // pages/index/index.js
-import { xPage } from '../../utils/xmini';
+import { xPage, xmini } from '../../utils/xmini';
 
 xPage({
   data: {},
@@ -9,6 +9,11 @@ xPage({
   onReady() {},
   onShow() {
     console.log('page page1: onShow');
+    // 模拟用户登录
+    xmini.piwikUpdate({
+      userId: 'xxxxx',
+      openId: '9999999',
+    });
   },
   onHide() {},
   onUnload() {},

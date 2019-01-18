@@ -5,7 +5,7 @@
 
 ## plugin-stat
 
-收集尽可能多的数据(数据命名，使用下划线，更清晰，统一加 `mini_` 前缀)
+收集尽可能多的数据(数据命名，使用下划线，更清晰，统一加 `` 前缀)
 
 - 每个阶段能收集到哪些数据
   - 打开次数
@@ -18,61 +18,62 @@
 
 - app
   - onError
-    - 产出错误信息 error_message
-    - 记录错误总数量 error_count
-    emit('stat', ['event', 'error_message', JSON.stringify(err)], this);
+    - 产出错误信息 error
+    - 记录错误总数量 errorCount
+    log('event', 'error', JSON.stringify(err));
   - onLaunch
     - 结合条件判断
       - 当前app是否已经上报过
     - 基础信息初始化
       - 生成uuid, 唯一标识
       - timestamp = Date.now()
-      - showtime = Date.now()
-      - duration = 0
-      - error_count = 0
-      - page_count = 1
-      - first_page = 1
+      - appShowTime = Date.now()
+      - appDuration = 0
+      - errorCount = 0
+      - pageCount = 1
+      - firstPage = 1
       - launchTimes++ ?
       - 获取启动参数 showOptions（获取 referer 信息）
     - 同步获取系统信息 systemInfo
     - 异步获取定位信息 location（可更新）
     - 异步获取网络状态信息 networkType（可更新）
     - 获取用户信息[有或没有]（提供给业务更新）
-    emit('stat', ['config', this.getData()], this); 不论同步或异步，数据更新后要发送通知
+    emit('stat_data', { ...rest }, this); 不论同步或异步，数据更新后要发送通知
   - onShow
     - 获取分享票据 shareTicket 等
     - 获取启动参数 showOptions（获取 referer 信息）
-    emit('stat', ['config', this.getData()], this);
+    emit('stat_data', { ...rest }, this);
     - 计算并 event 上报启动时长 startupTime(注意保活机制)
       emit('event', '启动时长', 'time')
     - showTimes++
   - onHide
-    - 计算使用时长 duration = Data.now() - showtime
+    - 计算使用时长 duration = Data.now() - appShowTime
     - hideTimes++
   - onUnlaunch
-    - 计算使用时长 duration = Data.now() - showtime
+    - 计算使用时长 duration = Data.now() - appShowTime
     - hideTimes++
 - page/component
   - onLoad
     - 获取页面参数，pageQuery（获取 referer 信息）
-    emit('stat', ['config', this.getData()], this); 更新当前页面相关信息，如 referer query 等
+    emit('stat_data', { ...rest }, this); 更新当前页面相关信息，如 referer query 等
   - onReady
     - 计算页面准备时间
   - onShow
     - 结合条件判断
       - 当前页面是否已经上报过
-      - page_count++
-    - start_time = 0
+      - pageCount++
+    - showTime = 0
     - 是否是第一个页面
     - 设置 last_page 为当前页面
     - 触发上报 pv
-    emit('stat', ['config', this.getData()], this); 更新当前页面相关信息
-    emit('pv', 'pageUrl')
+    emit('stat_data', { ...rest }, this); 更新当前页面相关信息
+    log('pv', 'pageUrl')
   - onHide
-    - 计算当前页面时长 Data.now() - start_time
-    emit(event) 上报页面浏览时长
+    - 计算当前页面时长 duration = Data.now() - showTime
+    log('event', '当前页面浏览时长', 'duration') 上报页面浏览时长
   - onUnload
-    - 计算当前页面时长 Data.now() - start_time
+    - 计算当前页面时长 duration = Data.now() - showTime
+    log('event', '当前页面浏览时长', 'duration')
   - onShareAppMessage
 
 注意事项
@@ -82,7 +83,7 @@
 
 其他问题
 
-- mini_duration 在 app page 上报时，代表意义不同
+- duration 在 app page 上报时，代表意义不同
 - onLoad 页面加载时触发。一个页面只会调用一次，可以在 onLoad 的参数中获取打开当前页面路径中的参数。
 - onReady 页面初次渲染完成时触发。一个页面只会调用一次，代表页面已经准备妥当，可以和视图层进行交互。
 - onShow 页面显示/切入前台时触发。
@@ -93,52 +94,52 @@
 
 ```js
 const sdkVersion = systemInfo['SDKVersion'];
-app.mini_sdk_version = isUnDef(sdkVersion) ? '1.0.0' : sdkVersion;
+app.sdkVersion = isUnDef(sdkVersion) ? '1.0.0' : sdkVersion;
 {
   name: app.appId,
   v: version,
 
-  so: app.mini_showoption, // app
-  st: app.mini_start_time, // Date.now()
-  ts: page.mini_timestamp,
-  dr: app.mini_duration, // Date.now() - page.mini_start_time,
+  so: app.showOptions, // app
+  st: app.startTime, // Date.now()
+  ts: page.timestamp,
+  dr: app.duration, // Date.now() - page.startTime,
 
-  ec: page.mini_error_count,
+  ec: page.errorCount,
   la_c: launchTimes,
   as_c: showTimes,
   ah_c: hideTimes,
 
   // 公共数据
-  nt: app.mini_network_type
-  ht: app.mini_host, // systemInfo['app'] 当前运行的客户端 alipay wechat
-  pf: app.mini_platform, // systemInfo['platform'] 客户端平台 Android iOS
-  vos: app.mini_system_version, // systemInfo['system'] 操作系统版本
-  vh: app.mini_host_version, // systemInfo['version'] 宿主版本号
-  v_sdk: app.mini_sdk_version, // 客户端基础库版本
-  lang: app.mini_language, // systemInfo['language'] 设置的语言
-  sb: app.mini_phone_brand, // systemInfo['brand'] 手机品牌
-  apm: app.mini_phone_model, // systemInfo['model'] 手机型号
-  apr: app.mini_pixel_ratio, // systemInfo['pixelRatio'] 设备像素比
-  sw: app.mini_screen_width, // systemInfo['screenWidth'] 屏幕宽高
-  sh: app.mini_screen_height, // systemInfo['screenHeight']
-  ww: app.mini_window_width, // systemInfo['windowWidth'] 可使用窗口宽高
-  wh: app.mini_window_height, // systemInfo['windowHeight']
+  nt: app.networkType
+  ht: app.host, // systemInfo['app'] 当前运行的客户端 alipay wechat
+  pf: app.platform, // systemInfo['platform'] 客户端平台 Android iOS
+  vos: app.systemVersion, // systemInfo['system'] 操作系统版本
+  vh: app.hostVersion, // systemInfo['version'] 宿主版本号
+  v_sdk: app.sdkVersion, // 客户端基础库版本
+  lang: app.language, // systemInfo['language'] 设置的语言
+  sb: app.brand, // systemInfo['brand'] 手机品牌
+  apm: app.model, // systemInfo['model'] 手机型号
+  apr: app.pixelRatio, // systemInfo['pixelRatio'] 设备像素比
+  sw: app.screenWidth, // systemInfo['screenWidth'] 屏幕宽高
+  sh: app.screenHeight, // systemInfo['screenHeight']
+  ww: app.windowWidth, // systemInfo['windowWidth'] 可使用窗口宽高
+  wh: app.windowHeight, // systemInfo['windowHeight']
 
-  // ln: app.mini_location_name,
+  // ln: app.location_name,
   // wxapp wgs84
-  lat: app.mini_lat, // res.latitude
-  lng: app.mini_lng, // res.longitude
-  lsp: app.mini_speed, // res.speed
+  lat: app.lat, // res.latitude
+  lng: app.lng, // res.longitude
+  lsp: app.speed, // res.speed
 
   // 定位信息支付宝会返回更多数据，如 province city district 等信息
 
   pp: page.route,
-  pq: page.mini_page_query,
-  psc: page.page_share_count,
+  pq: page.pageQuery,
+  psc: page.pageShareCount,
 
-  ifo: app.mini_is_first_open,
-  ifp: app.mini_is_first_page,
-  lp: app.mini_page_last_page,
+  ifo: app.isFirstOpen,
+  fp: app.firstPage,
+  lp: app.lastPage,
 
   // event 专有
   // tp: event value
@@ -153,7 +154,7 @@ log('app', 'show');
 log('page', 'show');
 log('component', 'show');
 log('event', 'share_click', 'event data');
-log('event', 'error_message', 'err data');
+log('event', 'error', 'err data');
 
 sendEvent(action, value = '') {
   // 参数长度不能超过255个字符
@@ -165,7 +166,7 @@ sendEvent(action, value = '') {
 
 ```js
 const { xmini } = 'xmini';
-const startTime = Date.now();//启动时间
+const startTime = Date.now(); // 启动时间
 App({
   onShow() {
     xmini.event('小程序的启动时长', {

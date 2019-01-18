@@ -106,18 +106,24 @@ class Plugin extends PluginBase {
       ...xmini.getChannelFilter(),
     };
     // ['screen', 'userId', 'openId', 'location', 'cityName', 'path', 'refer', 'channel', 'spm']
-    const config = xmini.filterObj(opts, whiteList);
+    const config = filterObj(opts, whiteList);
     this.setData(config);
   }
-  piwikPageView(pageUrl) {
+  piwikPageView(pagePath) {
     // pv 统计页面 url 以及页面名称
-    const temp = {
-      action_name: pageName,
-      url: pageName,
-      urlref: 'refer',
-      _ref: 'refer',
+    // const { pageName, pagePath, referer = '' } = xmini.me.$getPageInfo();
+    let url = pagePath;
+    if (!/^http/.test(pagePath)) {
+      url = 'http://' + pagePath;
+    }
+    const { lastPage, referer } = this.getData();
+    const data = {
+      url,
+      path: pagePath,
+      urlref: lastPage || 'istoppage',
+      _ref: referer,
     };
-    this.piwikLog(temp);
+    this.pushLog(data);
   }
   // cvar 暂时只有固定的数量，通过 stat_update/piwikUpdate 更新
   // piwikCustomVar(index, name, value) { }
@@ -128,72 +134,59 @@ class Plugin extends PluginBase {
     const temp = {
       action_name: action,
       // url: '',
-      e_c: category,
+      e_c: this.getConfig('category'),
       e_a: action,
-      e_n: name,
+      e_n: value,
     };
-    this.piwikLog(temp);
+    let immediately = false;
+    if (action === 'app') {
+      if (value === 'hide' || value === 'unlaunch') {
+        immediately = true;
+      }
+    }
+    this.pushLog(temp, immediately);
   }
+  // 暂时只支持两种log：event pv
   statLog(data) {
-    if (isObject(data) && !data.type) {
-      console.error('piwikLog 上报 log 为对象时，必须指定数据类型 data.type');
+    if (!isObject(data) || !data.type) {
+      console.error('statLog 上报数据格式必须为对象，且必须指定type 和 action');
       return;
     }
-    // if (isString(data)) {
-    //   // let type = 'event';
-    //   const temp = [].slice.call(arguments, +!!(data === 'event'));
-    //   // if (temp.length < 2) {}
-    //   data = {
-    //     action_name: 'event',
-    //     action: temp[0],
-    //     value: temp[1] || '',
-    //   };
-    // }
-    this.piwikLog({
-      action_name: data.type,
-      action: data.action,
-      value: data.value,
-    });
+    switch (data.type) {
+      case 'event':
+        this.piwikEvent(data.action, data.value);
+        break;
+      case 'pv':
+        this.piwikPageView(data.action, data.value);
+        break;
+      default:
+        // doNothing
+        break;
+    }
   }
   piwikLog(data) {
     // 通用结构
-    if (isObject(data) && !data.action_name) {
+    if (!isObject(data) && !data.action_name) {
       console.error(
-        'piwikLog 上报 log 为对象时，必须指定数据类型 data.action_name'
+        'piwikLog 上报数据格式必须为对象，且必须指定 action_name 和 action'
       );
       return;
     }
-    let log = {};
-    let immediately = false;
-    const common = this.getCommon();
-    switch (data.action_name) {
-      case 'event':
-        if (data.action === 'app') {
-          if (data.value === 'hide' || data.value === 'unlaunch') {
-            immediately = true;
-          }
-        }
-        log = merge(common, data);
-        break;
-      default:
-        // 默认 pv
-        log = merge(common, data);
-        break;
-    }
+    this.pushLog(data);
+  }
+  pushLog(data, immediately) {
+    const log = merge(this.getCommon(), data);
     console.warn(log);
-
-    this.pushLog(log, immediately);
-  }
-  pushLog(log, reportLog) {
     this._logs.push(stringify(log));
-    this.checkLog(reportLog);
+    this.checkLog();
   }
-  checkLog() {
+  checkLog(immediately) {
     if (this.reporting) return;
     if (!this._logs.length) return;
-    this.reportLog();
+    this.reportLog(immediately);
   }
   reportLog(immediately) {
+    // "?urlref=istoppage&_ref=istoppage&action_name=index&url=http%3A%2F%2Fpages%2Findex%2Findex%3Fspm%3Daliapp%26channel_id%3Daliapp%26ide_internal_page%3Dpages%252Findex%252Findex%26port%3D60154&idsite=5&rec=1&_id=c3b80d787042a4c8&uid=&res=375x667&r=366229&h=17&m=25&s=17&send_image=0&cvar=%7B%221%22%3A%5B%22channel%22%2C%22aliapp%22%5D%2C%222%22%3A%5B%22city_name%22%2Cnull%5D%2C%223%22%3A%5B%22spm%22%2C%22aliapp%22%5D%2C%224%22%3A%5B%22user_id%22%2C%22%22%5D%7D&_cvar=%7B%221%22%3A%5B%22spm%22%2C%22aliapp%22%5D%2C%222%22%3A%5B%22openid%22%2Cnull%5D%2C%223%22%3A%5B%22city_name%22%2Cnull%5D%2C%224%22%3A%5B%22user_id%22%2C%22%22%5D%7D&cdt=1547803517"
     if (this.reporting && !immediately) return;
     let logs = this._logs.splice(0);
 
@@ -260,15 +253,16 @@ class Plugin extends PluginBase {
     const config = this.getConfig();
     const data = this.getData();
     const devId = hexMD5(data.uuid + config.idsite).substr(8, 16);
+    const { screenWidth, screenHeight } = data;
+    const channelParams = xmini.getChannel();
     const temp = {
       idsite: config.idsite,
       rec: 1,
       _id: devId, // 支付宝小程序使用 user_id + idsite 前端生成ID，微信小程序使用 openid + idsite 前端生成ID
-      token_auth: config.token_auth,
-      ...xmini.getChannel(),
+      ...channelParams,
 
       uid: '',
-      res: data.screen || '',
+      res: screenWidth ? `${screenWidth}x${screenHeight}` : '',
       // r: this.__random(6),
       h: date.getHours(),
       m: date.getMinutes(),
@@ -279,18 +273,18 @@ class Plugin extends PluginBase {
       rq_c: 0,
       retryTimes: 0,
 
-      cvar: {
-        1: ['channel', data.channel],
+      cvar: JSON.stringify({
+        1: ['channel', channelParams.channel],
         2: ['city_name', data.cityName],
-        3: ['spm', data.spm],
+        3: ['spm', channelParams.spm],
         4: ['user_id', data.userId || ''],
-      },
-      _cvar: {
-        1: ['spm', data.spm],
+      }),
+      _cvar: JSON.stringify({
+        1: ['spm', channelParams.spm],
         2: ['openid', data.openId || null],
         3: ['city_name', data.cityName || null],
         4: ['user_id', data.userId || ''],
-      },
+      }),
       cdt: parseInt(date / 1000),
 
       // country: 'cn',
@@ -322,21 +316,6 @@ class Plugin extends PluginBase {
   //   if (!city) return '';
   //   return cityIdMap[city.toLowerCase()];
   // }
-  pv(url) {
-    if (!url) return;
-    // 需要上报当前 url 以及 refer
-    // action_name
-    const pageInfo = xmini.me.$getPageInfo();
-    this.piwikUpdate({
-      path: pageInfo.pagePath,
-      refer: pageInfo.refer || 'istoppage',
-      ...xmini.getChannel(),
-    });
-    this._trackPageView(...rest);
-  }
-  event(action, value) {
-    this._trackEvent(action, value);
-  }
 }
 
 export default Plugin;

@@ -30,6 +30,9 @@ class Plugin extends PluginBase {
   _data = {};
   constructor(config) {
     super(config);
+    this.setData({
+      startTime: Date.now(),
+    });
   }
   setData(options = {}) {
     emitter.emit('stat_data', { ...options }, this);
@@ -44,7 +47,7 @@ class Plugin extends PluginBase {
     // 不同的触发，产生的数据也不同，需要按类别进行过滤处理
     // 参考百度统计，输出规范化的数据
     // _hmt.push(['_trackPageview', pageURL]);
-    // _hmt.push(['_trackEvent', category, action, opt_label, opt_value]);
+    // _hmt.push(['_trackEvent', category, action, opt_label, optValue]);
     // _hmt.push(['_setCustomVar', index, name, value, opt_scope]);
     // _hmt.push(['_setAccount', siteId);
     // _hmt.push(['_setAutoPageview', false]);
@@ -56,28 +59,7 @@ class Plugin extends PluginBase {
     // 触发 更新 事件 以及 log
     switch (type) {
       case 'event':
-        emitter.emit(
-          'stat_log',
-          {
-            type,
-            action,
-            value,
-          },
-          this
-        );
-        break;
-      // case 'app':
-      // case 'page':
-      //   emitter.emit(
-      //     'stat_log',
-      //     {
-      //       type: 'event',
-      //       action: type,
-      //       value: action,
-      //     },
-      //     this
-      //   );
-      //   break;
+      case 'pv':
       default:
         emitter.emit(
           'stat_log',
@@ -92,12 +74,12 @@ class Plugin extends PluginBase {
     }
   }
   preAppOnError(err) {
-    let count = this.getData('mini_error_count') || 0;
+    let count = this.getData('errorCount') || 0;
     this.setData({
-      mini_error_count: count + 1,
+      errorCount: count + 1,
     });
     this.log('event', 'error', JSON.stringify(err));
-    // emitter.emit('stat', ['_trackEvent', 'error_message', JSON.stringify(err)], this);
+    // emitter.emit('stat', ['TrackEvent', 'error_message', JSON.stringify(err)], this);
   }
   preAppOnLaunch(options) {
     workspaceInit();
@@ -105,54 +87,58 @@ class Plugin extends PluginBase {
 
     // 初始化
     this.setData({
-      mini_uuid: xmini.me.$getUUID(),
-      mini_timestamp: Date.now(),
-      mini_showtime: Date.now(),
-      mini_duration: 0,
-      mini_error_count: 0,
-      mini_page_count: 1,
-      mini_first_page: 0,
-      mini_showoption: options,
-      // launchTimes++ ?
+      uuid: xmini.me.$getUUID(),
+      timestamp: Date.now(),
+      showTime: Date.now(),
+      duration: 0,
+      errorCount: 0,
+      pageCount: 1,
+      firstPage: 0,
+      showOptions: options,
+      // 下面几个暂无意义，需要对应的 event 总数累加
+      // 否则需要本地拿到上一次的次数累加才有效
+      launchTimes: 0,
+      showTimes: 0,
+      hideTimes: 0,
     });
 
     // 异步获取网络以及定位相关信息
     xmini.me.getNetworkType({
       success(res) {
         that.setData({
-          mini_network_type: res.networkType || 'no_name',
+          networkType: res.networkType || 'no_name',
         });
       },
       fail(err) {
         that.setData({
-          mini_network_type: 'fail',
+          networkType: 'fail',
         });
       },
     });
     xmini.me.$getLocation(res => {
       this.setData({
-        mini_lat: res.latitude || 0,
-        mini_lng: res.longitude || 0,
-        mini_speed: res.speed || 0,
+        lat: res.latitude || 0,
+        lng: res.longitude || 0,
+        speed: res.speed || 0,
       });
     });
     // 同步获取系统信息
     const systemInfo = xmini.me.$getSystemInfo();
     this.setData({
-      // mini_platform: systemInfo['platform'], // 平台、终端
-      mini_os: systemInfo.platform, // 客户端平台 Android iOS
-      mini_os_version: systemInfo.system, // 操作系统版本
-      mini_host: systemInfo.app || 'wechat', // 当前运行的客户端 alipay wechat
-      mini_host_version: systemInfo.version, // 宿主版本号
-      mini_sdk_version: systemInfo.SDKVersion || '1.0.0', // 客户端基础库版本
-      mini_language: systemInfo.language, // 设置的语言
-      mini_phone_brand: systemInfo.brand, // 手机品牌
-      mini_phone_model: systemInfo.model, // 手机型号
-      mini_pixel_ratio: systemInfo.pixelRatio, // 设备像素比
-      mini_screen_width: systemInfo.screenWidth, // 屏幕宽高
-      mini_screen_height: systemInfo.screenHeight,
-      mini_window_width: systemInfo.windowWidth, // 可使用窗口宽高
-      mini_window_height: systemInfo.windowHeight,
+      // platform: systemInfo['platform'], // 平台、终端
+      os: systemInfo.platform, // 客户端平台 Android iOS
+      osVersion: systemInfo.system, // 操作系统版本
+      host: systemInfo.app || 'wechat', // 当前运行的客户端 alipay wechat
+      hostVersion: systemInfo.version, // 宿主版本号
+      sdkVersion: systemInfo.SDKVersion || '1.0.0', // 客户端基础库版本
+      language: systemInfo.language, // 设置的语言
+      brand: systemInfo.brand, // 手机品牌
+      model: systemInfo.model, // 手机型号
+      pixelRatio: systemInfo.pixelRatio, // 设备像素比
+      screenWidth: systemInfo.screenWidth, // 屏幕宽高
+      screenHeight: systemInfo.screenHeight,
+      windowWidth: systemInfo.windowWidth, // 可使用窗口宽高
+      windowHeight: systemInfo.windowHeight,
     });
     // 用户信息，需要业务设定，登录后有
     // getUserInfo();
@@ -161,56 +147,79 @@ class Plugin extends PluginBase {
   }
   preAppOnShow(options = {}) {
     this.setData({
-      mini_showtime: Date.now(),
-      mini_showoption: options,
-      // showTimes++ ？
+      appShowTime: Date.now(),
+      showOptions: options,
+      // showTimes: this.getData('showTimes') + 1,
     });
-    if (options.shareTicket) {
-    }
-    // 上报启动时长(注意保活)
-    // this.log('event', '启动时长', Date.now() - )
-    // log('app', 'show');
+    // if (options.shareTicket) { }
+    // 上报启动时长(注意保活 这个不好处理)
+    // this.log('event', 'appStartTimes', Date.now() - startTime);
   }
   preAppOnHide() {
+    const appDuration = Date.now() - this.getData('appShowTime');
     this.setData({
-      mini_duration: Date.now() - this.getData('mini_showtime'),
+      appDuration,
+      // hideTimes: this.getData('hideTimes') + 1,
     });
-    // if (this.mini_is_first_open) this.mini_is_first_open = false;
-    this.log('event', 'app', 'hide');
+    this.log('event', 'app_hide', appDuration);
+    // 上报使用时长
   }
   preAppOnUnlaunch() {
+    const appDuration = Date.now() - this.getData('appShowTime');
     this.setData({
-      mini_duration: Date.now() - this.getData('mini_showtime'),
+      appDuration,
+      // hideTimes: this.getData('hideTimes') + 1,
     });
-    this.log('event', 'app', 'unlaunch');
+    this.log('event', 'app_unlaunch', appDuration);
+    // 上报使用时长
   }
 
   prePageOnLoad(query = {}) {
     this.setData({
-      mini_page_query: query,
+      pageQuery: query,
+      pageStartTime: Date.now(),
     });
-    this.log('event', 'page', 'load');
+    this.log('event', 'page_load');
   }
   prePageOnReady() {
-    this.log('event', 'page', 'ready');
+    const duration = Date.now() - this.getData('pageStartTime');
+    this.log('event', 'page_ready', duration);
   }
   prePageOnShow(opts = {}, ctx) {
-    this.setData({
-      mini_page_count: this.getData('mini_page_count') + 1,
-      mini_start_time: 0,
-      mini_last_page: ctx.route,
-    });
+    const pagePath = ctx.route;
+    const data = {
+      pageCount: this.getData('pageCount') + 1,
+      showTime: 0,
+      lastPage: pagePath,
+      referer: this.getData('lastPage'),
+    };
+    if (!this.getData('firstPage')) {
+      /* eslint dot-notation: 0 */
+      data['firstPage'] = pagePath;
+    }
+    this.setData(data);
+
+    // pv, url, referer
+    this.log('pv', pagePath, this.getData('lastPage'));
     // 此处存储当前 path 路径，并上报一次 pv
     // this.log('event', 'page', 'show');
     // this.log('pv', 'pageName', url);
-    const { pageName, pagePath } = xmini.me.$getPageInfo();
-    this.log('pv', pageName, pagePath);
   }
   prePageOnHide() {
-    this.log('event', 'page', 'hide');
+    const duration = Date.now() - this.getData('showTime');
+    this.setData({
+      duration,
+    });
+    this.log('event', 'page_hide', duration);
+    // 上报当前页面浏览时长
   }
   prePageOnUnload() {
-    this.log('event', 'page', 'unload');
+    const duration = Date.now() - this.getData('showTime');
+    this.setData({
+      duration,
+    });
+    this.log('event', 'page_unload', duration);
+    // 上报当前页面浏览时长
   }
 }
 
