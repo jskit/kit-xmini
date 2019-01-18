@@ -16,6 +16,16 @@ export function compactObject(object = {}, invalid = ['', undefined, null]) {
   return result;
 }
 
+// 过滤值，以及无效值
+export function filterObj(params, filters) {
+  return Object.keys(params).reduce((obj, key) => {
+    if (filters[key] && ![undefined, null, ''].includes(params[key])) {
+      obj[key] = params[key];
+    }
+    return obj;
+  }, {});
+}
+
 /**
  * 处理参数
  *

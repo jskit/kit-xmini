@@ -182,7 +182,7 @@ class Plugin extends PluginBase {
     this.setData({
       mini_duration: Date.now() - this.getData('mini_showtime'),
     });
-    this.log('event', 'app', 'unLaunch');
+    this.log('event', 'app', 'unlaunch');
   }
 
   prePageOnLoad(query = {}) {

@@ -1,7 +1,7 @@
 import PluginBase from '../core/plugin-base';
 
 // import { compactObject } from '@jskit/qs';
-import { compactObject } from '../utils/qs';
+import { compactObject, filterObj } from '../utils/index';
 import xmini from '../core/xmini';
 
 // function toMap(arr = []) {
@@ -32,7 +32,6 @@ class Plugin extends PluginBase {
     getChannel: 'getChannel',
     setChannel: 'setChannel',
     getChannelFilter: 'getChannelFilter',
-    filterObj: 'filterObj',
   };
 
   constructor(config = {}) {
@@ -58,15 +57,6 @@ class Plugin extends PluginBase {
     });
   }
 
-  filterObj(params, filters) {
-    return Object.keys(params).reduce((obj, key) => {
-      if (filters[key]) {
-        obj[key] = params[key];
-      }
-      return obj;
-    }, {});
-  }
-
   initChannel(options = {}, type) {
     // console.log(options, type);
     const { path = '', query, referrerInfo = {}, scene, shareTicket } = options;
@@ -85,7 +75,7 @@ class Plugin extends PluginBase {
     if (!filters) {
       filters = this.getConfig();
     }
-    return this.filterObj(params, filters);
+    return filterObj(params, filters);
   }
 
   setChannel(options) {

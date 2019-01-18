@@ -4,5 +4,10 @@
 
   <text class="iconfont icon-close"></text>
   <view class="iconfont icon-feedback"></view>
+
+  <view>做两个页面，创造多种数据来上报</view>
+
+  <button bindtap="goNext" data-link="page1">page1</button>
+  <button bindtap="goNext" data-link="page2">page2</button>
 </view>
 

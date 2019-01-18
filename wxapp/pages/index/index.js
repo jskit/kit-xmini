@@ -43,4 +43,16 @@ xPage({
   onPullDownRefresh() {},
   onReachBottom() {},
   onShareAppMessage() {},
+
+  goNext(e) {
+    const { link } = e.currentTarget.dataset;
+    // switch (link) {
+    //   case 'detail':
+    // }
+    if (link) {
+      wx.navigateTo({
+        url: `../../pages/${link}/${link}`,
+      });
+    }
+  },
 })(Page);

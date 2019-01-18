@@ -6,7 +6,8 @@ import {
   emitter,
   merge,
   isObject,
-  isString,
+  filterObj,
+  // isString,
 } from '../../utils/index';
 // import { cityMap } from './cityMap';
 
@@ -50,7 +51,8 @@ class Plugin extends PluginBase {
   _data = {};
   _logs = [];
   constructor(config) {
-    super(config);
+    super({});
+    this.piwikInit(config);
   }
   install() {
     emitter.on('stat_data', this.setData, this);
@@ -63,12 +65,13 @@ class Plugin extends PluginBase {
   getData(key) {
     return key ? this._data[key] : { ...this._data };
   }
+  // 不需要这个，因为直接 new 时，就可以配置好了
   piwikInit(opts = {}) {
     if (!opts.reportURI || !opts.siteId || !opts.authToken) {
       console.error(
         `请检查 plugin ${
           this.name
-        } 的设置，初始化必须配置 reportURI, siteId, token_auth`
+        } 的设置，初始化必须配置 reportURI, siteId, authToken`
       );
       return;
     }
@@ -81,7 +84,7 @@ class Plugin extends PluginBase {
     };
 
     // 这里做过滤，无效的删除，非白名单的删除
-    // const config = xmini.filterObj(opts, whiteList);
+    const config = filterObj(opts, whiteList);
     this.setConfig({
       size: config.size,
       idsite: config.siteId,
@@ -161,29 +164,37 @@ class Plugin extends PluginBase {
       return;
     }
     let log = {};
+    let immediately = false;
     const common = this.getCommon();
     switch (data.action_name) {
       case 'event':
-        log = merge(common, log);
+        if (data.action === 'app') {
+          if (data.value === 'hide' || data.value === 'unlaunch') {
+            immediately = true;
+          }
+        }
+        log = merge(common, data);
         break;
       default:
         // 默认 pv
-        log = merge(common, log);
+        log = merge(common, data);
         break;
     }
-    this.pushLog(log);
+    console.warn(log);
+
+    this.pushLog(log, immediately);
   }
-  pushLog(log) {
+  pushLog(log, reportLog) {
     this._logs.push(stringify(log));
-    this.checkLog();
+    this.checkLog(reportLog);
   }
   checkLog() {
     if (this.reporting) return;
     if (!this._logs.length) return;
     this.reportLog();
   }
-  reportLog() {
-    if (this.reporting) return;
+  reportLog(immediately) {
+    if (this.reporting && !immediately) return;
     let logs = this._logs.splice(0);
 
     let retryTimes = 0;
@@ -195,7 +206,6 @@ class Plugin extends PluginBase {
       logs = logs.map(item => {
         return item
           .replace(/rq_c=(\d+)/g, (match, $1) => {
-            debugger;
             const count = $1 > this.requestCount ? $1 : this.requestCount;
             return `rq_c=${count}`;
           })
@@ -234,13 +244,16 @@ class Plugin extends PluginBase {
             }, 300);
           } else {
             this.reporting = false;
-            // 把数据存起来，留待后面上报使用
+            // 把数据存起来，留待后面再上报使用
             this.save();
           }
         },
       });
     };
     reportData();
+  }
+  save() {
+    // 临时存储
   }
   getCommon() {
     const date = new Date();
