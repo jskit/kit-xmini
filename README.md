@@ -19,170 +19,101 @@
 
 ## 注意事项
 
--**注意**：如果模块只有一个输出值，就使用export default，如果模块有多个输出值，
-就不使用export default，export default与普通的export不要同时使用。(http://es6.ruanyifeng.com/#docs/style#%E6%A8%A1%E5%9D%97)
-
 经过测试，存在以下问题，
 
 - aliapp 不能引入 npm模块的es6格式，需要编译成es5
-- wxapp 不能引入node_modules路径下内容，而其他路径可以
-- 综上，建议使用独立文件夹路径引入，直接使用es6源文件即可
+- wxapp 不能引入node_modules路径下内容，而其他路径可以（目前最新版也不是 node_modules 文件夹）
+- 综上，最好还是手动源码引入，将安装后的代码，拖入自定义文件夹中使用
 
-## 模块功能
-
-- 模块间逻辑相互独立，按需引用
-- 支持配置以及扩展功能
+**注意**：如果模块只有一个输出值，就使用export default，如果模块有多个输出值，
+就不使用export default，export default与普通的export不要同时使用。(http://es6.ruanyifeng.com/#docs/style#%E6%A8%A1%E5%9D%97)
 
 ## 使用
 
-新建 `/utils/mini.js` 文件
+- 新版本支持按需引入
+- 以插件形式随意扩展功能，也可以自己实现功能后引入
+
+引入过程，新建 `/utils/xmini.js` 文件如下（假如你自定义的引用文件夹为 npm）
 
 ```js
-import { Storage, storage } from '../npm/x-mini/lib/mini/storage';
-import native from '../npm/x-mini/lib/mini/native';
-import XMini from '../npm/x-mini/lib/mini/index';
-import extend from '../npm/x-mini/lib/mini/extend';
+import xm from '../xmini/core/xmini';
+// import { App, Page } from '../xmini/utils/mockMini';
+import miniapp from '../xmini/adaptors/adaptor-wxapp';
 
-const plugins = {
-  stat: require('../npm/x-mini/lib/stat/index'),
-  debug: require('../npm/x-mini/lib/debug/index'),
-  report: require('../npm/x-mini/lib/report/index'),
-}
+import PluginErrorReport from '../xmini/plugins/plugin-error-report';
+import PluginChannel from '../xmini/plugins/plugin-channel';
+import PluginStat from '../xmini/plugins/plugin-stat/index';
+import PluginPiwik from '../xmini/plugins/plugin-piwik/index';
 
-// const storage = new Storage('mini');
-const xApp = new XMini({ type: 'app' });
-const xPage = new XMini({ type: 'page' });
-
-function init(opts = {}) {
-  const temp = {};
-  native.init({
-    ...opts,
-    me: opts.me,
-    xApp,
-    xPage,
-    getLocation: opts.getLocation || false,
-  });
-  extend.init(native.get());
-  Object.assign(temp, {
-    extend,
-  });
-  // 缓存下全局变量，供内部使用
-  for (const key in plugins) {
-    const plugin = plugins[key];
-    plugin.init(native.get());
-    Object.assign(temp, {
-      [`${key}`]: plugin,
-    });
-  }
-  return temp;
-}
-
-const appId = '';
-const appName = 'iqg';
-let me = {};
-let host;
-let appConfig;
-
-// 对工具变量进行处理，方便输出
-if (typeof __wxConfig !== 'undefined') {
-  host = 'wxapp';
-  appConfig = __wxConfig;
-  me = Object.assign({}, wx);
-  wx = me;
-} else {
-  host = 'aliapp';
-  appConfig = require('../app.json');
-  me = my;
-}
-
-// 以下变量必须设置
-const mini = init({
-  host, // aliapp or wxapp
-  me,
-  appId,
-  appName: `${appName}-${host}`,
-  appConfig,
+xm.init({
+  appId: 123,
+  appName: 'test',
+  me: miniapp.me(),
+  getCurrentPages: miniapp.getCurrentPages,
+  plugins: [
+    new PluginErrorReport({
+      reportURI: 'https://tongji.xxx.com/log.php',
+    }),
+    new PluginChannel({
+      spm: 'wxapp',
+      channel: 'wxapp',
+      channel_id: 'wxapp',
+    }),
+    new PluginStat({}),
+    new PluginPiwik({
+      size: 10,
+      // time: '', // 上报时间间隔
+      siteId: 2, // 测试用 2，本站点使用 5
+      reportURI: 'https://tongji.xxx.com/piwik.php',
+      authToken: 'xxx',
+    }),
+  ],
 });
 
-// storage.set('test', {a:1}, 100);
-// var aa = storage.get('test')
-// console.warn(111, aa)
+export const xmini = xm;
 
-module.exports = {
-  storage,
-  Storage,
-  me,
-  xApp,
-  xPage,
-};
+export const xApp = xm.xApp;
+export const xPage = xm.xPage;
+export const xComponent = xm.xPage;
 ```
 
-页面具体使用如下
+页面引用如下
 
 ```js
 // app.js
-import {
-  xApp,
-} from './utils/mini';
+import { xApp } from './utils/xmini';
 
-App(xApp.entry({
-  onLaunch() {},
-  onShow() {},
-}));
+xApp({
+  onError(err) {},
+  onShow() {
+    console.log('app onShow');
+    // 模拟错误信息
+    // xxx;
+  },
+})(App);
 ```
 
 ```js
 // page.js
-import {
-  xPage,
-} from './utils/mini';
+import { xPage } from './utils/xmini';
 
-Page(xPage.entry({
-  onLoad() {},
-  onShow() {},
-}));
+xPage({
+  onLoad(query) {},
+  onShow() {
+    console.log('page onShow');
+  },
+})(Page);
 ```
 
-### x-mini
+## 插件
 
-支持对生命周期方法进行前置、后置的方法混入
-
-### 数据统计方案
-
-stat 实现统计方案接入
-
-### 错误上报机制
-
-report 实现错误上报机制
-
-### my 方法优化与扩展
-
-- my 方法使用优化 如 showToast 等
-- 扩展 my 方法，如 $forward
-
-### 缓存方案
-
-封装 storage，实现缓存方案
-
-### 数据请求优化
-
-- 封装请求队列
-- 统一处理报错
-- 优化接口、公共参数配置，统一管理
-- 支持缓存
-- 支持请求拦截
-
-### debug 调试模式
-
-- 支持api环境切换
-- 支持一定的调试手段，如开关log弹窗
-
-### formId 解决方案
-
-### 组件最佳实践
-
-### 模板共用最佳实践
+- plugin-error-report 错误上报
+- plugin-channel 渠道跟踪
+- plugin-stat 数据收集
+- plugin-piwik 统计数据上报
 
 ## Testing
 
 可以以微信小程序为例进行测试研究，相对来说调试更方便并且功能更齐全。
+
+或使用 `mockMini` 来完成自动化测试
