@@ -1,4 +1,4 @@
-# x-mini 小程序最佳实践
+# @xmini/x-mini 小程序壳
 
 **注意**
 
@@ -28,22 +28,24 @@
 **注意**：如果模块只有一个输出值，就使用export default，如果模块有多个输出值，
 就不使用export default，export default与普通的export不要同时使用。(http://es6.ruanyifeng.com/#docs/style#%E6%A8%A1%E5%9D%97)
 
-## 使用
+## 如何使用
 
 - 新版本支持按需引入
 - 以插件形式随意扩展功能，也可以自己实现功能后引入
 
-引入过程，新建 `/utils/xmini.js` 文件如下（假如你自定义的引用文件夹为 npm）
+使用过程如下：
+
+新建 `/utils/xmini.js` 文件如下（假设你引用 `node_modules` es6 包的文件夹为 `npm` 目录）
 
 ```js
-import xm from '../xmini/core/xmini';
-// import { App, Page } from '../xmini/utils/mockMini';
-import miniapp from '../xmini/adaptors/adaptor-wxapp';
+import xm from '../npm/xmini/core/xmini';
+// import { App, Page } from '../npm/xmini/utils/mockMini';
+import miniapp from '../npm/xmini/adaptors/adaptor-wxapp';
 
-import PluginErrorReport from '../xmini/plugins/plugin-error-report';
-import PluginChannel from '../xmini/plugins/plugin-channel';
-import PluginStat from '../xmini/plugins/plugin-stat/index';
-import PluginPiwik from '../xmini/plugins/plugin-piwik/index';
+import PluginErrorReport from '../npm/xmini/plugins/plugin-error-report';
+import PluginChannel from '../npm/xmini/plugins/plugin-channel';
+import PluginStat from '../npm/xmini/plugins/plugin-stat/index';
+import PluginPiwik from '../npm/xmini/plugins/plugin-piwik/index';
 
 xm.init({
   appId: 123,
@@ -113,8 +115,8 @@ xPage({
 - plugins
   - [x] plugin-error-report 错误上报
   - [x] plugin-channel 渠道跟踪
-  - [ ] plugin-stat 数据收集（是否可以无埋点）
-  - [ ] plugin-piwik 统计数据上报到 piwik
+  - [x] plugin-stat 数据收集（是否可以无埋点）
+  - [x] plugin-piwik 统计数据上报到 piwik
   - [ ] formId 解决方案
   - [ ] 封装请求队列
 
