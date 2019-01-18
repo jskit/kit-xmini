@@ -114,7 +114,7 @@ class Plugin extends PluginBase {
   piwikReport() {
     const temp = this._caches;
     const data = {
-      token_auth: '5db85cb262e7423aa6bdca05a0283643',
+      token_auth: '',
       requests: [...temp],
     };
 
