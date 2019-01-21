@@ -34,6 +34,7 @@
       - firstPage = 1
       - launchTimes++ ?
       - 获取启动参数 showOptions（获取 referer 信息）
+      - 场景值 √
     - 同步获取系统信息 systemInfo
     - 异步获取定位信息 location（可更新）
     - 异步获取网络状态信息 networkType（可更新）
@@ -47,10 +48,10 @@
       emit('event', '启动时长', 'time')
     - showTimes++
   - onHide
-    - 计算使用时长 duration = Data.now() - appShowTime
+    - 计算使用时长 appDuration = Data.now() - appShowTime
     - hideTimes++
   - onUnlaunch
-    - 计算使用时长 duration = Data.now() - appShowTime
+    - 计算使用时长 appDuration = Data.now() - appShowTime
     - hideTimes++
 - page/component
   - onLoad

@@ -109,18 +109,20 @@ class Plugin extends PluginBase {
     const config = filterObj(opts, whiteList);
     this.setData(config);
   }
-  piwikPageView(pagePath) {
+  piwikPageView(pagePath, referer) {
     // pv 统计页面 url 以及页面名称
     // const { pageName, pagePath, referer = '' } = xmini.me.$getPageInfo();
     let url = pagePath;
     if (!/^http/.test(pagePath)) {
       url = 'http://' + pagePath;
     }
-    const { lastPage, referer } = this.getData();
+    // const { lastPage } = this.getData();
+    // pv 信息都应该从 pageInfo 上取
     const data = {
       url,
       path: pagePath,
-      urlref: lastPage || 'istoppage',
+      // action_name: pageName,
+      urlref: referer || 'istoppage',
       _ref: referer,
     };
     this.pushLog(data);
@@ -248,6 +250,13 @@ class Plugin extends PluginBase {
   save() {
     // 临时存储
   }
+  random(size) {
+    let temp = '';
+    for (let i = 0; i < size; i++) {
+      temp += Math.floor(Math.random() * 10);
+    }
+    return temp;
+  }
   getCommon() {
     const date = new Date();
     const config = this.getConfig();
@@ -263,7 +272,7 @@ class Plugin extends PluginBase {
 
       uid: '',
       res: screenWidth ? `${screenWidth}x${screenHeight}` : '',
-      // r: this.__random(6),
+      r: this.random(6),
       h: date.getHours(),
       m: date.getMinutes(),
       s: date.getSeconds(),
@@ -273,17 +282,20 @@ class Plugin extends PluginBase {
       rq_c: 0,
       retryTimes: 0,
 
+      // 当前页面访问时的数据
       cvar: JSON.stringify({
         1: ['channel', channelParams.channel],
         2: ['city_name', data.cityName],
         3: ['spm', channelParams.spm],
         4: ['user_id', data.userId || ''],
       }),
+      // 记录访问最后一个页面的数据
       _cvar: JSON.stringify({
         1: ['spm', channelParams.spm],
         2: ['openid', data.openId || null],
         3: ['city_name', data.cityName || null],
         4: ['user_id', data.userId || ''],
+        5: ['scene', data.scene || ''], // 场景值
       }),
       cdt: parseInt(date / 1000),
 

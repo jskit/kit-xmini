@@ -1,5 +1,5 @@
 // pages/index/index.js
-import { xPage, xmini } from '../../utils/xmini';
+import { xPage, xmini } from '../../config/xmini';
 const { me } = xmini;
 
 xPage({

@@ -24,6 +24,7 @@ class Plugin extends PluginBase {
   events = {
     preAppOnLaunch: 'preAppOnLaunch',
     preAppOnShow: 'preAppOnShow',
+
     prePageOnLoad: 'prePageOnLoad',
     // prePageOnShow: 'prePageOnShow',
   };

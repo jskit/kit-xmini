@@ -1,5 +1,5 @@
 // pages/index/index.js
-import { xPage } from '../../utils/xmini';
+import { xPage } from '../../config/xmini';
 
 xPage({
   data: {},

@@ -20,6 +20,9 @@ xm.init({
   appId: 123,
   appName: 'test',
   me,
+  mixins: [
+    // {},
+  ],
   plugins: [
     new PluginChannel({
       spm: 'wxapp',

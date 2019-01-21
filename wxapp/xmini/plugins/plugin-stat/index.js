@@ -41,7 +41,7 @@ class Plugin extends PluginBase {
   getData(key) {
     return key ? this._data[key] : { ...this._data };
   }
-  log(type, action, value) {
+  statLog(type, action, value) {
     // 数据类型，app page component event
     // 每触发一次抛出一次数据，数据可以被其他插件接收（通过特定的形式）
     // 不同的触发，产生的数据也不同，需要按类别进行过滤处理
@@ -78,7 +78,7 @@ class Plugin extends PluginBase {
     this.setData({
       errorCount: count + 1,
     });
-    this.log('event', 'error', JSON.stringify(err));
+    this.statLog('event', 'error', JSON.stringify(err));
     // emitter.emit('stat', ['TrackEvent', 'error_message', JSON.stringify(err)], this);
   }
   preAppOnLaunch(options) {
@@ -143,7 +143,7 @@ class Plugin extends PluginBase {
     // 用户信息，需要业务设定，登录后有
     // getUserInfo();
 
-    this.log('event', 'app', 'launch');
+    this.statLog('event', 'app', 'launch');
   }
   preAppOnShow(options = {}) {
     this.setData({
@@ -153,7 +153,7 @@ class Plugin extends PluginBase {
     });
     // if (options.shareTicket) { }
     // 上报启动时长(注意保活 这个不好处理)
-    // this.log('event', 'appStartTimes', Date.now() - startTime);
+    // this.statLog('event', 'appStartTimes', Date.now() - startTime);
   }
   preAppOnHide() {
     const appDuration = Date.now() - this.getData('appShowTime');
@@ -161,7 +161,7 @@ class Plugin extends PluginBase {
       appDuration,
       // hideTimes: this.getData('hideTimes') + 1,
     });
-    this.log('event', 'app_hide', appDuration);
+    this.statLog('event', 'app_hide', appDuration);
     // 上报使用时长
   }
   preAppOnUnlaunch() {
@@ -170,7 +170,7 @@ class Plugin extends PluginBase {
       appDuration,
       // hideTimes: this.getData('hideTimes') + 1,
     });
-    this.log('event', 'app_unlaunch', appDuration);
+    this.statLog('event', 'app_unlaunch', appDuration);
     // 上报使用时长
   }
 
@@ -179,11 +179,11 @@ class Plugin extends PluginBase {
       pageQuery: query,
       pageStartTime: Date.now(),
     });
-    this.log('event', 'page_load');
+    this.statLog('event', 'page_load');
   }
   prePageOnReady() {
     const duration = Date.now() - this.getData('pageStartTime');
-    this.log('event', 'page_ready', duration);
+    this.statLog('event', 'page_ready', duration);
   }
   prePageOnShow(opts = {}, ctx) {
     const pagePath = ctx.route;
@@ -200,17 +200,17 @@ class Plugin extends PluginBase {
     this.setData(data);
 
     // pv, url, referer
-    this.log('pv', pagePath, this.getData('lastPage'));
+    this.statLog('pv', pagePath, this.getData('lastPage'));
     // 此处存储当前 path 路径，并上报一次 pv
-    // this.log('event', 'page', 'show');
-    // this.log('pv', 'pageName', url);
+    // this.statLog('event', 'page', 'show');
+    // this.statLog('pv', 'pageName', url);
   }
   prePageOnHide() {
     const duration = Date.now() - this.getData('showTime');
     this.setData({
       duration,
     });
-    this.log('event', 'page_hide', duration);
+    this.statLog('event', 'page_hide', duration);
     // 上报当前页面浏览时长
   }
   prePageOnUnload() {
@@ -218,7 +218,7 @@ class Plugin extends PluginBase {
     this.setData({
       duration,
     });
-    this.log('event', 'page_unload', duration);
+    this.statLog('event', 'page_unload', duration);
     // 上报当前页面浏览时长
   }
 }
