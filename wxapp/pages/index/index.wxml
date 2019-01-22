@@ -9,5 +9,6 @@
 
   <button bindtap="goNext" data-link="page1">page1</button>
   <button bindtap="goNext" data-link="page2">page2</button>
+  <button bindtap="goLogin" open-type="getUserInfo" bindgetuserinfo="getUserInfo">login</button>
 </view>
 

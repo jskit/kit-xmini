@@ -7,6 +7,7 @@ import {
   merge,
   isObject,
   filterObj,
+  compactObject,
   // isString,
 } from '../../utils/index';
 import { regionMap } from './regionMap';
@@ -38,7 +39,7 @@ const storagePiwik = new Storage('piwik', 31536000);
  *  - piwikInit 配置接口(受限)
  *  - piwikUpdate 更新数据接口(受限)
  *  - piwikLog 接收log，之后合并公共数据，然后 push 到数组中，并触发log上报
- *    - 内部方法 pushLog reportLog send
+ *    - 内部方法 pushLog piwikReport send
  * https://developer.matomo.org/api-reference/tracking-api
  *
  * @class Plugin
@@ -50,7 +51,8 @@ class Plugin extends PluginBase {
   requestCount = 0;
   methods = {
     piwikInit: 'piwikInit',
-    piwikLog: 'piwikLog',
+    piwikUpdate: 'piwikUpdate',
+    piwikEvent: 'piwikEvent',
   };
   _data = {};
   _logs = [];
@@ -89,14 +91,15 @@ class Plugin extends PluginBase {
     };
 
     // 这里做过滤，无效的删除，非白名单的删除
-    const config = filterObj(opts, whiteList);
-    this.setConfig({
-      size: config.size,
-      idsite: config.siteId,
-      reportURI: config.reportURI,
-      token_auth: config.authToken,
+    const temp = filterObj(opts, whiteList);
+    const config = {
+      size: temp.size || 5,
+      idsite: temp.siteId,
+      reportURI: temp.reportURI,
+      token_auth: temp.authToken,
       rec: 1,
-    });
+    };
+    this.setConfig(compactObject(config));
   }
   piwikUpdate(opts = {}) {
     // 只允许更新以下值
@@ -184,15 +187,15 @@ class Plugin extends PluginBase {
   pushLog(data, immediately) {
     const log = merge(this.getCommon(), data);
     console.warn(log);
-    this._logs.push(stringify(log));
+    this._logs.push(`?${stringify(log)}`);
     this.checkLog();
   }
   checkLog(immediately) {
     if (this.reporting) return;
     if (!this._logs.length) return;
-    this.reportLog(immediately);
+    this.piwikReport(immediately);
   }
-  reportLog(immediately) {
+  piwikReport(immediately) {
     // "?urlref=istoppage&_ref=istoppage&action_name=index&url=http%3A%2F%2Fpages%2Findex%2Findex%3Fspm%3Daliapp%26channel_id%3Daliapp%26ide_internal_page%3Dpages%252Findex%252Findex%26port%3D60154&idsite=5&rec=1&_id=c3b80d787042a4c8&uid=&res=375x667&r=366229&h=17&m=25&s=17&send_image=0&cvar=%7B%221%22%3A%5B%22channel%22%2C%22aliapp%22%5D%2C%222%22%3A%5B%22city_name%22%2Cnull%5D%2C%223%22%3A%5B%22spm%22%2C%22aliapp%22%5D%2C%224%22%3A%5B%22user_id%22%2C%22%22%5D%7D&_cvar=%7B%221%22%3A%5B%22spm%22%2C%22aliapp%22%5D%2C%222%22%3A%5B%22openid%22%2Cnull%5D%2C%223%22%3A%5B%22city_name%22%2Cnull%5D%2C%224%22%3A%5B%22user_id%22%2C%22%22%5D%7D&cdt=1547803517"
     if (this.reporting && !immediately) return;
     let logs = this._logs.splice(0);
@@ -226,6 +229,7 @@ class Plugin extends PluginBase {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'User-Agent': '121212121',
         },
         data: JSON.stringify(data),
         dataType: 'json',
@@ -330,10 +334,6 @@ class Plugin extends PluginBase {
     if (!province) return '';
     return regionMap[province] || '';
   }
-  // _getRegionId(city) {
-  //   if (!city) return '';
-  //   return cityIdMap[city.toLowerCase()];
-  // }
 }
 
 export default Plugin;
