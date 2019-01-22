@@ -89,6 +89,7 @@ xPage({
   },
 
   login(data) {
+    // console.log(aa);
     wx.request({
       url: 'https://m.api.haoshiqi.net/user/login',
       method: 'POST',
@@ -98,17 +99,18 @@ xPage({
       // dataType: 'json', // 默认 json
       // responseType: 'text', // 默认 text
       data: {
-        // zoneId: '857',
-        // channel: 'wxapp',
-        // spm: 'wxapp',
-        // v: '3.4.6',
+        zoneId: '857',
+        channel: 'wxapp',
+        spm: 'wxapp',
+        v: '3.4.6',
+        appId: 'wxa090d3923fde0d4b', // 必填
         appid: 'wxa090d3923fde0d4b', // 必填
         terminal: 'wxapp', // 必填
         type: 2,
         ...data,
       },
       success(res) {
-        const { data } = res;
+        const { data } = res.data;
         const userId = data.user_id;
         // data.userId = userId;
         console.log(data);
@@ -131,13 +133,15 @@ xPage({
 
   goNext(e) {
     const { link } = e.currentTarget.dataset;
-    // switch (link) {
-    //   case 'detail':
-    // }
-    if (link) {
-      wx.navigateTo({
-        url: `../../pages/${link}/${link}`,
-      });
+    switch (link) {
+      case 'search':
+        xmini.piwikEvent('');
+        break;
+      default: {
+        wx.navigateTo({
+          url: `../../pages/${link}/${link}`,
+        });
+      }
     }
   },
 })(Page);

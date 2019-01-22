@@ -41,7 +41,7 @@ class Plugin extends PluginBase {
   getData(key) {
     return key ? this._data[key] : { ...this._data };
   }
-  statLog(type, action, value) {
+  statLog(type, action, value, category) {
     // 数据类型，app page component event
     // 每触发一次抛出一次数据，数据可以被其他插件接收（通过特定的形式）
     // 不同的触发，产生的数据也不同，需要按类别进行过滤处理
@@ -67,6 +67,7 @@ class Plugin extends PluginBase {
             type,
             action,
             value,
+            category,
           },
           this
         );
@@ -78,7 +79,8 @@ class Plugin extends PluginBase {
     this.setData({
       errorCount: count + 1,
     });
-    this.statLog('event', 'error', JSON.stringify(err));
+    // 这里自定义事件不上报错误
+    // this.statLog('event', 'error', JSON.stringify(err));
     // emitter.emit('stat', ['TrackEvent', 'error_message', JSON.stringify(err)], this);
   }
   preAppOnLaunch(options) {
@@ -116,8 +118,10 @@ class Plugin extends PluginBase {
       },
     });
     xmini.me.$getLocation(res => {
+      console.warn('geo');
+      console.log(res);
       this.setData({
-        ...res,
+        location: res,
         // latitude: res.latitude || 0,
         // longitude: res.longitude || 0,
         // speed: res.speed || 0,
@@ -147,7 +151,7 @@ class Plugin extends PluginBase {
     // 用户信息，需要业务设定，登录后有
     // getUserInfo();
 
-    this.statLog('event', 'app', 'launch');
+    // this.statLog('event', 'app_launch', '', 'lifecycle');
   }
   preAppOnShow(options = {}) {
     this.setData({
@@ -160,21 +164,22 @@ class Plugin extends PluginBase {
     // this.statLog('event', 'appStartTimes', Date.now() - startTime);
   }
   preAppOnHide() {
-    const appDuration = Date.now() - this.getData('appShowTime');
-    this.setData({
-      appDuration,
-      // hideTimes: this.getData('hideTimes') + 1,
-    });
-    this.statLog('event', 'app_hide', appDuration);
+    // const appDuration = Date.now() - this.getData('appShowTime');
+    // this.setData({
+    //   appDuration,
+    //   // hideTimes: this.getData('hideTimes') + 1,
+    // });
+    // this.statLog('event', 'app_hide', appDuration, 'lifecycle');
     // 上报使用时长
   }
   preAppOnUnlaunch() {
-    const appDuration = Date.now() - this.getData('appShowTime');
-    this.setData({
-      appDuration,
-      // hideTimes: this.getData('hideTimes') + 1,
-    });
-    this.statLog('event', 'app_unlaunch', appDuration);
+    // 强制上报一次数据
+    // const appDuration = Date.now() - this.getData('appShowTime');
+    // this.setData({
+    //   appDuration,
+    //   // hideTimes: this.getData('hideTimes') + 1,
+    // });
+    // this.statLog('event', 'app_unlaunch', appDuration, 'lifecycle');
     // 上报使用时长
   }
 
@@ -183,11 +188,11 @@ class Plugin extends PluginBase {
       pageQuery: query,
       pageStartTime: Date.now(),
     });
-    this.statLog('event', 'page_load');
+    // this.statLog('event', 'page_load');
   }
   prePageOnReady() {
-    const duration = Date.now() - this.getData('pageStartTime');
-    this.statLog('event', 'page_ready', duration);
+    // const duration = Date.now() - this.getData('pageStartTime');
+    // this.statLog('event', 'page_ready', duration, 'lifecycle');
   }
   prePageOnShow(opts = {}, ctx) {
     const pagePath = ctx.route;
@@ -195,7 +200,7 @@ class Plugin extends PluginBase {
       pageCount: this.getData('pageCount') + 1,
       showTime: 0,
       lastPage: pagePath,
-      referer: this.getData('lastPage'),
+      referer: this.getData('lastPage') || '',
     };
     if (!this.getData('firstPage')) {
       /* eslint dot-notation: 0 */
@@ -204,25 +209,25 @@ class Plugin extends PluginBase {
     this.setData(data);
 
     // pv, url, referer
-    this.statLog('pv', pagePath, this.getData('lastPage'));
+    this.statLog('pv', pagePath, data['referer']);
     // 此处存储当前 path 路径，并上报一次 pv
     // this.statLog('event', 'page', 'show');
     // this.statLog('pv', 'pageName', url);
   }
   prePageOnHide() {
-    const duration = Date.now() - this.getData('showTime');
-    this.setData({
-      duration,
-    });
-    this.statLog('event', 'page_hide', duration);
+    // const duration = Date.now() - this.getData('showTime');
+    // this.setData({
+    //   duration,
+    // });
+    // this.statLog('event', 'page_hide', duration, 'lifecycle');
     // 上报当前页面浏览时长
   }
   prePageOnUnload() {
-    const duration = Date.now() - this.getData('showTime');
-    this.setData({
-      duration,
-    });
-    this.statLog('event', 'page_unload', duration);
+    // const duration = Date.now() - this.getData('showTime');
+    // this.setData({
+    //   duration,
+    // });
+    // this.statLog('event', 'page_unload', duration, 'lifecycle');
     // 上报当前页面浏览时长
   }
 }

@@ -10,10 +10,10 @@ xPage({
   onShow() {
     console.log('page page1: onShow');
     // 模拟用户登录
-    xmini.piwikUpdate({
-      userId: 'xxxxx',
-      openId: '9999999',
-    });
+    // xmini.piwikUpdate({
+    //   userId: 'xxxxx',
+    //   openId: '9999999',
+    // });
   },
   onHide() {},
   onUnload() {},

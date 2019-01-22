@@ -114,10 +114,13 @@ class Plugin extends PluginBase {
       ...xmini.getChannelFilter(),
     };
     // ['screen', 'userId', 'openId', 'location', 'cityName', 'path', 'refer', 'channel', 'spm']
+    // console.warn(opts);
     const config = filterObj(opts, whiteList);
+    // console.warn('更新用户信息');
     this.setData(config);
   }
   piwikPageView(pagePath, referer) {
+    console.warn('pv');
     // pv 统计页面 url 以及页面名称
     // const { pageName, pagePath, referer = '' } = xmini.me.$getPageInfo();
     let url = pagePath;
@@ -128,23 +131,29 @@ class Plugin extends PluginBase {
     // pv 信息都应该从 pageInfo 上取
     const data = {
       url,
-      path: pagePath,
-      // action_name: pageName,
+      action_name: pagePath,
       urlref: referer || 'istoppage',
       _ref: referer,
     };
+    this.setData({
+      url,
+      urlref: referer || 'istoppage',
+      _ref: referer,
+    });
     this.pushLog(data);
   }
   // cvar 暂时只有固定的数量，通过 stat_update/piwikUpdate 更新
   // piwikCustomVar(index, name, value) { }
   // 上报自定义事件
-  piwikEvent(action, value = '') {
+  piwikEvent(action, value = '', category = '') {
+    console.warn('event');
     // 上报自定义事件
     if (!action) return;
+    // 系统生命周期的事件，别用 action 直接用，category=lifecycle
+    // 用户交互事件，使用 action 区别行为
+    // 曝光事件，使用 action 以 ex_ 开头, category=exposure
     const temp = {
-      action_name: action,
-      // url: '',
-      e_c: this.getConfig('category'),
+      e_c: category,
       e_a: action,
       e_n: value,
     };
@@ -164,10 +173,10 @@ class Plugin extends PluginBase {
     }
     switch (data.type) {
       case 'event':
-        this.piwikEvent(data.action, data.value);
+        this.piwikEvent(data.action, data.value, data.category);
         break;
       case 'pv':
-        this.piwikPageView(data.action, data.value);
+        this.piwikPageView(data.action, data.value, data.category);
         break;
       default:
         // doNothing
@@ -274,19 +283,22 @@ class Plugin extends PluginBase {
     const devId = hexMD5(data.uuid + config.idsite).substr(8, 16);
     const { screenWidth, screenHeight } = data;
     const channelParams = xmini.getChannel();
+    const { scene = '' } = data.showOptions || {};
 
     // 支付宝版本低时，取不到省市相关信息
-    const regionId = this.getRegionId(data);
+    const regionId = this.getRegionId(data.province);
     const locate = {};
+    const { location = {} } = data;
+    Object.assign(locate, {
+      country: 'cn',
+      lat: location.latitude || 0,
+      long: location.longitude || 0,
+    });
 
     if (regionId) {
-      const { location = {} } = data;
       Object.assign(locate, {
-        country: 'cn',
         region: regionId,
         city: location.province,
-        lat: location.latitude || 0,
-        long: location.longitude || 0,
       });
     }
 
@@ -296,13 +308,17 @@ class Plugin extends PluginBase {
       _id: devId, // 支付宝小程序使用 user_id + idsite 前端生成ID，微信小程序使用 openid + idsite 前端生成ID
       ...channelParams,
 
-      uid: '',
+      uid: '', // 这里不加
       res: screenWidth ? `${screenWidth}x${screenHeight}` : '',
       r: this.random(6),
       h: date.getHours(),
       m: date.getMinutes(),
       s: date.getSeconds(),
       send_image: 0,
+
+      url: data.url,
+      urlref: data.urlref,
+      _ref: data._ref,
 
       // 额外参数 上报次数，以及错误重试次数
       // rq_c: 0,
@@ -316,12 +332,13 @@ class Plugin extends PluginBase {
         4: ['user_id', data.userId || ''],
       }),
       // 记录访问最后一个页面的数据(每次上报，只是 piwik 数据库中覆盖式记录只存在一条记录)
+      // https://developers.weixin.qq.com/miniprogram/dev/framework/app-service/scene.html
       _cvar: JSON.stringify({
         1: ['spm', channelParams.spm],
         2: ['openid', data.openId || null],
         3: ['city_name', data.cityName || null],
         4: ['user_id', data.userId || ''],
-        5: ['scene', data.scene || ''], // 场景值
+        5: ['scene', scene || ''], // 场景值
       }),
       cdt: parseInt(date / 1000),
 
