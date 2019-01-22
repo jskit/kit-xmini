@@ -1,4 +1,4 @@
-export const cityMap = {
+export const regionMap = {
   安徽省: '01',
   浙江省: '02',
   江西省: '03',

@@ -9,7 +9,11 @@ import {
   filterObj,
   // isString,
 } from '../../utils/index';
-// import { cityMap } from './cityMap';
+import { regionMap } from './regionMap';
+
+import { Storage } from '../../core/storage';
+
+const storagePiwik = new Storage('piwik', 31536000);
 
 /**
  * 公共参数 idsite、rec、r、url、urlref、h、m、s、send_image、cookie、gt_ms、_ref、pv_id、country、region、city、lat、long、cdt
@@ -53,6 +57,7 @@ class Plugin extends PluginBase {
   constructor(config) {
     super({});
     this.piwikInit(config);
+    this._logs = (storagePiwik.get('piwikLog') || []).concat(this._logs);
   }
   install() {
     emitter.on('stat_data', this.setData, this);
@@ -198,17 +203,17 @@ class Plugin extends PluginBase {
 
     this.reporting = true;
     const reportData = () => {
-      logs = logs.map(item => {
-        return item
-          .replace(/rq_c=(\d+)/g, (match, $1) => {
-            const count = $1 > this.requestCount ? $1 : this.requestCount;
-            return `rq_c=${count}`;
-          })
-          .replace(/retryTimes=(\d+)/g, (match, $1) => {
-            const count = $1 > retryTimes ? $1 : retryTimes;
-            return `retryTimes=${count}`;
-          });
-      });
+      // logs = logs.map(item => {
+      //   return item
+      //     .replace(/rq_c=(\d+)/g, (match, $1) => {
+      //       const count = $1 > this.requestCount ? $1 : this.requestCount;
+      //       return `rq_c=${count}`;
+      //     })
+      //     .replace(/retryTimes=(\d+)/g, (match, $1) => {
+      //       const count = $1 > retryTimes ? $1 : retryTimes;
+      //       return `retryTimes=${count}`;
+      //     });
+      // });
       console.log('report 上报数据', JSON.stringify(logs));
       const data = {
         token_auth,
@@ -240,15 +245,16 @@ class Plugin extends PluginBase {
           } else {
             this.reporting = false;
             // 把数据存起来，留待后面再上报使用
-            this.save();
+            this.save(logs);
           }
         },
       });
     };
     reportData();
   }
-  save() {
-    // 临时存储
+  save(logs) {
+    // 未上报成功的数据存储下来
+    storagePiwik('piwikLog', logs);
   }
   random(size) {
     let temp = '';
@@ -264,6 +270,22 @@ class Plugin extends PluginBase {
     const devId = hexMD5(data.uuid + config.idsite).substr(8, 16);
     const { screenWidth, screenHeight } = data;
     const channelParams = xmini.getChannel();
+
+    // 支付宝版本低时，取不到省市相关信息
+    const regionId = this.getRegionId(data);
+    const locate = {};
+
+    if (regionId) {
+      const { location = {} } = data;
+      Object.assign(locate, {
+        country: 'cn',
+        region: regionId,
+        city: location.province,
+        lat: location.latitude || 0,
+        long: location.longitude || 0,
+      });
+    }
+
     const temp = {
       idsite: config.idsite,
       rec: 1,
@@ -278,9 +300,9 @@ class Plugin extends PluginBase {
       s: date.getSeconds(),
       send_image: 0,
 
-      // 额外参数
-      rq_c: 0,
-      retryTimes: 0,
+      // 额外参数 上报次数，以及错误重试次数
+      // rq_c: 0,
+      // retryTimes: 0,
 
       // 当前页面访问时的数据
       cvar: JSON.stringify({
@@ -289,7 +311,7 @@ class Plugin extends PluginBase {
         3: ['spm', channelParams.spm],
         4: ['user_id', data.userId || ''],
       }),
-      // 记录访问最后一个页面的数据
+      // 记录访问最后一个页面的数据(每次上报，只是 piwik 数据库中覆盖式记录只存在一条记录)
       _cvar: JSON.stringify({
         1: ['spm', channelParams.spm],
         2: ['openid', data.openId || null],
@@ -299,30 +321,14 @@ class Plugin extends PluginBase {
       }),
       cdt: parseInt(date / 1000),
 
-      // country: 'cn',
-      // region: '',
-      // city: location.provinceId,
-      // lat: location.lat || 0,
-      // long: location.long || 0,
+      ...locate,
     };
-
-    // 支付宝版本低时，取不到省市相关信息
-    const piwikId = this.getPiwikId();
-    if (piwikId) {
-      const { location = {} } = data;
-      Object.assign(temp, {
-        country: 'cn',
-        region: piwikId,
-        city: location.provinceId,
-        lat: location.lat || 0,
-        long: location.lon || 0,
-      });
-    }
 
     return temp;
   }
-  getPiwikId() {
-    return '';
+  getRegionId(province) {
+    if (!province) return '';
+    return regionMap[province] || '';
   }
   // _getRegionId(city) {
   //   if (!city) return '';

@@ -106,20 +106,24 @@ class Plugin extends PluginBase {
     xmini.me.getNetworkType({
       success(res) {
         that.setData({
-          networkType: res.networkType || 'no_name',
+          networkType: res.networkType || 'nt_no_name',
         });
       },
       fail(err) {
         that.setData({
-          networkType: 'fail',
+          networkType: 'nt_fail',
         });
       },
     });
     xmini.me.$getLocation(res => {
       this.setData({
-        lat: res.latitude || 0,
-        lng: res.longitude || 0,
-        speed: res.speed || 0,
+        ...res,
+        // latitude: res.latitude || 0,
+        // longitude: res.longitude || 0,
+        // speed: res.speed || 0,
+        // province: res.province || 0,
+        // city: res.city || 0,
+        // district: res.district || 0,
       });
     });
     // 同步获取系统信息

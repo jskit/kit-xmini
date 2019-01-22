@@ -101,9 +101,3 @@ export class Storage {
 }
 
 export const storage = new Storage();
-
-// 系统相关
-export const storageSystem = new Storage('system', 31536000);
-
-// 统计数据
-export const storageStat = new Storage('stat', 31536000);

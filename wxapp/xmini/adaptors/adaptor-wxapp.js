@@ -1,7 +1,10 @@
 import PluginBase from '../core/plugin-base';
-import { storage, storageSystem } from '../core/storage';
+import { storage, Storage } from '../core/storage';
 import { uuid } from '../utils/index';
 // import queue from '../core/queue';
+
+// 系统相关
+const storageSystem = new Storage('system', 31536000);
 
 // 适配小程序方法等
 // 增强方法或属性全使用$开头
@@ -76,10 +79,12 @@ class Plugin extends PluginBase {
       let location = storageSystem.get('location');
       if (!location) {
         me.getLocation({
-          type: 'wgs84',
+          type: 'wgs84', // wxapp
+          // type: 1, // aliapp
+          // cacheTimeout: '600', // aliapp 默认30秒
           success(res) {
             // 缓存15分钟
-            storageSystem.set('location', res, 900);
+            storageSystem.set('location', res, 600);
             cb && cb(res);
           },
           fail(err) {
