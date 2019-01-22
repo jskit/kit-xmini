@@ -15,9 +15,6 @@
   ],
   "author": "cloudyan <1395093509@qq.com>",
   "license": "MIT",
-  "dependencies": {
-    "@jskit/qs": "0.0.7"
-  },
   "devDependencies": {
     "@babel/core": "^7.2.2",
     "@babel/plugin-proposal-class-properties": "^7.2.3",
