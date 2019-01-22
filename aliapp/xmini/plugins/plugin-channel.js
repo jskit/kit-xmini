@@ -1,7 +1,6 @@
 import PluginBase from '../core/plugin-base';
 
-// import { compactObject } from '@jskit/qs';
-import { compactObject } from '../utils/qs';
+import { compactObject, filterObj } from '../utils/index';
 import xmini from '../core/xmini';
 
 // function toMap(arr = []) {
@@ -10,15 +9,6 @@ import xmini from '../core/xmini';
 //     return obj;
 //   }, {})
 // }
-
-function channelFilter(params, filters) {
-  return Object.keys(params).reduce((obj, key) => {
-    if (filters[key]) {
-      obj[key] = params[key];
-    }
-    return obj;
-  }, {});
-}
 
 /**
  * 小程序业务渠道&参数处理(如果扩展可以支持业务之外的参数处理)
@@ -33,6 +23,7 @@ class Plugin extends PluginBase {
   events = {
     preAppOnLaunch: 'preAppOnLaunch',
     preAppOnShow: 'preAppOnShow',
+
     prePageOnLoad: 'prePageOnLoad',
     // prePageOnShow: 'prePageOnShow',
   };
@@ -40,6 +31,7 @@ class Plugin extends PluginBase {
   methods = {
     getChannel: 'getChannel',
     setChannel: 'setChannel',
+    getChannelFilter: 'getChannelFilter',
   };
 
   constructor(config = {}) {
@@ -57,9 +49,9 @@ class Plugin extends PluginBase {
   }
   prePageOnLoad(query = {}, ctx) {
     // console.warn(ctx);
-    // ctx.$query = query;
+    // ctx.$pageQuery = query;
     // `不允许重写 ${ctx.$getPageName()} 中的 onLoad 方法的 query 参数`，但暂时无法控制
-    Object.defineProperty(ctx, '$query', {
+    Object.defineProperty(ctx, '$pageQuery', {
       value: query,
       writable: false,
     });
@@ -75,11 +67,15 @@ class Plugin extends PluginBase {
     return this;
   }
 
+  getChannelFilter() {
+    return this.getConfig();
+  }
+
   channelFilter(params, filters) {
     if (!filters) {
       filters = this.getConfig();
     }
-    return channelFilter(params, filters);
+    return filterObj(params, filters);
   }
 
   setChannel(options) {
@@ -120,8 +116,8 @@ class Plugin extends PluginBase {
 
     // 获取业务渠道参数，由全局参数以及page参数运算得出
     // 提供给API、forward以及统计使用
-    const { query = {} } = xmini.me.$getPageInfo();
-    const current = compactObject(this.channelFilter(query));
+    const { pageQuery = {} } = xmini.me.$getPageInfo();
+    const current = compactObject(this.channelFilter(pageQuery));
     return { ...this.getConfig(), ...this.startParams, ...current };
   }
 }

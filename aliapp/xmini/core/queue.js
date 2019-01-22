@@ -2,6 +2,7 @@
 
 // 使用队列实现控制并发数量
 // 默认并发 10
+// 目前小程序貌似没有并发限制，如果发现请求相关问题的话，使用此方案处理
 const checkConcurrency = (concurrency = 1) => {
   if (concurrency === null) {
     concurrency = 1;

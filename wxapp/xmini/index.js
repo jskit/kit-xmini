@@ -1,5 +1,5 @@
-import { APP_HOOKS, PAGE_HOOKS, upperFirst, emitter } from '../utils/index';
-import Core from './core';
+import { APP_HOOKS, PAGE_HOOKS, upperFirst, emitter } from './utils/index';
+import Core from './core/core';
 // import Bridge from './bridge';
 
 // const bridge = new Bridge();

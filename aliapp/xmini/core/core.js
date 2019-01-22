@@ -1,5 +1,9 @@
 // const globalConfig = {};
 
+function copy(v = '') {
+  return JSON.parse(JSON.stringify(v));
+}
+
 class Core {
   constructor(config = {}, isGlobal) {
     this.config = config;
@@ -10,8 +14,8 @@ class Core {
     // }
   }
 
-  getConfig() {
-    return { ...this.config };
+  getConfig(key) {
+    return copy(key ? this.config[key] : this.config);
   }
 
   setConfig(newConfig = {}) {

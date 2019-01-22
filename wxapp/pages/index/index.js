@@ -116,7 +116,7 @@ xPage({
         console.log(data);
         // {"errno":0,"errmsg":"success","data":{"username":"晓寒","avatar":"https://img2.haoshiqi.net/FjpT8ZWkVuOIhMuB2eH6KQo1AiWC?imageView2/0/w/120/h/120/q/90","mobile":"13817131714","email":"","birthday":"0000-00-00","sex":0,"enabled":1,"created_at":1455943115,"is_talent":1,"is_dealer":1,"is_talent_blocked":0,"balance":224,"locked_balance":0,"withdraw_total":0,"transfer_amount":0,"user_id":10000208,"wechat_open_id":"oqiYY4w5JCrIfAx60Z80ErAkq1y8","wechat_union_id":"o31SljhvIXvUZT1ydpGgIxT6DEY8","invite_code":"989750X2","token":"1da0fb8cda002856c12445753085f29d"},"timestamp":1548135646,"serverlogid":"04c98abdf54af057fe1932c264292961"}
         if (userId) {
-          console.log(data);
+          // console.log(data);
         }
 
         // 用户登录后，要更新统计相关的用户信息

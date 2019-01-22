@@ -1,4 +1,4 @@
-import xm from '../xmini/core/xmini';
+import xm from '../xmini/index';
 // import { App, Page } from '../xmini/utils/mockMini';
 import miniapp from '../xmini/adaptors/adaptor-wxapp';
 

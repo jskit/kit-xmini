@@ -1,33 +1,27 @@
 import PluginBase from '../core/plugin-base';
-import storage from '../core/storage';
-import queue from '../core/queue';
-
-// 适配小程序方法等
-// 增强方法或属性全使用$开头
-//   - $storage   优化缓存设置
-//   - $getSystemInfo  获取系统信息
-//   - $getCurPage() 获取当前页面
-//   - $getPageInfo() 获取当前页面信息，如 pageName pagePath pageQuery
+import Storage from '../core/storage';
+// import queue from '../core/queue';
 
 class Plugin extends PluginBase {
   name = 'aliapp';
-  constructor(config = {}) {
-    super(config);
+  constructor(...rest) {
+    super(...rest);
   }
 
   getCurrentPages() {
     return getCurrentPages();
   }
 
-  // 兼容处理微信小程序和支付宝小程序的差异
   me() {
     const me = my;
+    // 兼容处理微信小程序和支付宝小程序的差异
+    // source.httpRequest = source.request;
     // Object.defineProperty(me, 'request', {
     //   get() {
     //     return queue(me.request, 10);
     //   },
     // });
-    me.$storage = storage;
+    me.$storage = new Storage('aliapp');
     me.$getSystemInfo = () => {
       let systemInfo = storage.get('systemInfo');
       if (!systemInfo) {
@@ -36,23 +30,6 @@ class Plugin extends PluginBase {
       }
       return systemInfo;
     };
-    me.$getCurPage = () => {
-      const pages = getCurrentPages();
-      const length = pages.length;
-      if (!length) return {};
-      const currentPage = pages[length - 1] || {};
-      return currentPage;
-    };
-    me.$getPageInfo = () => {
-      const currentPage = me.$getCurPage();
-      const { route = '', $query = {} } = currentPage;
-      return {
-        query: { ...$query },
-        pagePath: route,
-        pageName: route.split('/').reverse()[0] || '',
-      };
-    };
-
     return me;
   }
 }

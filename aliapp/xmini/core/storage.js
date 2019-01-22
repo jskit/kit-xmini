@@ -1,3 +1,4 @@
+// 小程序的 storage 方法使用方式不完全一致，统一处理
 const {
   setStorage,
   // setStorageSync,
@@ -18,24 +19,27 @@ let storageData = {};
 // let me = {};
 
 // wxapp 本地数据存储的大小限制为 10MB
+// 把业务数据和系统数据分离
 
 let i = 1;
-class Storage {
-  constructor(store = 'x-mini') {
+export class Storage {
+  constructor(store = 'x-mini', time = 600) {
     this.store = store || `store-${i++}`;
+    this._time = (Number.isInteger(time) && time > 0) ? time : 600;
 
     let data = {};
     if (typeof my !== 'undefined') {
       // aliapp
       data = getStorageSync({ key: this.store }).data || {};
-    } else if (typeof my !== 'undefined') {
+    } else if (typeof wx !== 'undefined') {
       // wxapp
       data = getStorageSync(this.store) || {};
     }
     storageData[this.store] = data;
   }
-  set(key, value, time) {
-    // 单位秒
+  set(key, value, time = 0) {
+    // 单位秒，默认 10 分钟，-1表示一年
+    if (!time) time = this._time;
     const timeout = Date.now() - 1 + time * 1000;
     console.log(timeout);
     const data = {
@@ -96,4 +100,4 @@ class Storage {
   }
 }
 
-export default new Storage();
+export const storage = new Storage();
