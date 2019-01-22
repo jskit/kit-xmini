@@ -1,10 +1,16 @@
-import xm from '../xmini/core/xmini';
+import xm from '../xmini/index';
 // import { App, Page } from '../xmini/utils/mockMini';
 import miniapp from '../xmini/adaptors/adaptor-aliapp';
 
 import PluginErrorReport from '../xmini/plugins/plugin-error-report';
 import PluginChannel from '../xmini/plugins/plugin-channel';
-import PluginPiwik from '../xmini/plugins/plugin-piwik';
+import PluginStat from '../xmini/plugins/plugin-stat/index';
+import PluginPiwik from '../xmini/plugins/plugin-piwik/index';
+
+// xm.init()
+//   .use()
+//   .use()
+//   .use();
 
 xm.init({
   appId: 123,
@@ -16,14 +22,17 @@ xm.init({
       reportURI: 'https://tongji.doweidu.com/log.php',
     }),
     new PluginChannel({
-      spm: 'aliapp',
-      channel: 'aliapp',
-      channel_id: 'aliapp',
+      spm: 'wxapp',
+      channel: 'wxapp',
+      channel_id: 'wxapp',
     }),
+    new PluginStat({}),
     new PluginPiwik({
-      piwik: {
-        reportURI: 'https://tongji.doweidu.com/piwik.php',
-      },
+      size: 10,
+      // time: '', // 上报时间间隔
+      siteId: 2, // 测试用 2，本站点使用 5
+      reportURI: 'https://tongji.doweidu.com/piwik.php',
+      authToken: '5db85cb262e7423aa6bdca05a0283643',
     }),
   ],
 });
@@ -32,3 +41,4 @@ export const xmini = xm;
 
 export const xApp = xm.xApp;
 export const xPage = xm.xPage;
+export const xComponent = xm.xPage;

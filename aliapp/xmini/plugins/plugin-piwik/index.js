@@ -1,5 +1,5 @@
 import PluginBase from '../../core/plugin-base';
-import xmini from '../../core/xmini';
+import xmini from '../../index';
 import {
   stringify,
   hexMD5,
@@ -120,7 +120,7 @@ class Plugin extends PluginBase {
     this.setData(config);
   }
   piwikPageView(pagePath, referer) {
-    console.warn('pv');
+    // console.warn('pv');
     // pv 统计页面 url 以及页面名称
     // const { pageName, pagePath, referer = '' } = xmini.me.$getPageInfo();
     let url = pagePath;
@@ -238,7 +238,6 @@ class Plugin extends PluginBase {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'User-Agent': '121212121',
         },
         data: JSON.stringify(data),
         dataType: 'json',

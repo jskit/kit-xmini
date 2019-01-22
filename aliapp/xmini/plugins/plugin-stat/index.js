@@ -1,6 +1,6 @@
 import PluginBase from '../../core/plugin-base';
-import xmini from '../../core/xmini';
 import { emitter } from '../../utils/index';
+import xmini from '../../index';
 
 function workspaceInit() {}
 
@@ -118,8 +118,8 @@ class Plugin extends PluginBase {
       },
     });
     xmini.me.$getLocation(res => {
-      console.warn('geo');
-      console.log(res);
+      // console.warn('geo');
+      // console.log(res);
       this.setData({
         location: res,
         // latitude: res.latitude || 0,

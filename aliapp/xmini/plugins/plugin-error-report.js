@@ -1,5 +1,5 @@
 import PluginBase from '../core/plugin-base';
-import xmini from '../core/xmini';
+import xmini from '../index';
 
 // https://tongji.doweidu.com/log.php
 

@@ -238,7 +238,6 @@ class Plugin extends PluginBase {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'User-Agent': '121212121',
         },
         data: JSON.stringify(data),
         dataType: 'json',

@@ -1,7 +1,6 @@
 import PluginBase from '../core/plugin-base';
-
 import { compactObject, filterObj } from '../utils/index';
-import xmini from '../core/xmini';
+import xmini from '../index';
 
 // function toMap(arr = []) {
 //   return arr.reduce((obj, item) => {
@@ -59,10 +58,16 @@ class Plugin extends PluginBase {
 
   initChannel(options = {}, type) {
     // console.log(options, type);
-    const { path = '', query, referrerInfo = {}, scene, shareTicket } = options;
+    const {
+      // path = '',
+      query,
+      referrerInfo = {},
+      // scene,
+      // shareTicket,
+    } = options;
     const { extraData } = referrerInfo;
-    console.log(path, query, scene, shareTicket);
-    console.log(extraData);
+    // console.log(path, query, scene, shareTicket);
+    // console.log(extraData);
     this.setChannel(query || extraData);
     return this;
   }
