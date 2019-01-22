@@ -1,6 +1,5 @@
 import PluginBase from '../core/plugin-base';
 
-// import { compactObject } from '@jskit/qs';
 import { compactObject, filterObj } from '../utils/index';
 import xmini from '../core/xmini';
 
